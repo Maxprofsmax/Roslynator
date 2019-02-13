@@ -446,7 +446,7 @@ namespace Roslynator.Documentation
                 symbol,
                 SymbolDisplayFormats.FullDeclaration,
                 typeDeclarationOptions: SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
-                containingNamespaceStyle: SymbolDisplayContainingNamespaceStyle.OmittedAsContaining,
+                containingNamespaceStyle: SymbolDisplayContainingNamespaceStyle.Included,
                 isVisibleAttribute: f => AttributeDisplay.ShouldBeDisplayed(f),
                 formatBaseList: Options.FormatDeclarationBaseList,
                 formatConstraints: Options.FormatDeclarationConstraints,

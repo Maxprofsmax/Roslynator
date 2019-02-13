@@ -67,7 +67,7 @@ namespace Roslynator
                             case MethodKind.Ordinary:
                                 {
                                     return methodSymbol.ExplicitInterfaceImplementations.IsDefaultOrEmpty
-                                        && !CanBeEntryPoint(methodSymbol)
+                                        && !SymbolUtility.CanBeEntryPoint(methodSymbol)
                                         && !methodSymbol.ImplementsInterfaceMember(allInterfaces: true);
                                 }
                             case MethodKind.Constructor:
@@ -150,40 +150,6 @@ namespace Roslynator
             }
 
             return true;
-        }
-
-        // https://docs.microsoft.com/cs-cz/dotnet/csharp/programming-guide/main-and-command-args/
-        private static bool CanBeEntryPoint(IMethodSymbol methodSymbol)
-        {
-            if (methodSymbol.IsStatic
-                && string.Equals(methodSymbol.Name, "Main", StringComparison.Ordinal)
-                && methodSymbol.ContainingType?.TypeKind.Is(TypeKind.Class, TypeKind.Struct) == true
-                && !methodSymbol.TypeParameters.Any())
-            {
-                ImmutableArray<IParameterSymbol> parameters = methodSymbol.Parameters;
-
-                int length = parameters.Length;
-
-                if (length == 0)
-                    return true;
-
-                if (length == 1)
-                {
-                    IParameterSymbol parameter = parameters[0];
-
-                    ITypeSymbol type = parameter.Type;
-
-                    if (type.Kind == SymbolKind.ArrayType)
-                    {
-                        var arrayType = (IArrayTypeSymbol)type;
-
-                        if (arrayType.ElementType.SpecialType == SpecialType.System_String)
-                            return true;
-                    }
-                }
-            }
-
-            return false;
         }
 
         private static bool IsReferencedInDebuggerDisplayAttribute(ISymbol symbol)

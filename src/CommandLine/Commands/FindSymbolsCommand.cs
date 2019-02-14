@@ -28,13 +28,13 @@ namespace Roslynator.CommandLine
         public FindSymbolsCommand(
             FindSymbolsCommandLineOptions options,
             VisibilityFilter visibilityFilter,
-            SymbolGroups symbolGroups,
+            SymbolGroupFilter symbolGroupFilter,
             ImmutableArray<MetadataName> ignoredAttributes,
             in ProjectFilter projectFilter) : base(projectFilter)
         {
             Options = options;
             VisibilityFilter = visibilityFilter;
-            SymbolGroups = symbolGroups;
+            SymbolGroupFilter = symbolGroupFilter;
             IgnoredAttributes = ignoredAttributes;
         }
 
@@ -42,7 +42,7 @@ namespace Roslynator.CommandLine
 
         public VisibilityFilter VisibilityFilter { get; }
 
-        public SymbolGroups SymbolGroups { get; }
+        public SymbolGroupFilter SymbolGroupFilter { get; }
 
         public ImmutableArray<MetadataName> IgnoredAttributes { get; }
 
@@ -55,7 +55,7 @@ namespace Roslynator.CommandLine
                 : null;
 
             var options = new SymbolFinderOptions(
-                symbolGroups: SymbolGroups,
+                symbolGroupFilter: SymbolGroupFilter,
                 visibilityFilter: VisibilityFilter,
                 ignoredAttributes: IgnoredAttributes,
                 ignoreObsolete: Options.IgnoreObsolete,

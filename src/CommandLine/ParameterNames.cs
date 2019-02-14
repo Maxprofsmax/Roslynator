@@ -14,8 +14,9 @@ namespace Roslynator.CommandLine
         public const string MSBuildPath = "msbuild-path";
         public const string OmitContainingNamespaceParts = "omit-containing-namespace-parts";
         public const string Projects = "projects";
+        public const string RootDirectoryUrl = "root-directory-url";
         public const string SeverityLevel = "severity-level";
-        public const string SymbolGroups = "symbol-groups";
+        public const string SymbolGroupFilter = "symbol-group-filter";
         public const string Visibility = "visibility";
     }
 }

@@ -86,9 +86,9 @@ namespace Roslynator.FindSymbols
 
             bool IsMatch(ISymbol symbol)
             {
-                SymbolGroups symbolGroups = GetSymbolGroups(symbol);
+                SymbolGroupFilter symbolGroupFilter = GetSymbolGroupFilter(symbol);
 
-                if ((options.SymbolGroups & symbolGroups) == 0)
+                if ((options.SymbolGroupFilter & symbolGroupFilter) == 0)
                     return false;
 
                 Visibility visibility = symbol.GetVisibility();
@@ -111,7 +111,7 @@ namespace Roslynator.FindSymbols
             }
         }
 
-        private static SymbolGroups GetSymbolGroups(ISymbol symbol)
+        private static SymbolGroupFilter GetSymbolGroupFilter(ISymbol symbol)
         {
             switch (symbol.Kind)
             {
@@ -122,29 +122,29 @@ namespace Roslynator.FindSymbols
                         switch (namedType.TypeKind)
                         {
                             case TypeKind.Class:
-                                return SymbolGroups.Class;
+                                return SymbolGroupFilter.Class;
                             case TypeKind.Delegate:
-                                return SymbolGroups.Delegate;
+                                return SymbolGroupFilter.Delegate;
                             case TypeKind.Enum:
-                                return SymbolGroups.Enum;
+                                return SymbolGroupFilter.Enum;
                             case TypeKind.Interface:
-                                return SymbolGroups.Interface;
+                                return SymbolGroupFilter.Interface;
                             case TypeKind.Struct:
-                                return SymbolGroups.Struct;
+                                return SymbolGroupFilter.Struct;
                         }
 
                         Debug.Fail(namedType.TypeKind.ToString());
-                        return SymbolGroups.None;
+                        return SymbolGroupFilter.None;
                     }
                 case SymbolKind.Event:
                     {
-                        return SymbolGroups.Event;
+                        return SymbolGroupFilter.Event;
                     }
                 case SymbolKind.Field:
                     {
                         return (((IFieldSymbol)symbol).IsConst)
-                            ? SymbolGroups.Const
-                            : SymbolGroups.Field;
+                            ? SymbolGroupFilter.Const
+                            : SymbolGroupFilter.Field;
                     }
                 case SymbolKind.Method:
                     {
@@ -157,15 +157,15 @@ namespace Roslynator.FindSymbols
                                     if (methodSymbol.ContainingType.TypeKind == TypeKind.Struct
                                         && !methodSymbol.Parameters.Any())
                                     {
-                                        return SymbolGroups.None;
+                                        return SymbolGroupFilter.None;
                                     }
 
-                                    return SymbolGroups.Method;
+                                    return SymbolGroupFilter.Method;
                                 }
                             case MethodKind.Conversion:
                             case MethodKind.UserDefinedOperator:
                             case MethodKind.Ordinary:
-                                return SymbolGroups.Method;
+                                return SymbolGroupFilter.Method;
                             case MethodKind.AnonymousFunction:
                             case MethodKind.DelegateInvoke:
                             case MethodKind.Destructor:
@@ -180,23 +180,23 @@ namespace Roslynator.FindSymbols
                             case MethodKind.BuiltinOperator:
                             case MethodKind.DeclareMethod:
                             case MethodKind.LocalFunction:
-                                return SymbolGroups.None;
+                                return SymbolGroupFilter.None;
                         }
 
                         Debug.Fail(methodSymbol.MethodKind.ToString());
 
-                        return SymbolGroups.None;
+                        return SymbolGroupFilter.None;
                     }
                 case SymbolKind.Property:
                     {
                         return (((IPropertySymbol)symbol).IsIndexer)
-                            ? SymbolGroups.Indexer
-                            : SymbolGroups.Property;
+                            ? SymbolGroupFilter.Indexer
+                            : SymbolGroupFilter.Property;
                     }
             }
 
             Debug.Fail(symbol.Kind.ToString());
-            return SymbolGroups.None;
+            return SymbolGroupFilter.None;
         }
     }
 }

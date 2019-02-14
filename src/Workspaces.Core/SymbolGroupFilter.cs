@@ -4,9 +4,8 @@ using System;
 
 namespace Roslynator
 {
-    //TODO: SymbolGroups > SymbolGroupFilter
     [Flags]
-    internal enum SymbolGroups
+    internal enum SymbolGroupFilter
     {
         None = 0,
         Namespace = 1,

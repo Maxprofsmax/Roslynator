@@ -12,6 +12,7 @@ roslynator list-symbols <PROJECT|SOLUTION>
 [--empty-line-between-members]
 [--file-log]
 [--file-log-verbosity]
+[--format-attributes]
 [--format-base-list]
 [--format-constraints]
 [--format-parameters]
@@ -50,6 +51,10 @@ Defines a depth of a documentation. Default value is `member`.
 **`[--empty-line-between-members]`**
 
 Indicates whether an empty line should be added between two member definitions.
+
+**`[--format-attributes]`**
+
+Indicates whether attributes should be formatted on a multiple lines.
 
 **`[--format-base-list]`**
 

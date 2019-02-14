@@ -1,58 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <assemblies>
-    <assembly name="Roslynator.Core, Version=1.0.0.10, Culture=neutral, PublicKeyToken=3aeedfaf14b2cebf">
-      <attributes>
-        <attribute>AssemblyCompany("Josef Pihrt")</attribute>
-        <attribute>AssemblyCopyright("Copyright (c) 2017-2018 Josef Pihrt")</attribute>
-        <attribute>AssemblyDescription("This library extends functionality of package Microsoft.CodeAnalysis.Common.")</attribute>
-        <attribute>AssemblyFileVersion("1.0.0.10")</attribute>
-        <attribute>AssemblyInformationalVersion("1.0.0.10")</attribute>
-        <attribute>AssemblyProduct("Roslynator.Core")</attribute>
-        <attribute>AssemblyTitle("Roslynator.Core")</attribute>
-        <attribute>TargetFramework(".NETStandard,Version=v1.3", FrameworkDisplayName = "")</attribute>
-      </attributes>
-    </assembly>
-    <assembly name="Roslynator.CSharp, Version=1.0.0.10, Culture=neutral, PublicKeyToken=390be46f77b79f52">
-      <attributes>
-        <attribute>AssemblyCompany("Josef Pihrt")</attribute>
-        <attribute>AssemblyCopyright("Copyright (c) 2017-2018 Josef Pihrt")</attribute>
-        <attribute>AssemblyDescription("This library extends functionality of package Microsoft.CodeAnalysis.CSharp\n\nCommonly Used Types:\nRoslynator.CSharp.CSharpFactory\nRoslynator.CSharp.CSharpFacts\nRoslynator.CSharp.SyntaxInfo\nRoslynator.NameGenerator")</attribute>
-        <attribute>AssemblyFileVersion("1.0.0.10")</attribute>
-        <attribute>AssemblyInformationalVersion("1.0.0.10")</attribute>
-        <attribute>AssemblyProduct("Roslynator.CSharp")</attribute>
-        <attribute>AssemblyTitle("Roslynator.CSharp")</attribute>
-        <attribute>TargetFramework(".NETStandard,Version=v1.3", FrameworkDisplayName = "")</attribute>
-      </attributes>
-    </assembly>
-    <assembly name="Roslynator.CSharp.Workspaces, Version=1.0.0.10, Culture=neutral, PublicKeyToken=ec3f0c29a7973f23">
-      <attributes>
-        <attribute>AssemblyCompany("Josef Pihrt")</attribute>
-        <attribute>AssemblyCopyright("Copyright (c) 2017-2018 Josef Pihrt")</attribute>
-        <attribute>AssemblyDescription("This library extends functionality of package Microsoft.CodeAnalysis.CSharp.Workspaces\n\nCommonly Used Types:\nRoslynator.CSharp.CSharpFactory\nRoslynator.CSharp.CSharpFacts\nRoslynator.CSharp.SyntaxInfo\nRoslynator.NameGenerator")</attribute>
-        <attribute>AssemblyFileVersion("1.0.0.10")</attribute>
-        <attribute>AssemblyInformationalVersion("1.0.0.10")</attribute>
-        <attribute>AssemblyProduct("Roslynator.CSharp.Workspaces")</attribute>
-        <attribute>AssemblyTitle("Roslynator.CSharp.Workspaces")</attribute>
-        <attribute>TargetFramework(".NETStandard,Version=v1.3", FrameworkDisplayName = "")</attribute>
-      </attributes>
-    </assembly>
-    <assembly name="Roslynator.Workspaces.Core, Version=1.0.0.10, Culture=neutral, PublicKeyToken=be1ec334fe31b7bb">
-      <attributes>
-        <attribute>AssemblyCompany("Josef Pihrt")</attribute>
-        <attribute>AssemblyCopyright("Copyright (c) 2017-2018 Josef Pihrt")</attribute>
-        <attribute>AssemblyDescription("This library extends functionality of package Microsoft.CodeAnalysis.Workspaces.Common.")</attribute>
-        <attribute>AssemblyFileVersion("1.0.0.10")</attribute>
-        <attribute>AssemblyInformationalVersion("1.0.0.10")</attribute>
-        <attribute>AssemblyProduct("Roslynator.Workspaces.Core")</attribute>
-        <attribute>AssemblyTitle("Roslynator.Workspaces.Core")</attribute>
-        <attribute>TargetFramework(".NETStandard,Version=v1.3", FrameworkDisplayName = "")</attribute>
-      </attributes>
-    </assembly>
+    <assembly name="Roslynator.Core, Version=1.0.0.10, Culture=neutral, PublicKeyToken=3aeedfaf14b2cebf" />
+    <assembly name="Roslynator.CSharp, Version=1.0.0.10, Culture=neutral, PublicKeyToken=390be46f77b79f52" />
+    <assembly name="Roslynator.CSharp.Workspaces, Version=1.0.0.10, Culture=neutral, PublicKeyToken=ec3f0c29a7973f23" />
+    <assembly name="Roslynator.Workspaces.Core, Version=1.0.0.10, Culture=neutral, PublicKeyToken=be1ec334fe31b7bb" />
   </assemblies>
   <namespaces>
     <namespace name="Roslynator">
       <types>
+        <class def="public class Aaa">
+          <attributes>
+            <attribute>Bar</attribute>
+            <attribute>Foo</attribute>
+          </attributes>
+          <members>
+            <constructor def="public Aaa()" />
+          </members>
+        </class>
+        <class def="public class BarAttribute : Attribute">
+          <members>
+            <constructor def="public BarAttribute()" />
+          </members>
+        </class>
         <class def="public static class DiagnosticsExtensions">
           <members>
             <method def="public static void ReportDiagnostic(this SymbolAnalysisContext context, DiagnosticDescriptor descriptor, Location location, params object[] messageArgs)" />
@@ -105,6 +75,11 @@
             <method def="public static bool IsMultiLine(this FileLinePositionSpan fileLinePositionSpan)" />
             <method def="public static bool IsSingleLine(this FileLinePositionSpan fileLinePositionSpan)" />
             <method def="public static int StartLine(this FileLinePositionSpan fileLinePositionSpan)" />
+          </members>
+        </class>
+        <class def="public class FooAttribute : Attribute">
+          <members>
+            <constructor def="public FooAttribute()" />
           </members>
         </class>
         <class def="public sealed class MetadataNameEqualityComparer&lt;TSymbol&gt; : EqualityComparer&lt;TSymbol&gt; where TSymbol : ISymbol">

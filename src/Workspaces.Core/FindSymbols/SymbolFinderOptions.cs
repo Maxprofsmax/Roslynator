@@ -9,14 +9,14 @@ namespace Roslynator.FindSymbols
     internal class SymbolFinderOptions
     {
         public SymbolFinderOptions(
-            SymbolGroups symbolGroups = SymbolGroups.TypeOrMember,
+            SymbolGroupFilter symbolGroupFilter = SymbolGroupFilter.TypeOrMember,
             VisibilityFilter visibilityFilter = default,
             ImmutableArray<MetadataName> ignoredAttributes = default,
             bool ignoreObsolete = false,
             bool ignoreGeneratedCode = false,
             bool unusedOnly = false)
         {
-            SymbolGroups = symbolGroups;
+            SymbolGroupFilter = symbolGroupFilter;
             VisibilityFilter = visibilityFilter;
             IgnoredAttributes = (!ignoredAttributes.IsDefault) ? ignoredAttributes : ImmutableArray<MetadataName>.Empty;
             IgnoreGeneratedCode = ignoreGeneratedCode;
@@ -26,7 +26,7 @@ namespace Roslynator.FindSymbols
 
         public static SymbolFinderOptions Default { get; } = new SymbolFinderOptions();
 
-        public SymbolGroups SymbolGroups { get; }
+        public SymbolGroupFilter SymbolGroupFilter { get; }
 
         public VisibilityFilter VisibilityFilter{ get; }
 

@@ -14,27 +14,27 @@ namespace Roslynator.Documentation
 
         internal SymbolFilterOptions(
             VisibilityFilter visibilityFilter = VisibilityFilter.All,
-            SymbolGroups symbolGroups = SymbolGroups.NamespaceOrTypeOrMember,
+            SymbolGroupFilter symbolGroupFilter = SymbolGroupFilter.NamespaceOrTypeOrMember,
             IEnumerable<MetadataName> ignoredNames = null,
             IEnumerable<MetadataName> ignoredAttributeNames = null)
         {
             VisibilityFilter = visibilityFilter;
-            SymbolGroups = symbolGroups;
+            SymbolGroupFilter = symbolGroupFilter;
             IgnoredNames = ignoredNames?.ToImmutableArray() ?? ImmutableArray<MetadataName>.Empty;
             IgnoredAttributeNames = ignoredAttributeNames?.ToImmutableArray() ?? ImmutableArray<MetadataName>.Empty;
         }
 
         public VisibilityFilter VisibilityFilter { get; }
 
-        public SymbolGroups SymbolGroups { get; }
+        public SymbolGroupFilter SymbolGroupFilter { get; }
 
         public ImmutableArray<MetadataName> IgnoredNames { get; }
 
         public ImmutableArray<MetadataName> IgnoredAttributeNames { get; }
 
-        public bool IncludesGroup(SymbolGroups symbolGroups)
+        public bool IncludesSymbolGroup(SymbolGroupFilter symbolGroupFilter)
         {
-            return (SymbolGroups & symbolGroups) == symbolGroups;
+            return (SymbolGroupFilter & symbolGroupFilter) == symbolGroupFilter;
         }
 
         private bool IsVisible(ISymbol symbol)
@@ -44,14 +44,14 @@ namespace Roslynator.Documentation
 
         public virtual bool IsVisibleNamespace(INamespaceSymbol namespaceSymbol)
         {
-            return IncludesGroup(SymbolGroups.Namespace)
+            return IncludesSymbolGroup(SymbolGroupFilter.Namespace)
                 && !IsIgnorableNamespace(namespaceSymbol);
         }
 
         public virtual bool IsVisibleType(INamedTypeSymbol typeSymbol)
         {
             return !typeSymbol.IsImplicitlyDeclared
-                && IncludesGroup(typeSymbol.TypeKind.ToSymbolGroups())
+                && IncludesSymbolGroup(typeSymbol.TypeKind.ToSymbolGroupFilter())
                 && IsVisible(typeSymbol)
                 && !IsIgnorableType(typeSymbol);
         }
@@ -64,7 +64,7 @@ namespace Roslynator.Documentation
             {
                 case SymbolKind.Event:
                     {
-                        if (!IncludesGroup(SymbolGroups.Event))
+                        if (!IncludesSymbolGroup(SymbolGroupFilter.Event))
                             return false;
 
                         break;
@@ -75,11 +75,11 @@ namespace Roslynator.Documentation
 
                         if (fieldSymbol.IsConst)
                         {
-                            if (!IncludesGroup(SymbolGroups.Const))
+                            if (!IncludesSymbolGroup(SymbolGroupFilter.Const))
                             {
                                 return false;
                             }
-                            else if (!IncludesGroup(SymbolGroups.Field))
+                            else if (!IncludesSymbolGroup(SymbolGroupFilter.Field))
                             {
                                 return false;
                             }
@@ -93,11 +93,11 @@ namespace Roslynator.Documentation
 
                         if (propertySymbol.IsIndexer)
                         {
-                            if (!IncludesGroup(SymbolGroups.Indexer))
+                            if (!IncludesSymbolGroup(SymbolGroupFilter.Indexer))
                             {
                                 return false;
                             }
-                            else if (!IncludesGroup(SymbolGroups.Property))
+                            else if (!IncludesSymbolGroup(SymbolGroupFilter.Property))
                             {
                                 return false;
                             }
@@ -107,7 +107,7 @@ namespace Roslynator.Documentation
                     }
                 case SymbolKind.Method:
                     {
-                        if (!IncludesGroup(SymbolGroups.Method))
+                        if (!IncludesSymbolGroup(SymbolGroupFilter.Method))
                             return false;
 
                         var methodSymbol = (IMethodSymbol)symbol;
@@ -169,7 +169,68 @@ namespace Roslynator.Documentation
 
         public virtual bool IsVisibleAttribute(INamedTypeSymbol attributeType)
         {
-            return AttributeDisplay.ShouldBeDisplayed(attributeType);
+            switch (attributeType.MetadataName)
+            {
+                case "ConditionalAttribute":
+                case "DebuggableAttribute":
+                case "DebuggerBrowsableAttribute":
+                case "DebuggerDisplayAttribute":
+                case "DebuggerHiddenAttribute":
+                case "DebuggerNonUserCodeAttribute":
+                case "DebuggerStepperBoundaryAttribute":
+                case "DebuggerStepThroughAttribute":
+                case "DebuggerTypeProxyAttribute":
+                case "DebuggerVisualizerAttribute":
+                    return !attributeType.ContainingNamespace.HasMetadataName(MetadataNames.System_Diagnostics);
+                case "SuppressMessageAttribute":
+                    return !attributeType.ContainingNamespace.HasMetadataName(MetadataNames.System_Diagnostics_CodeAnalysis);
+                case "DefaultMemberAttribute":
+                case "AssemblyConfigurationAttribute":
+                case "AssemblyCultureAttribute":
+                case "AssemblyVersionAttribute":
+                    return !attributeType.ContainingNamespace.HasMetadataName(MetadataNames.System_Reflection);
+                case "AsyncStateMachineAttribute":
+                case "CompilationRelaxationsAttribute":
+                case "CompilerGeneratedAttribute":
+                case "IsReadOnlyAttribute":
+                case "InternalsVisibleToAttribute":
+                case "IteratorStateMachineAttribute":
+                case "MethodImplAttribute":
+                case "RuntimeCompatibilityAttribute":
+                case "StateMachineAttribute":
+                case "TupleElementNamesAttribute":
+                case "TypeForwardedFromAttribute":
+                case "TypeForwardedToAttribute":
+                    return !attributeType.ContainingNamespace.HasMetadataName(MetadataNames.System_Runtime_CompilerServices);
+#if DEBUG
+                case "AssemblyCompanyAttribute":
+                case "AssemblyCopyrightAttribute":
+                case "AssemblyDescriptionAttribute":
+                case "AssemblyFileVersionAttribute":
+                case "AssemblyInformationalVersionAttribute":
+                case "AssemblyProductAttribute":
+                case "AssemblyTitleAttribute":
+                case "AssemblyTrademarkAttribute":
+                case "AttributeUsageAttribute":
+                case "BarAttribute":
+                case "CLSCompliantAttribute":
+                case "ComVisibleAttribute":
+                case "DefaultValueAttribute":
+                case "FlagsAttribute":
+                case "FooAttribute":
+                case "GuidAttribute":
+                case "ObsoleteAttribute":
+                case "TargetFrameworkAttribute":
+                case "XmlArrayItemAttribute":
+                case "XmlAttributeAttribute":
+                case "XmlElementAttribute":
+                case "XmlRootAttribute":
+                    return true;
+#endif
+            }
+
+            Debug.Fail(attributeType.ToDisplayString());
+            return true;
         }
 
         internal bool IsIgnorableNamespace(INamespaceSymbol namespaceSymbol)

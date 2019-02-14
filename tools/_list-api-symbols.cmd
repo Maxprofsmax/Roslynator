@@ -10,7 +10,7 @@ set _msbuildPath="C:\Program Files\Microsoft Visual Studio\2017\Community\MSBuil
  --depth member ^
  --omit-containing-namespace ^
  --assembly-attributes ^
- --output "api.txt" "api.xml" ^
+ --output "api.txt" "api.xml" "api.md" ^
  --verbosity n ^
  --file-log "roslynator.log" ^
  --file-log-verbosity diag

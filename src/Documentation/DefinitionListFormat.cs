@@ -2,7 +2,7 @@
 
 namespace Roslynator.Documentation
 {
-    //TODO: order by namespace, accessibility, typekind, memberkind, name
+    //TODO: order by: namespace, accessibility, typekind, memberkind, name. group by: assembly, namespace
     internal class DefinitionListFormat
     {
         public DefinitionListFormat(
@@ -10,10 +10,10 @@ namespace Roslynator.Documentation
             bool omitContainingNamespace = DefaultValues.OmitContainingNamespace,
             bool nestNamespaces = DefaultValues.NestNamespaces,
             bool emptyLineBetweenMembers = DefaultValues.EmptyLineBetweenMembers,
+            bool formatAttributes = DefaultValues.FormatAttributes,
+            bool formatParameters = DefaultValues.FormatParameters,
             bool formatBaseList = DefaultValues.FormatBaseList,
             bool formatConstraints = DefaultValues.FormatConstraints,
-            bool formatParameters = DefaultValues.FormatParameters,
-            bool splitAttributes = DefaultValues.SplitAttributes,
             bool includeAttributeArguments = DefaultValues.IncludeAttributeArguments,
             bool omitIEnumerable = DefaultValues.OmitIEnumerable,
             bool useDefaultLiteral = DefaultValues.UseDefaultLiteral,
@@ -26,7 +26,7 @@ namespace Roslynator.Documentation
             FormatBaseList = formatBaseList;
             FormatConstraints = formatConstraints;
             FormatParameters = formatParameters;
-            SplitAttributes = splitAttributes;
+            FormatAttributes = formatAttributes;
             IncludeAttributeArguments = includeAttributeArguments;
             OmitIEnumerable = omitIEnumerable;
             UseDefaultLiteral = useDefaultLiteral;
@@ -49,7 +49,7 @@ namespace Roslynator.Documentation
 
         public bool FormatParameters { get; }
 
-        public bool SplitAttributes { get; }
+        public bool FormatAttributes { get; }
 
         public bool IncludeAttributeArguments { get; }
 
@@ -62,15 +62,15 @@ namespace Roslynator.Documentation
         internal static class DefaultValues
         {
             public const Visibility Visibility = Roslynator.Visibility.Private;
-            public const SymbolGroups SymbolGroups = Roslynator.SymbolGroups.NamespaceOrTypeOrMember;
+            public const SymbolGroupFilter SymbolGroupFilter = Roslynator.SymbolGroupFilter.NamespaceOrTypeOrMember;
             public const string IndentChars = "  ";
             public const bool OmitContainingNamespace = false;
             public const bool NestNamespaces = false;
             public const bool EmptyLineBetweenMembers = false;
+            public const bool FormatAttributes = false;
+            public const bool FormatParameters = false;
             public const bool FormatBaseList = false;
             public const bool FormatConstraints = false;
-            public const bool FormatParameters = false;
-            public const bool SplitAttributes = true;
             public const bool IncludeAttributeArguments = true;
             public const bool OmitIEnumerable = true;
             public const bool UseDefaultLiteral = true;

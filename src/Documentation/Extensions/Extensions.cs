@@ -7,20 +7,20 @@ namespace Roslynator.Documentation
 {
     internal static class Extensions
     {
-        public static SymbolGroups ToSymbolGroups(this TypeKind typeKind)
+        public static SymbolGroupFilter ToSymbolGroupFilter(this TypeKind typeKind)
         {
             switch (typeKind)
             {
                 case TypeKind.Class:
-                    return SymbolGroups.Class;
+                    return SymbolGroupFilter.Class;
                 case TypeKind.Delegate:
-                    return SymbolGroups.Delegate;
+                    return SymbolGroupFilter.Delegate;
                 case TypeKind.Enum:
-                    return SymbolGroups.Enum;
+                    return SymbolGroupFilter.Enum;
                 case TypeKind.Interface:
-                    return SymbolGroups.Interface;
+                    return SymbolGroupFilter.Interface;
                 case TypeKind.Struct:
-                    return SymbolGroups.Struct;
+                    return SymbolGroupFilter.Struct;
                 default:
                     throw new ArgumentException("", nameof(typeKind));
             }

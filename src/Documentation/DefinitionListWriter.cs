@@ -3,9 +3,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Xml;
 using Microsoft.CodeAnalysis;
 
 namespace Roslynator.Documentation
@@ -27,24 +25,6 @@ namespace Roslynator.Documentation
         public DefinitionListFormat Format { get; }
 
         public IComparer<ISymbol> Comparer { get; }
-
-        public static DefinitionListWriter Create(
-            TextWriter output,
-            SymbolFilterOptions filter = null,
-            DefinitionListFormat format = null,
-            IComparer<ISymbol> comparer = null)
-        {
-            return new DefinitionListTextWriter(output, filter, format, comparer);
-        }
-
-        public static DefinitionListWriter Create(
-            XmlWriter output,
-            SymbolFilterOptions filter = null,
-            DefinitionListFormat format = null,
-            IComparer<ISymbol> comparer = null)
-        {
-            return new DefinitionListXmlWriter(output, filter, format, comparer);
-        }
 
         public virtual bool SupportsMultilineDefinitions => true;
 
@@ -102,15 +82,15 @@ namespace Roslynator.Documentation
 
         public abstract void WriteEnumMemberSeparator();
 
-        public abstract void WriteStartAttributes();
+        public abstract void WriteStartAttributes(bool assemblyAttribute);
 
-        public abstract void WriteEndAttributes();
+        public abstract void WriteEndAttributes(bool assemblyAttribute);
 
-        public abstract void WriteStartAttribute(AttributeData attribute);
+        public abstract void WriteStartAttribute(AttributeData attribute, bool assemblyAttribute);
 
-        public abstract void WriteEndAttribute(AttributeData attribute);
+        public abstract void WriteEndAttribute(AttributeData attribute, bool assemblyAttribute);
 
-        public abstract void WriteAttributeSeparator();
+        public abstract void WriteAttributeSeparator(bool assemblyAttribute);
 
         public void WriteDocument(IEnumerable<IAssemblySymbol> assemblies)
         {
@@ -181,7 +161,7 @@ namespace Roslynator.Documentation
 
                         WriteStartNamespace(namespaceSymbol);
 
-                        if ((Filter.SymbolGroups & SymbolGroups.Type) != 0)
+                        if ((Filter.SymbolGroupFilter & SymbolGroupFilter.Type) != 0)
                             WriteTypes(en.Current);
 
                         WriteEndNamespace(namespaceSymbol);
@@ -258,7 +238,7 @@ namespace Roslynator.Documentation
             {
                 WriteStartNamespace(namespaceSymbol);
 
-                if ((Filter.SymbolGroups & SymbolGroups.Type) != 0)
+                if ((Filter.SymbolGroupFilter & SymbolGroupFilter.Type) != 0)
                     WriteTypes(typesByNamespace[namespaceSymbol]);
 
                 using (List<INamespaceSymbol>.Enumerator en = nestedNamespaces
@@ -348,7 +328,7 @@ namespace Roslynator.Documentation
 
         private void WriteMembers(INamedTypeSymbol namedType)
         {
-            if ((Filter.SymbolGroups & SymbolGroups.Member) != 0)
+            if ((Filter.SymbolGroupFilter & SymbolGroupFilter.Member) != 0)
             {
                 using (IEnumerator<ISymbol> en = namedType
                     .GetMembers()
@@ -390,13 +370,13 @@ namespace Roslynator.Documentation
                 }
             }
 
-            if ((Filter.SymbolGroups & SymbolGroups.Type) != 0)
+            if ((Filter.SymbolGroupFilter & SymbolGroupFilter.Type) != 0)
                 WriteTypes(namedType.GetTypeMembers().Where(f => Filter.IsVisibleType(f)));
         }
 
         private void WriteEnumMembers(INamedTypeSymbol enumType)
         {
-            if ((Filter.SymbolGroups & SymbolGroups.Member) == 0)
+            if ((Filter.SymbolGroupFilter & SymbolGroupFilter.Member) == 0)
                 return;
 
             using (IEnumerator<ISymbol> en = enumType
@@ -431,40 +411,33 @@ namespace Roslynator.Documentation
 
         public void WriteAttributes(ISymbol symbol)
         {
-            ImmutableArray<AttributeData> attributes = symbol.GetAttributes();
-
-            if (!attributes.Any())
-                return;
-
-            using (IEnumerator<AttributeData> en = attributes
+            using (IEnumerator<AttributeData> en = symbol
+                .GetAttributes()
                 .Where(f => Filter.IsVisibleAttribute(f.AttributeClass))
                 .OrderBy(f => f.AttributeClass, Comparer).GetEnumerator())
             {
                 if (en.MoveNext())
                 {
-                    WriteStartAttributes();
+                    bool assemblyAttribute = symbol.Kind == SymbolKind.Assembly;
 
-                    ImmutableArray<SymbolDisplayPart>.Builder parts = ImmutableArray.CreateBuilder<SymbolDisplayPart>();
+                    WriteStartAttributes(assemblyAttribute);
 
                     while (true)
                     {
-                        parts.Clear();
+                        WriteStartAttribute(en.Current, assemblyAttribute);
 
-                        WriteStartAttribute(en.Current);
-
-                        SymbolDefinitionDisplay.AddAttribute(
-                            parts: parts,
+                        ImmutableArray<SymbolDisplayPart> parts = SymbolDefinitionDisplay.GetAttributeParts(
                             attribute: en.Current,
                             omitContainingNamespace: Format.OmitContainingNamespace,
                             includeAttributeArguments: Format.IncludeAttributeArguments);
 
                         Write(parts);
 
-                        WriteEndAttribute(en.Current);
+                        WriteEndAttribute(en.Current, assemblyAttribute);
 
                         if (en.MoveNext())
                         {
-                            WriteAttributeSeparator();
+                            WriteAttributeSeparator(assemblyAttribute);
                         }
                         else
                         {
@@ -472,7 +445,7 @@ namespace Roslynator.Documentation
                         }
                     }
 
-                    WriteEndAttributes();
+                    WriteEndAttributes(assemblyAttribute);
                 }
             }
         }
@@ -485,16 +458,16 @@ namespace Roslynator.Documentation
                 SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
                 omitContainingNamespace: Format.OmitContainingNamespace,
                 addAttributes: false,
-                shouldDisplayAttribute: ShouldWriteAttribute,
-                formatBaseList: Format.FormatBaseList,
-                formatConstraints: Format.FormatConstraints,
-                formatParameters: Format.FormatParameters,
-                splitAttributes: Format.SplitAttributes,
+                addParameterAttributes: true,
+                addAccessorAttributes: true,
+                shouldDisplayAttribute: Filter.IsVisibleAttribute,
+                formatAttributes: Format.FormatAttributes && SupportsMultilineDefinitions,
+                formatBaseList: Format.FormatBaseList && SupportsMultilineDefinitions,
+                formatConstraints: Format.FormatConstraints && SupportsMultilineDefinitions,
+                formatParameters: Format.FormatParameters && SupportsMultilineDefinitions,
                 includeAttributeArguments: Format.IncludeAttributeArguments,
                 omitIEnumerable: Format.OmitIEnumerable,
-                useDefaultLiteral: Format.UseDefaultLiteral,
-                addAccessorAttributes: true,
-                addParameterAttributes: true);
+                useDefaultLiteral: Format.UseDefaultLiteral);
 
             Write(parts);
         }
@@ -514,11 +487,10 @@ namespace Roslynator.Documentation
 
         public abstract void WriteLine();
 
-        public abstract void WriteLine(string value);
-
-        public virtual bool ShouldWriteAttribute(INamedTypeSymbol attributeType)
+        public virtual void WriteLine(string value)
         {
-            return AttributeDisplay.ShouldBeDisplayed(attributeType);
+            Write(value);
+            WriteLine();
         }
     }
 }

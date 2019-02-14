@@ -22,8 +22,8 @@ namespace Roslynator.CommandLine
         [Option(longName: "ignore-generated-code")]
         public bool IgnoreGeneratedCode { get; set; }
 
-        [Option(longName: ParameterNames.SymbolGroups)]
-        public IEnumerable<string> SymbolGroups { get; set; }
+        [Option(longName: ParameterNames.SymbolGroupFilter)]
+        public IEnumerable<string> SymbolGroupFilter { get; set; }
 
         [Option(longName: "unused-only")]
         public bool UnusedOnly { get; set; }

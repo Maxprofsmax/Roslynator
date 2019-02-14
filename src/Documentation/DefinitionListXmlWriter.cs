@@ -231,27 +231,27 @@ namespace Roslynator.Documentation
         {
         }
 
-        public override void WriteStartAttributes()
+        public override void WriteStartAttributes(bool assemblyAttribute)
         {
             WriteStartElement("attributes");
         }
 
-        public override void WriteEndAttributes()
+        public override void WriteEndAttributes(bool assemblyAttribute)
         {
             WriteEndElement();
         }
 
-        public override void WriteStartAttribute(AttributeData attribute)
+        public override void WriteStartAttribute(AttributeData attribute, bool assemblyAttribute)
         {
             WriteStartElement("attribute");
         }
 
-        public override void WriteEndAttribute(AttributeData attribute)
+        public override void WriteEndAttribute(AttributeData attribute, bool assemblyAttribute)
         {
             WriteEndElement();
         }
 
-        public override void WriteAttributeSeparator()
+        public override void WriteAttributeSeparator(bool assemblyAttribute)
         {
         }
 

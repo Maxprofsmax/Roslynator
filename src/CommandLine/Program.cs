@@ -176,7 +176,7 @@ namespace Roslynator.CommandLine
             if (!options.TryGetProjectFilter(out ProjectFilter projectFilter))
                 return 1;
 
-            if (!TryParseOptionValueAsEnumFlags(options.SymbolGroups, ParameterNames.SymbolGroups, out SymbolGroups symbolKinds, SymbolFinderOptions.Default.SymbolGroups))
+            if (!TryParseOptionValueAsEnumFlags(options.SymbolGroupFilter, ParameterNames.SymbolGroupFilter, out SymbolGroupFilter symbolGroupFilter, SymbolFinderOptions.Default.SymbolGroupFilter))
                 return 1;
 
             if (!TryParseOptionValueAsEnumFlags(options.Visibility, ParameterNames.Visibility, out VisibilityFilter visibilityFilter, SymbolFinderOptions.Default.VisibilityFilter))
@@ -188,7 +188,7 @@ namespace Roslynator.CommandLine
             var command = new FindSymbolsCommand(
                 options: options,
                 visibilityFilter: visibilityFilter,
-                symbolGroups: symbolKinds,
+                symbolGroupFilter: symbolGroupFilter,
                 ignoredAttributes: ignoredAttributes,
                 projectFilter: projectFilter);
 
@@ -214,28 +214,32 @@ namespace Roslynator.CommandLine
             if (!TryParseMetadataNames(options.IgnoredAttributeNames, out ImmutableArray<MetadataName> ignoredAttributeNames))
                 return 1;
 
+            var symbolFilterOptions = new SymbolFilterOptions(
+                visibilityFilter: visibilityFilter,
+                symbolGroupFilter: GetSymbolGroupFilter(),
+                ignoredNames: ignoredNames,
+                ignoredAttributeNames: ignoredAttributeNames);
+
             var command = new ListSymbolsCommand(
                 options: options,
-                visibilityFilter: visibilityFilter,
-                symbolGroups: GetSymbolGroups(),
-                ignoredNames: ignoredNames,
-                ignoredAttributeNames: ignoredAttributeNames,
+                symbolFilterOptions: symbolFilterOptions,
+                rootDirectoryUrl: options.RootDirectoryUrl,
                 projectFilter: projectFilter);
 
             CommandResult result = await command.ExecuteAsync(options.Path, options.MSBuildPath, options.Properties);
 
             return (result.Kind == CommandResultKind.Success) ? 0 : 1;
 
-            SymbolGroups GetSymbolGroups()
+            SymbolGroupFilter GetSymbolGroupFilter()
             {
                 switch (depth)
                 {
                     case DocumentationDepth.Member:
-                        return SymbolGroups.NamespaceOrTypeOrMember;
+                        return SymbolGroupFilter.NamespaceOrTypeOrMember;
                     case DocumentationDepth.Type:
-                        return SymbolGroups.NamespaceOrType;
+                        return SymbolGroupFilter.NamespaceOrType;
                     case DocumentationDepth.Namespace:
-                        return SymbolGroups.Namespace;
+                        return SymbolGroupFilter.Namespace;
                     default:
                         throw new InvalidOperationException();
                 }

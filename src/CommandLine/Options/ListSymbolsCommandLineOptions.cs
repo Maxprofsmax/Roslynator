@@ -56,9 +56,9 @@ namespace Roslynator.CommandLine
             MetaValue = "<INDENT_CHARS>")]
         public string IndentChars { get; set; }
 
-        //[Option(longName: "merge-attributes",
-        //    HelpText = "Indicates whether attributes should be displayed in a single attribute list.")]
-        //public bool MergeAttributes { get; set; }
+        [Option(longName: "format-attributes",
+            HelpText = "Indicates whether attributes should be formatted on a multiple lines.")]
+        public bool FormatAttributes { get; set; }
 
         [Option(longName: "nest-namespaces",
             HelpText = "Indicates whether namespaces should be nested.")]
@@ -80,6 +80,11 @@ namespace Roslynator.CommandLine
             HelpText = "Defines path to file(s) that will store a list of symbol definitions.",
             MetaValue = "<OUTPUT_FILE>")]
         public IEnumerable<string> Output { get; set; }
+
+        [Option(longName: ParameterNames.RootDirectoryUrl,
+            HelpText = "Defines a relative url to the documentation root directory. This option is relevant only for markdown output.",
+            MetaValue = "<ROOT_DIRECTORY_URL>")]
+        public string RootDirectoryUrl { get; set; }
 
         [Option(longName: ParameterNames.Visibility,
             Default = nameof(Roslynator.Visibility.Private),

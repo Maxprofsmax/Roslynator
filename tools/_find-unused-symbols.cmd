@@ -7,7 +7,7 @@ set _msbuildPath="C:\Program Files\Microsoft Visual Studio\2017\Community\MSBuil
 "..\src\CommandLine\bin\Debug\net461\roslynator" find-symbols "..\src\Roslynator.sln" ^
  --msbuild-path %_msbuildPath% ^
  --visibility public internal private ^
- --symbol-kinds type ^
+ --symbol-group-filter type ^
  --ignored-attributes ^
   "System.ObsoleteAttribute" ^
   "Microsoft.CodeAnalysis.Diagnostics.DiagnosticAnalyzerAttribute" ^

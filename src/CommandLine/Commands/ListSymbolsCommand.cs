@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
@@ -8,10 +9,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using DotMarkdown;
 using Microsoft.CodeAnalysis;
 using Roslynator.Documentation;
 using static Roslynator.Logger;
-using System.Collections.Generic;
 
 namespace Roslynator.CommandLine
 {
@@ -19,28 +20,20 @@ namespace Roslynator.CommandLine
     {
         public ListSymbolsCommand(
             ListSymbolsCommandLineOptions options,
-            VisibilityFilter visibilityFilter,
-            SymbolGroups symbolGroups,
-            ImmutableArray<MetadataName> ignoredNames,
-            ImmutableArray<MetadataName> ignoredAttributeNames,
+            SymbolFilterOptions symbolFilterOptions,
+            string rootDirectoryUrl,
             in ProjectFilter projectFilter) : base(projectFilter)
         {
             Options = options;
-            VisibilityFilter = visibilityFilter;
-            SymbolGroups = symbolGroups;
-            IgnoredNames = ignoredNames;
-            IgnoredAttributeNames = ignoredAttributeNames;
+            SymbolFilterOptions = symbolFilterOptions;
+            RootDirectoryUrl = rootDirectoryUrl;
         }
 
         public ListSymbolsCommandLineOptions Options { get; }
 
-        public VisibilityFilter VisibilityFilter { get; }
+        public SymbolFilterOptions SymbolFilterOptions { get; }
 
-        public SymbolGroups SymbolGroups { get; }
-
-        public ImmutableArray<MetadataName> IgnoredNames { get; }
-
-        public ImmutableArray<MetadataName> IgnoredAttributeNames { get; }
+        public string RootDirectoryUrl { get; }
 
         public override async Task<CommandResult> ExecuteAsync(ProjectOrSolution projectOrSolution, CancellationToken cancellationToken = default)
         {
@@ -51,10 +44,10 @@ namespace Roslynator.CommandLine
                 indentChars: Options.IndentChars,
                 nestNamespaces: Options.NestNamespaces,
                 emptyLineBetweenMembers: Options.EmptyLineBetweenMembers,
+                formatAttributes: Options.FormatAttributes,
+                formatParameters: Options.FormatParameters,
                 formatBaseList: Options.FormatBaseList,
                 formatConstraints: Options.FormatConstraints,
-                formatParameters: Options.FormatParameters,
-                splitAttributes: true,
                 includeAttributeArguments: !Options.NoAttributeArguments,
                 omitIEnumerable: true,
                 assemblyAttributes: Options.AssemblyAttributes);
@@ -63,27 +56,21 @@ namespace Roslynator.CommandLine
 
             string text = null;
 
-            var filter = new SymbolFilterOptions(
-                visibilityFilter: VisibilityFilter,
-                symbolGroups: SymbolGroups,
-                ignoredNames: IgnoredNames,
-                ignoredAttributeNames: IgnoredAttributeNames);
-
             SymbolDefinitionComparer comparer = SymbolDefinitionComparer.SystemNamespaceFirstInstance;
 
             IEnumerable<IAssemblySymbol> assemblies = compilations.Select(f => f.Assembly);
 
             using (var stringWriter = new StringWriter())
             {
-                DefinitionListWriter writer = DefinitionListWriter.Create(
+                DefinitionListWriter writer = new DefinitionListTextWriter(
                     stringWriter,
-                    filter: filter,
+                    filter: SymbolFilterOptions,
                     format: format,
                     comparer: comparer);
 
                 writer.WriteAssemblies(assemblies);
 
-                text = writer.ToString();
+                text = stringWriter.ToString();
             }
 
             WriteLine(Verbosity.Minimal);
@@ -91,26 +78,47 @@ namespace Roslynator.CommandLine
 
             foreach (string path in Options.Output)
             {
+                WriteLine($"Save '{path}'", ConsoleColor.DarkGray, Verbosity.Diagnostic);
+
                 string extension = Path.GetExtension(path);
 
                 if (string.Equals(extension, ".xml", StringComparison.OrdinalIgnoreCase))
                 {
-#if DEBUG
                     var xmlWriterSettings = new XmlWriterSettings() { Indent = true, IndentChars = Options.IndentChars };
-
+#if DEBUG
                     using (XmlWriter xmlWriter = XmlWriter.Create(ConsoleOut, xmlWriterSettings))
                     {
-                        DefinitionListWriter writer = DefinitionListWriter.Create(xmlWriter, filter, format, comparer);
+                        DefinitionListWriter writer = new DefinitionListXmlWriter(xmlWriter, SymbolFilterOptions, format, comparer);
 
                         writer.WriteDocument(assemblies);
                     }
 
                     WriteLine();
 #endif
-
                     using (XmlWriter xmlWriter = XmlWriter.Create(path, xmlWriterSettings))
                     {
-                        DefinitionListWriter writer = DefinitionListWriter.Create(xmlWriter, filter, format, comparer);
+                        DefinitionListWriter writer = new DefinitionListXmlWriter(xmlWriter, SymbolFilterOptions, format, comparer);
+
+                        writer.WriteDocument(assemblies);
+                    }
+                }
+                else if (string.Equals(extension, ".md", StringComparison.OrdinalIgnoreCase))
+                {
+                    var markdownWriterSettings = new MarkdownWriterSettings();
+#if DEBUG
+                    using (MarkdownWriter markdownWriter = MarkdownWriter.Create(ConsoleOut, markdownWriterSettings))
+                    {
+                        DefinitionListWriter writer = new DefinitionListMarkdownWriter(markdownWriter, SymbolFilterOptions, format, comparer, RootDirectoryUrl);
+
+                        writer.WriteDocument(assemblies);
+                    }
+
+                    WriteLine();
+#endif
+                    using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read))
+                    using (MarkdownWriter markdownWriter = MarkdownWriter.Create(fileStream, markdownWriterSettings))
+                    {
+                        DefinitionListWriter writer = new DefinitionListMarkdownWriter(markdownWriter, SymbolFilterOptions, format, comparer, RootDirectoryUrl);
 
                         writer.WriteDocument(assemblies);
                     }
@@ -122,7 +130,7 @@ namespace Roslynator.CommandLine
             }
 
             if (ShouldWrite(Verbosity.Normal))
-                WriteSummary(assemblies, filter, Verbosity.Normal);
+                WriteSummary(assemblies, SymbolFilterOptions, Verbosity.Normal);
 
             return CommandResult.Success;
         }

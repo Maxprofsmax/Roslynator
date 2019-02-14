@@ -448,10 +448,10 @@ namespace Roslynator.Documentation
                 typeDeclarationOptions: SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
                 omitContainingNamespace: false,
                 addAttributes: true,
-                shouldDisplayAttribute: f => AttributeDisplay.ShouldBeDisplayed(f),
+                shouldDisplayAttribute: f => SymbolFilterOptions.Default.IsVisibleAttribute(f),
+                formatAttributes: true,
                 formatBaseList: Options.FormatDeclarationBaseList,
                 formatConstraints: Options.FormatDeclarationConstraints,
-                splitAttributes: true,
                 includeAttributeArguments: Options.IncludeAttributeArguments,
                 omitIEnumerable: Options.OmitIEnumerable,
                 useDefaultLiteral: true);
@@ -698,13 +698,13 @@ namespace Roslynator.Documentation
             if (symbol is INamedTypeSymbol typeSymbol
                 && Options.IncludeInheritedAttributes)
             {
-                attributes = typeSymbol.GetAttributesIncludingInherited(f => AttributeDisplay.ShouldBeDisplayed(f));
+                attributes = typeSymbol.GetAttributesIncludingInherited(f => SymbolFilterOptions.Default.IsVisibleAttribute(f));
             }
             else
             {
                 attributes = symbol
                     .GetAttributes()
-                    .Where(f => AttributeDisplay.ShouldBeDisplayed(f.AttributeClass))
+                    .Where(f => SymbolFilterOptions.Default.IsVisibleAttribute(f.AttributeClass))
                     .Select(f => new AttributeInfo(symbol, f))
                     .ToImmutableArray();
             }

@@ -27,22 +27,22 @@ namespace Roslynator.CommandLine
 
         public FindSymbolsCommand(
             FindSymbolsCommandLineOptions options,
-            ImmutableArray<Visibility> visibilities,
-            SymbolSpecialKinds symbolKinds,
+            VisibilityFilter visibilityFilter,
+            SymbolGroups symbolGroups,
             ImmutableArray<MetadataName> ignoredAttributes,
             in ProjectFilter projectFilter) : base(projectFilter)
         {
             Options = options;
-            Visibilities = visibilities;
-            SymbolKinds = symbolKinds;
+            VisibilityFilter = visibilityFilter;
+            SymbolGroups = symbolGroups;
             IgnoredAttributes = ignoredAttributes;
         }
 
         public FindSymbolsCommandLineOptions Options { get; }
 
-        public ImmutableArray<Visibility> Visibilities { get; }
+        public VisibilityFilter VisibilityFilter { get; }
 
-        public SymbolSpecialKinds SymbolKinds { get; }
+        public SymbolGroups SymbolGroups { get; }
 
         public ImmutableArray<MetadataName> IgnoredAttributes { get; }
 
@@ -55,8 +55,8 @@ namespace Roslynator.CommandLine
                 : null;
 
             var options = new SymbolFinderOptions(
-                symbolKinds: SymbolKinds,
-                visibilities: Visibilities,
+                symbolGroups: SymbolGroups,
+                visibilityFilter: VisibilityFilter,
                 ignoredAttributes: IgnoredAttributes,
                 ignoreObsolete: Options.IgnoreObsolete,
                 ignoreGeneratedCode: Options.IgnoreGeneratedCode,
@@ -116,7 +116,7 @@ namespace Roslynator.CommandLine
                     }
 
                     int maxKindLength = projectSymbols
-                        .Select(f => f.GetSpecialKind())
+                        .Select(f => f.GetSymbolGroup())
                         .Distinct()
                         .Max(f => f.ToString().Length);
 
@@ -135,18 +135,17 @@ namespace Roslynator.CommandLine
                 WriteLine($"Done analyzing solution '{solution.FilePath}' in {stopwatch.Elapsed:mm\\:ss\\.ff}", Verbosity.Minimal);
             }
 
-            //TODO: add option --summary
             if (allSymbols.Any())
             {
-                Dictionary<SymbolSpecialKind, int> countByKind = allSymbols
-                    .GroupBy(f => f.GetSpecialKind())
+                Dictionary<SymbolGroup, int> countByGroup = allSymbols
+                    .GroupBy(f => f.GetSymbolGroup())
                     .OrderByDescending(f => f.Count())
                     .ThenBy(f => f.Key)
                     .ToDictionary(f => f.Key, f => f.Count());
 
-                int maxKindLength = countByKind.Max(f => f.Key.ToString().Length);
+                int maxKindLength = countByGroup.Max(f => f.Key.ToString().Length);
 
-                int maxCountLength = countByKind.Max(f => f.Value.ToString().Length);
+                int maxCountLength = countByGroup.Max(f => f.Value.ToString().Length);
 
                 WriteLine(Verbosity.Normal);
 
@@ -157,7 +156,7 @@ namespace Roslynator.CommandLine
 
                 WriteLine(Verbosity.Normal);
 
-                foreach (KeyValuePair<SymbolSpecialKind, int> kvp in countByKind)
+                foreach (KeyValuePair<SymbolGroup, int> kvp in countByGroup)
                 {
                     WriteLine($"{kvp.Value.ToString().PadLeft(maxCountLength)} {kvp.Key.ToString().ToLowerInvariant()} symbols", Verbosity.Normal);
                 }
@@ -199,7 +198,7 @@ namespace Roslynator.CommandLine
 
             Write(indentation, verbosity);
 
-            string kindText = symbol.GetSpecialKind().ToString().ToLowerInvariant();
+            string kindText = symbol.GetSymbolGroup().ToString().ToLowerInvariant();
 
             if (isObsolete)
             {

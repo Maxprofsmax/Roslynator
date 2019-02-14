@@ -614,6 +614,25 @@ namespace Roslynator
             }
         }
 
+        internal static bool IsVisible(this ISymbol symbol, VisibilityFilter visibilityFilter)
+        {
+            switch (symbol.GetVisibility())
+            {
+                case Visibility.NotApplicable:
+                    break;
+                case Visibility.Private:
+                    return (visibilityFilter & VisibilityFilter.Private) != 0;
+                case Visibility.Internal:
+                    return (visibilityFilter & VisibilityFilter.Internal) != 0;
+                case Visibility.Public:
+                    return (visibilityFilter & VisibilityFilter.Public) != 0;
+            }
+
+            Debug.Fail(symbol.ToDisplayString(SymbolDisplayFormats.Test));
+
+            return false;
+        }
+
         /// <summary>
         /// Returns true if a symbol has the specified <see cref="MetadataName"/>.
         /// </summary>

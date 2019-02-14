@@ -103,7 +103,7 @@ Indicates whether containing namespace should be omitted when displayed a symbol
 
 **`[--output]`** `<OUTPUT_PATH>`
 
-Defines path to file that will store a list of symbol definitions.
+Defines path to file(s) that will store a list of symbol definitions.
 
 **`--projects`** <PROJECT_NAME>
 

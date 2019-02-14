@@ -5,186 +5,201 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Xml;
 using Microsoft.CodeAnalysis;
 
 namespace Roslynator.Documentation
 {
-    internal class DefinitionListWriter
+    internal abstract class DefinitionListWriter
     {
-        private bool _pendingIndentation;
-        private int _indentationLevel;
-
-        public DefinitionListWriter(
-            TextWriter writer,
-            DefinitionListOptions options = null,
+        protected DefinitionListWriter(
+            SymbolFilterOptions filter = null,
+            DefinitionListFormat format = null,
             IComparer<ISymbol> comparer = null)
         {
-            Writer = writer;
-            Options = options ?? DefinitionListOptions.Default;
+            Filter = filter ?? SymbolFilterOptions.Default;
+            Format = format ?? DefinitionListFormat.Default;
             Comparer = comparer ?? SymbolDefinitionComparer.Instance;
         }
 
-        public TextWriter Writer { get; }
+        public SymbolFilterOptions Filter { get; }
 
-        public DefinitionListOptions Options { get; }
+        public DefinitionListFormat Format { get; }
 
         public IComparer<ISymbol> Comparer { get; }
 
-        public virtual bool IsVisibleNamespace(INamespaceSymbol namespaceSymbol)
+        public static DefinitionListWriter Create(
+            TextWriter output,
+            SymbolFilterOptions filter = null,
+            DefinitionListFormat format = null,
+            IComparer<ISymbol> comparer = null)
         {
-            return !Options.ShouldBeIgnored(namespaceSymbol);
+            return new DefinitionListTextWriter(output, filter, format, comparer);
         }
 
-        public virtual bool IsVisibleType(INamedTypeSymbol typeSymbol)
+        public static DefinitionListWriter Create(
+            XmlWriter output,
+            SymbolFilterOptions filter = null,
+            DefinitionListFormat format = null,
+            IComparer<ISymbol> comparer = null)
         {
-            return !typeSymbol.IsImplicitlyDeclared
-                && Options.IsVisible(typeSymbol)
-                && !Options.ShouldBeIgnored(typeSymbol);
+            return new DefinitionListXmlWriter(output, filter, format, comparer);
         }
 
-        public virtual bool IsVisibleMember(ISymbol symbol)
+        public virtual bool SupportsMultilineDefinitions => true;
+
+        public abstract void WriteStartDocument();
+
+        public abstract void WriteEndDocument();
+
+        public abstract void WriteStartAssemblies();
+
+        public abstract void WriteEndAssemblies();
+
+        public abstract void WriteStartAssembly(IAssemblySymbol assemblySymbol);
+
+        public abstract void WriteEndAssembly(IAssemblySymbol assemblySymbol);
+
+        public abstract void WriteAssemblySeparator();
+
+        public abstract void WriteStartNamespaces();
+
+        public abstract void WriteEndNamespaces();
+
+        public abstract void WriteStartNamespace(INamespaceSymbol namespaceSymbol);
+
+        public abstract void WriteEndNamespace(INamespaceSymbol namespaceSymbol);
+
+        public abstract void WriteNamespaceSeparator();
+
+        public abstract void WriteStartTypes();
+
+        public abstract void WriteEndTypes();
+
+        public abstract void WriteStartType(INamedTypeSymbol typeSymbol);
+
+        public abstract void WriteEndType(INamedTypeSymbol typeSymbol);
+
+        public abstract void WriteTypeSeparator();
+
+        public abstract void WriteStartMembers();
+
+        public abstract void WriteEndMembers();
+
+        public abstract void WriteStartMember(ISymbol symbol);
+
+        public abstract void WriteEndMember(ISymbol symbol);
+
+        public abstract void WriteMemberSeparator();
+
+        public abstract void WriteStartEnumMembers();
+
+        public abstract void WriteEndEnumMembers();
+
+        public abstract void WriteStartEnumMember(ISymbol symbol);
+
+        public abstract void WriteEndEnumMember(ISymbol symbol);
+
+        public abstract void WriteEnumMemberSeparator();
+
+        public abstract void WriteStartAttributes();
+
+        public abstract void WriteEndAttributes();
+
+        public abstract void WriteStartAttribute(AttributeData attribute);
+
+        public abstract void WriteEndAttribute(AttributeData attribute);
+
+        public abstract void WriteAttributeSeparator();
+
+        public void WriteDocument(IEnumerable<IAssemblySymbol> assemblies)
         {
-            bool canBeImplicitlyDeclared = false;
-
-            switch (symbol.Kind)
-            {
-                case SymbolKind.Event:
-                case SymbolKind.Field:
-                case SymbolKind.Property:
-                    {
-                        break;
-                    }
-                case SymbolKind.Method:
-                    {
-                        var methodSymbol = (IMethodSymbol)symbol;
-
-                        switch (methodSymbol.MethodKind)
-                        {
-                            case MethodKind.Constructor:
-                                {
-                                    TypeKind typeKind = methodSymbol.ContainingType.TypeKind;
-
-                                    Debug.Assert(typeKind == TypeKind.Class || typeKind == TypeKind.Struct, typeKind.ToString());
-
-                                    if (typeKind == TypeKind.Class)
-                                    {
-                                        if (!methodSymbol.Parameters.Any())
-                                            canBeImplicitlyDeclared = true;
-                                    }
-                                    else if (typeKind == TypeKind.Struct)
-                                    {
-                                        if (!methodSymbol.Parameters.Any())
-                                            return false;
-                                    }
-
-                                    break;
-                                }
-                            case MethodKind.Conversion:
-                            case MethodKind.UserDefinedOperator:
-                            case MethodKind.Ordinary:
-                                break;
-                            case MethodKind.ExplicitInterfaceImplementation:
-                            case MethodKind.StaticConstructor:
-                            case MethodKind.Destructor:
-                            case MethodKind.EventAdd:
-                            case MethodKind.EventRaise:
-                            case MethodKind.EventRemove:
-                            case MethodKind.PropertyGet:
-                            case MethodKind.PropertySet:
-                                return false;
-                            default:
-                                {
-                                    Debug.Fail(methodSymbol.MethodKind.ToString());
-                                    return false;
-                                }
-                        }
-
-                        break;
-                    }
-                default:
-                    {
-                        Debug.Assert(symbol.Kind == SymbolKind.NamedType, symbol.Kind.ToString());
-                        return false;
-                    }
-            }
-
-            return (canBeImplicitlyDeclared || !symbol.IsImplicitlyDeclared)
-                && Options.IsVisible(symbol)
-                && !Options.HasIgnoredAttribute(symbol);
+            WriteStartDocument();
+            WriteAssemblies(assemblies);
+            WriteEndDocument();
         }
 
-        public virtual bool IsVisibleAttribute(INamedTypeSymbol attributeType)
+        public void WriteAssemblies(IEnumerable<IAssemblySymbol> assemblies)
         {
-            return AttributeDisplay.ShouldBeDisplayed(attributeType);
-        }
+            WriteStartAssemblies();
 
-        public void Write(IEnumerable<IAssemblySymbol> assemblies)
-        {
             using (IEnumerator<IAssemblySymbol> en = assemblies
                 .OrderBy(f => f.Name)
-                .ThenBy(f => f.Identity.Version).GetEnumerator())
+                .ThenBy(f => f.Identity.Version)
+                .GetEnumerator())
             {
                 if (en.MoveNext())
                 {
                     while (true)
                     {
-                        WriteAssembly(en.Current);
+                        WriteStartAssembly(en.Current);
+                        WriteEndAssembly(en.Current);
 
-                        if (!en.MoveNext())
+                        if (en.MoveNext())
+                        {
+                            WriteAssemblySeparator();
+                        }
+                        else
+                        {
                             break;
-
-                        if (Options.AssemblyAttributes)
-                            WriteLine();
+                        }
                     }
                 }
             }
 
+            WriteEndAssemblies();
+
             IEnumerable<IGrouping<INamespaceSymbol, INamedTypeSymbol>> typesByNamespace = assemblies
-                .SelectMany(a => a.GetTypes(t => t.ContainingType == null && IsVisibleType(t)))
+                .SelectMany(a => a.GetTypes(t => t.ContainingType == null && Filter.IsVisibleType(t)))
                 .GroupBy(t => t.ContainingNamespace, MetadataNameEqualityComparer<INamespaceSymbol>.Instance)
-                .Where(g => IsVisibleNamespace(g.Key))
+                .Where(g => Filter.IsVisibleNamespace(g.Key))
                 .OrderBy(g => g.Key, Comparer);
 
-            if (Options.NestNamespaces)
+            WriteStartNamespaces();
+
+            if (Format.NestNamespaces)
             {
-                WriteWithNamespaceHierarchy(typesByNamespace.ToDictionary(f => f.Key, f => f.AsEnumerable()));
+                WriteNamespacesWithHierarchy(typesByNamespace.ToDictionary(f => f.Key, f => f.AsEnumerable()));
             }
             else
             {
-                foreach (IGrouping<INamespaceSymbol, INamedTypeSymbol> grouping in typesByNamespace)
+                WriteNamespaces(typesByNamespace);
+            }
+
+            WriteEndNamespaces();
+        }
+
+        private void WriteNamespaces(IEnumerable<IGrouping<INamespaceSymbol, INamedTypeSymbol>> typesByNamespace)
+        {
+            using (IEnumerator<IGrouping<INamespaceSymbol, INamedTypeSymbol>> en = typesByNamespace.GetEnumerator())
+            {
+                if (en.MoveNext())
                 {
-                    INamespaceSymbol namespaceSymbol = grouping.Key;
+                    while (true)
+                    {
+                        INamespaceSymbol namespaceSymbol = en.Current.Key;
 
-                    WriteStartNamespace(namespaceSymbol);
+                        WriteStartNamespace(namespaceSymbol);
 
-                    if (Options.Depth <= DefinitionListDepth.Type)
-                        WriteTypes(grouping);
+                        if ((Filter.SymbolGroups & SymbolGroups.Type) != 0)
+                            WriteTypes(en.Current);
 
-                    WriteEndNamespace(namespaceSymbol);
+                        WriteEndNamespace(namespaceSymbol);
+
+                        if (en.MoveNext())
+                        {
+                            WriteNamespaceSeparator();
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
                 }
             }
         }
 
-        private void WriteAssembly(IAssemblySymbol assembly)
-        {
-            Write("assembly ");
-            WriteLine(assembly.Identity.ToString());
-
-            if (Options.AssemblyAttributes)
-            {
-                ImmutableArray<SymbolDisplayPart> attributeParts = SymbolDefinitionDisplay.GetAttributesParts(
-                    assembly,
-                    IsVisibleAttribute,
-                    containingNamespaceStyle: (Options.OmitContainingNamespace) ?  SymbolDisplayContainingNamespaceStyle.Omitted : SymbolDisplayContainingNamespaceStyle.Included,
-                    splitAttributes: Options.SplitAttributes,
-                    includeAttributeArguments: Options.IncludeAttributeArguments);
-
-                if (attributeParts.Any())
-                    Write(attributeParts);
-            }
-        }
-
-        private void WriteWithNamespaceHierarchy(Dictionary<INamespaceSymbol, IEnumerable<INamedTypeSymbol>> typesByNamespace)
+        private void WriteNamespacesWithHierarchy(Dictionary<INamespaceSymbol, IEnumerable<INamedTypeSymbol>> typesByNamespace)
         {
             var rootNamespaces = new HashSet<INamespaceSymbol>(MetadataNameEqualityComparer<INamespaceSymbol>.Instance);
 
@@ -217,27 +232,60 @@ namespace Roslynator.Documentation
                 }
             }
 
-            foreach (INamespaceSymbol namespaceSymbol in rootNamespaces.OrderBy(f => f, Comparer))
+            using (IEnumerator<INamespaceSymbol> en = rootNamespaces
+                .OrderBy(f => f, Comparer)
+                .GetEnumerator())
             {
-                WriteNamespace(namespaceSymbol);
+                if (en.MoveNext())
+                {
+                    while (true)
+                    {
+                        WriteNamespace(en.Current);
+
+                        if (en.MoveNext())
+                        {
+                            WriteNamespaceSeparator();
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
             }
 
             void WriteNamespace(INamespaceSymbol namespaceSymbol)
             {
                 WriteStartNamespace(namespaceSymbol);
 
-                if (Options.Depth <= DefinitionListDepth.Type)
+                if ((Filter.SymbolGroups & SymbolGroups.Type) != 0)
                     WriteTypes(typesByNamespace[namespaceSymbol]);
 
-                foreach (INamespaceSymbol nestedNamespace in nestedNamespaces
+                using (List<INamespaceSymbol>.Enumerator en = nestedNamespaces
                     .Where(f => MetadataNameEqualityComparer<INamespaceSymbol>.Instance.Equals(f.ContainingNamespace, namespaceSymbol))
                     .Distinct(MetadataNameEqualityComparer<INamespaceSymbol>.Instance)
                     .OrderBy(f => f, Comparer)
-                    .ToArray())
+                    .ToList()
+                    .GetEnumerator())
                 {
-                    nestedNamespaces.Remove(nestedNamespace);
+                    if (en.MoveNext())
+                    {
+                        while (true)
+                        {
+                            nestedNamespaces.Remove(en.Current);
 
-                    WriteNamespace(nestedNamespace);
+                            WriteNamespace(en.Current);
+
+                            if (en.MoveNext())
+                            {
+                                WriteNamespaceSeparator();
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
                 }
 
                 WriteEndNamespace(namespaceSymbol);
@@ -247,17 +295,18 @@ namespace Roslynator.Documentation
         private void WriteTypes(IEnumerable<INamedTypeSymbol> types)
         {
             using (IEnumerator<INamedTypeSymbol> en = types
-                .OrderBy(f => f, Comparer).GetEnumerator())
+                .OrderBy(f => f, Comparer)
+                .GetEnumerator())
             {
                 if (en.MoveNext())
                 {
-                    WriteLine();
+                    WriteStartTypes();
 
                     while (true)
                     {
                         INamedTypeSymbol namedType = en.Current;
 
-                        WriteStartNamedType(namedType);
+                        WriteStartType(namedType);
 
                         switch (namedType.TypeKind)
                         {
@@ -280,116 +329,74 @@ namespace Roslynator.Documentation
                                 }
                         }
 
-                        WriteEndNamedType(namedType);
+                        WriteEndType(namedType);
 
                         if (en.MoveNext())
                         {
-                            WriteLine();
+                            WriteTypeSeparator();
                         }
                         else
                         {
                             break;
                         }
                     }
+
+                    WriteEndTypes();
                 }
-            }
-        }
-
-        private void WriteStartNamespace(INamespaceSymbol namespaceSymbol)
-        {
-            if (namespaceSymbol.IsGlobalNamespace)
-                return;
-
-            WriteLine();
-            Write(namespaceSymbol, SymbolDefinitionDisplayFormats.NamespaceDefinition);
-            WriteLine();
-
-            _indentationLevel++;
-        }
-
-        private void WriteEndNamespace(INamespaceSymbol namespaceSymbol)
-        {
-            if (namespaceSymbol.IsGlobalNamespace)
-                return;
-
-            DecreaseIndentation();
-        }
-
-        private void WriteStartNamedType(INamedTypeSymbol namedType)
-        {
-            Write(namedType, SymbolDefinitionDisplayFormats.FullDefinition_NameOnly);
-
-            TypeKind typeKind = namedType.TypeKind;
-
-            if (namedType.TypeKind != TypeKind.Delegate)
-            {
-                WriteLine();
-
-                _indentationLevel++;
-            }
-        }
-
-        private void WriteEndNamedType(INamedTypeSymbol namedType)
-        {
-            if (namedType.TypeKind != TypeKind.Delegate)
-            {
-                DecreaseIndentation();
             }
         }
 
         private void WriteMembers(INamedTypeSymbol namedType)
         {
-            if (Options.Depth == DefinitionListDepth.Member)
+            if ((Filter.SymbolGroups & SymbolGroups.Member) != 0)
             {
-                using (IEnumerator<ISymbol> en = namedType.GetMembers()
-                    .Where(f => IsVisibleMember(f))
+                using (IEnumerator<ISymbol> en = namedType
+                    .GetMembers()
+                    .Where(f => Filter.IsVisibleMember(f))
                     .OrderBy(f => f, Comparer)
                     .GetEnumerator())
                 {
                     if (en.MoveNext())
                     {
-                        WriteLine();
+                        WriteStartMembers();
 
                         MemberDeclarationKind kind = en.Current.GetMemberDeclarationKind();
 
                         while (true)
                         {
-                            SymbolDisplayFormat format = (Options.OmitContainingNamespace)
-                                ? SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypes
-                                : SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypesAndNamespaces;
-
-                            Write(en.Current, format);
-
-                            WriteLine();
+                            WriteStartMember(en.Current);
+                            WriteEndMember(en.Current);
 
                             if (en.MoveNext())
                             {
-                                MemberDeclarationKind kind2 = en.Current.GetMemberDeclarationKind();
+                                MemberDeclarationKind nextKind = en.Current.GetMemberDeclarationKind();
 
-                                if (kind != kind2
-                                    || Options.EmptyLineBetweenMembers)
+                                if (kind != nextKind
+                                    || Format.EmptyLineBetweenMembers)
                                 {
-                                    WriteLine();
+                                    WriteMemberSeparator();
                                 }
 
-                                kind = kind2;
+                                kind = nextKind;
                             }
                             else
                             {
                                 break;
                             }
                         }
+
+                        WriteEndMembers();
                     }
                 }
             }
 
-            if (Options.Depth <= DefinitionListDepth.Type)
-                WriteTypes(namedType.GetTypeMembers().Where(f => IsVisibleType(f)));
+            if ((Filter.SymbolGroups & SymbolGroups.Type) != 0)
+                WriteTypes(namedType.GetTypeMembers().Where(f => Filter.IsVisibleType(f)));
         }
 
         private void WriteEnumMembers(INamedTypeSymbol enumType)
         {
-            if (Options.Depth != DefinitionListDepth.Member)
+            if ((Filter.SymbolGroups & SymbolGroups.Member) == 0)
                 return;
 
             using (IEnumerator<ISymbol> en = enumType
@@ -400,95 +407,118 @@ namespace Roslynator.Documentation
             {
                 if (en.MoveNext())
                 {
-                    WriteLine();
+                    WriteStartEnumMembers();
 
-                    do
+                    while (true)
                     {
-                        Write(en.Current, SymbolDefinitionDisplayFormats.FullDefinition_NameOnly);
-                        WriteLine();
+                        WriteStartEnumMember(en.Current);
+                        WriteEndEnumMember(en.Current);
+
+                        if (en.MoveNext())
+                        {
+                            WriteEnumMemberSeparator();
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
-                    while (en.MoveNext());
+
+                    WriteEndEnumMembers();
                 }
             }
         }
 
-        private void Write(ISymbol symbol, SymbolDisplayFormat format)
+        public void WriteAttributes(ISymbol symbol)
+        {
+            ImmutableArray<AttributeData> attributes = symbol.GetAttributes();
+
+            if (!attributes.Any())
+                return;
+
+            using (IEnumerator<AttributeData> en = attributes
+                .Where(f => Filter.IsVisibleAttribute(f.AttributeClass))
+                .OrderBy(f => f.AttributeClass, Comparer).GetEnumerator())
+            {
+                if (en.MoveNext())
+                {
+                    WriteStartAttributes();
+
+                    ImmutableArray<SymbolDisplayPart>.Builder parts = ImmutableArray.CreateBuilder<SymbolDisplayPart>();
+
+                    while (true)
+                    {
+                        parts.Clear();
+
+                        WriteStartAttribute(en.Current);
+
+                        SymbolDefinitionDisplay.AddAttribute(
+                            parts: parts,
+                            attribute: en.Current,
+                            omitContainingNamespace: Format.OmitContainingNamespace,
+                            includeAttributeArguments: Format.IncludeAttributeArguments);
+
+                        Write(parts);
+
+                        WriteEndAttribute(en.Current);
+
+                        if (en.MoveNext())
+                        {
+                            WriteAttributeSeparator();
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    WriteEndAttributes();
+                }
+            }
+        }
+
+        public virtual void Write(ISymbol symbol, SymbolDisplayFormat format)
         {
             ImmutableArray<SymbolDisplayPart> parts = SymbolDefinitionDisplay.GetDisplayParts(
                 symbol,
                 format,
                 SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
-                containingNamespaceStyle: (Options.OmitContainingNamespace) ? SymbolDisplayContainingNamespaceStyle.Omitted : SymbolDisplayContainingNamespaceStyle.Included,
-                isVisibleAttribute: IsVisibleAttribute,
-                formatBaseList: Options.FormatBaseList,
-                formatConstraints: Options.FormatConstraints,
-                formatParameters: Options.FormatParameters,
-                splitAttributes: Options.SplitAttributes,
-                includeAttributeArguments: Options.IncludeAttributeArguments,
-                omitIEnumerable: Options.OmitIEnumerable,
-                useDefaultLiteral: Options.UseDefaultLiteral,
+                omitContainingNamespace: Format.OmitContainingNamespace,
+                addAttributes: false,
+                shouldDisplayAttribute: ShouldWriteAttribute,
+                formatBaseList: Format.FormatBaseList,
+                formatConstraints: Format.FormatConstraints,
+                formatParameters: Format.FormatParameters,
+                splitAttributes: Format.SplitAttributes,
+                includeAttributeArguments: Format.IncludeAttributeArguments,
+                omitIEnumerable: Format.OmitIEnumerable,
+                useDefaultLiteral: Format.UseDefaultLiteral,
                 addAccessorAttributes: true,
                 addParameterAttributes: true);
 
             Write(parts);
         }
 
-        private void Write(ImmutableArray<SymbolDisplayPart> parts)
+        public virtual void Write(IEnumerable<SymbolDisplayPart> parts)
         {
             foreach (SymbolDisplayPart part in parts)
-            {
-                Write(part.ToString());
-
-                if (part.Kind == SymbolDisplayPartKind.LineBreak)
-                    _pendingIndentation = true;
-            }
+                Write(part);
         }
 
-        public void Write(string value)
+        public virtual void Write(SymbolDisplayPart part)
         {
-            CheckPendingIndentation();
-            Writer.Write(value);
+            Write(part.ToString());
         }
 
-        public void WriteLine()
-        {
-            Writer.WriteLine();
+        public abstract void Write(string value);
 
-            _pendingIndentation = true;
-        }
+        public abstract void WriteLine();
 
-        public void WriteLine(string value)
-        {
-            Write(value);
-            WriteLine();
-        }
+        public abstract void WriteLine(string value);
 
-        public void WriteIndentation()
+        public virtual bool ShouldWriteAttribute(INamedTypeSymbol attributeType)
         {
-            for (int i = 0; i < _indentationLevel; i++)
-            {
-                Write(Options.IndentChars);
-            }
-        }
-
-        private void CheckPendingIndentation()
-        {
-            if (_pendingIndentation)
-            {
-                _pendingIndentation = false;
-                WriteIndentation();
-            }
-        }
-
-        public override string ToString()
-        {
-            return Writer.ToString();
-        }
-
-        private void DecreaseIndentation()
-        {
-            Debug.Assert(_indentationLevel > 0, "Cannot decrease indentation level.");
-            _indentationLevel--;
+            return AttributeDisplay.ShouldBeDisplayed(attributeType);
         }
     }
 }

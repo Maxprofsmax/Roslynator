@@ -1,8 +1,42 @@
-﻿Roslynator.Core, Version=1.0.0.10, Culture=neutral, PublicKeyToken=3aeedfaf14b2cebf
-Roslynator.CSharp, Version=1.0.0.10, Culture=neutral, PublicKeyToken=390be46f77b79f52
-Roslynator.CSharp.Workspaces, Version=1.0.0.10, Culture=neutral, PublicKeyToken=ec3f0c29a7973f23
-Roslynator.Workspaces.Core, Version=1.0.0.10, Culture=neutral, PublicKeyToken=be1ec334fe31b7bb
+﻿assembly Roslynator.Core, Version=1.0.0.10, Culture=neutral, PublicKeyToken=3aeedfaf14b2cebf
+  [AssemblyCompany("Josef Pihrt")]
+  [AssemblyCopyright("Copyright (c) 2017-2018 Josef Pihrt")]
+  [AssemblyDescription("This library extends functionality of package Microsoft.CodeAnalysis.Common.")]
+  [AssemblyFileVersion("1.0.0.10")]
+  [AssemblyInformationalVersion("1.0.0.10")]
+  [AssemblyProduct("Roslynator.Core")]
+  [AssemblyTitle("Roslynator.Core")]
+  [TargetFramework(".NETStandard,Version=v1.3", FrameworkDisplayName = "")]
 
+assembly Roslynator.CSharp, Version=1.0.0.10, Culture=neutral, PublicKeyToken=390be46f77b79f52
+  [AssemblyCompany("Josef Pihrt")]
+  [AssemblyCopyright("Copyright (c) 2017-2018 Josef Pihrt")]
+  [AssemblyDescription("This library extends functionality of package Microsoft.CodeAnalysis.CSharp\n\nCommonly Used Types:\nRoslynator.CSharp.CSharpFactory\nRoslynator.CSharp.CSharpFacts\nRoslynator.CSharp.SyntaxInfo\nRoslynator.NameGenerator")]
+  [AssemblyFileVersion("1.0.0.10")]
+  [AssemblyInformationalVersion("1.0.0.10")]
+  [AssemblyProduct("Roslynator.CSharp")]
+  [AssemblyTitle("Roslynator.CSharp")]
+  [TargetFramework(".NETStandard,Version=v1.3", FrameworkDisplayName = "")]
+
+assembly Roslynator.CSharp.Workspaces, Version=1.0.0.10, Culture=neutral, PublicKeyToken=ec3f0c29a7973f23
+  [AssemblyCompany("Josef Pihrt")]
+  [AssemblyCopyright("Copyright (c) 2017-2018 Josef Pihrt")]
+  [AssemblyDescription("This library extends functionality of package Microsoft.CodeAnalysis.CSharp.Workspaces\n\nCommonly Used Types:\nRoslynator.CSharp.CSharpFactory\nRoslynator.CSharp.CSharpFacts\nRoslynator.CSharp.SyntaxInfo\nRoslynator.NameGenerator")]
+  [AssemblyFileVersion("1.0.0.10")]
+  [AssemblyInformationalVersion("1.0.0.10")]
+  [AssemblyProduct("Roslynator.CSharp.Workspaces")]
+  [AssemblyTitle("Roslynator.CSharp.Workspaces")]
+  [TargetFramework(".NETStandard,Version=v1.3", FrameworkDisplayName = "")]
+
+assembly Roslynator.Workspaces.Core, Version=1.0.0.10, Culture=neutral, PublicKeyToken=be1ec334fe31b7bb
+  [AssemblyCompany("Josef Pihrt")]
+  [AssemblyCopyright("Copyright (c) 2017-2018 Josef Pihrt")]
+  [AssemblyDescription("This library extends functionality of package Microsoft.CodeAnalysis.Workspaces.Common.")]
+  [AssemblyFileVersion("1.0.0.10")]
+  [AssemblyInformationalVersion("1.0.0.10")]
+  [AssemblyProduct("Roslynator.Workspaces.Core")]
+  [AssemblyTitle("Roslynator.Workspaces.Core")]
+  [TargetFramework(".NETStandard,Version=v1.3", FrameworkDisplayName = "")]
 namespace Roslynator
 
   public static class DiagnosticsExtensions
@@ -1064,7 +1098,7 @@ namespace Roslynator.CSharp
     public static SyntaxToken WithSimplifierAnnotation(this SyntaxToken token)
     public static TNode WithSimplifierAnnotation<TNode>(this TNode node) where TNode : SyntaxNode
 
-  public readonly struct ExpressionChain : IEquatable<ExpressionChain>, IEnumerable<ExpressionSyntax>
+  public readonly struct ExpressionChain : IEnumerable<ExpressionSyntax>, IEquatable<ExpressionChain>
 
     public BinaryExpressionSyntax BinaryExpression { get; }
     public TextSpan? Span { get; }
@@ -1088,7 +1122,7 @@ namespace Roslynator.CSharp
       public bool MoveNext()
       public void Reset()
 
-    public readonly struct Reversed : IEquatable<ExpressionChain.Reversed>, IEnumerable<ExpressionSyntax>
+    public readonly struct Reversed : IEnumerable<ExpressionSyntax>, IEquatable<ExpressionChain.Reversed>
 
       public Reversed(in ExpressionChain chain)
 
@@ -1110,7 +1144,7 @@ namespace Roslynator.CSharp
         public bool MoveNext()
         public void Reset()
 
-  public readonly struct IfStatementCascade : IEquatable<IfStatementCascade>, IEnumerable<IfStatementOrElseClause>
+  public readonly struct IfStatementCascade : IEnumerable<IfStatementOrElseClause>, IEquatable<IfStatementCascade>
 
     public IfStatementSyntax IfStatement { get; }
 

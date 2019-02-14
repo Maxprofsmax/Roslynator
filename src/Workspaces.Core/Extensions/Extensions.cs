@@ -71,7 +71,7 @@ namespace Roslynator
             return MemberDeclarationKind.None;
         }
 
-        public static SymbolSpecialKind GetSpecialKind(this ISymbol symbol)
+        public static SymbolGroup GetSymbolGroup(this ISymbol symbol)
         {
             switch (symbol.Kind)
             {
@@ -82,44 +82,114 @@ namespace Roslynator
                         switch (namedType.TypeKind)
                         {
                             case TypeKind.Class:
-                                return SymbolSpecialKind.Class;
+                                return SymbolGroup.Class;
                             case TypeKind.Delegate:
-                                return SymbolSpecialKind.Delegate;
+                                return SymbolGroup.Delegate;
                             case TypeKind.Enum:
-                                return SymbolSpecialKind.Enum;
+                                return SymbolGroup.Enum;
                             case TypeKind.Interface:
-                                return SymbolSpecialKind.Interface;
+                                return SymbolGroup.Interface;
                             case TypeKind.Struct:
-                                return SymbolSpecialKind.Struct;
+                                return SymbolGroup.Struct;
                         }
 
                         Debug.Fail(namedType.TypeKind.ToString());
-                        return SymbolSpecialKind.None;
+                        return SymbolGroup.None;
                     }
                 case SymbolKind.Event:
                     {
-                        return SymbolSpecialKind.Event;
+                        return SymbolGroup.Event;
                     }
                 case SymbolKind.Field:
                     {
                         return (((IFieldSymbol)symbol).IsConst)
-                            ? SymbolSpecialKind.Const
-                            : SymbolSpecialKind.Field;
+                            ? SymbolGroup.Const
+                            : SymbolGroup.Field;
                     }
                 case SymbolKind.Method:
                     {
-                        return SymbolSpecialKind.Method;
+                        return SymbolGroup.Method;
                     }
                 case SymbolKind.Property:
                     {
                         return (((IPropertySymbol)symbol).IsIndexer)
-                            ? SymbolSpecialKind.Indexer
-                            : SymbolSpecialKind.Property;
+                            ? SymbolGroup.Indexer
+                            : SymbolGroup.Property;
                     }
             }
 
             Debug.Fail(symbol.Kind.ToString());
-            return SymbolSpecialKind.None;
+            return SymbolGroup.None;
+        }
+
+        public static string GetText(this SymbolGroup symbolGroup)
+        {
+            switch (symbolGroup)
+            {
+                case SymbolGroup.Namespace:
+                    return "namespace";
+                case SymbolGroup.Class:
+                    return "class";
+                case SymbolGroup.Delegate:
+                    return "delegate";
+                case SymbolGroup.Enum:
+                    return "enum";
+                case SymbolGroup.Interface:
+                    return "interface";
+                case SymbolGroup.Struct:
+                    return "struct";
+                case SymbolGroup.Event:
+                    return "event";
+                case SymbolGroup.Field:
+                    return "field";
+                case SymbolGroup.Const:
+                    return "const";
+                case SymbolGroup.Method:
+                    return "method";
+                case SymbolGroup.Property:
+                    return "property";
+                case SymbolGroup.Indexer:
+                    return "indexer";
+            }
+
+            Debug.Fail(symbolGroup.ToString());
+
+            return "";
+        }
+
+        public static string GetPluralText(this SymbolGroup symbolGroup)
+        {
+            switch (symbolGroup)
+            {
+                case SymbolGroup.Namespace:
+                    return "namespaces";
+                case SymbolGroup.Class:
+                    return "classes";
+                case SymbolGroup.Delegate:
+                    return "delegates";
+                case SymbolGroup.Enum:
+                    return "enums";
+                case SymbolGroup.Interface:
+                    return "interfaces";
+                case SymbolGroup.Struct:
+                    return "structs";
+                case SymbolGroup.Event:
+                    return "events";
+                case SymbolGroup.Field:
+                    return "fields";
+                case SymbolGroup.Const:
+                    return "consts";
+                case SymbolGroup.Method:
+                    return "methods";
+                case SymbolGroup.Property:
+                    return "properties";
+                case SymbolGroup.Indexer:
+                    return "indexers";
+            }
+
+            Debug.Fail(symbolGroup.ToString());
+
+            return "";
         }
 
         public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)

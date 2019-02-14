@@ -5,11 +5,12 @@ using System;
 namespace Roslynator
 {
     [Flags]
-    internal enum VisibilityFlags
+    internal enum VisibilityFilter
     {
         None = 0,
         Public = 1,
         Internal = 2,
-        Private = 4
+        Private = 4,
+        All = Public | Internal | Private
     }
 }

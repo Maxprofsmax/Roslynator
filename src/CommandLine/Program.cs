@@ -176,10 +176,10 @@ namespace Roslynator.CommandLine
             if (!options.TryGetProjectFilter(out ProjectFilter projectFilter))
                 return 1;
 
-            if (!TryParseOptionValueAsEnumFlags(options.SymbolKinds, ParameterNames.SymbolKinds, out SymbolSpecialKinds symbolKinds, SymbolFinderOptions.Default.SymbolKinds))
+            if (!TryParseOptionValueAsEnumFlags(options.SymbolGroups, ParameterNames.SymbolGroups, out SymbolGroups symbolKinds, SymbolFinderOptions.Default.SymbolGroups))
                 return 1;
 
-            if (!TryParseOptionValueAsEnumValues(options.Visibility, ParameterNames.Visibility, out ImmutableArray<Visibility> visibilities, SymbolFinderOptions.Default.Visibilities))
+            if (!TryParseOptionValueAsEnumFlags(options.Visibility, ParameterNames.Visibility, out VisibilityFilter visibilityFilter, SymbolFinderOptions.Default.VisibilityFilter))
                 return 1;
 
             if (!TryParseMetadataNames(options.IgnoredAttributes, out ImmutableArray<MetadataName> ignoredAttributes))
@@ -187,8 +187,8 @@ namespace Roslynator.CommandLine
 
             var command = new FindSymbolsCommand(
                 options: options,
-                visibilities: visibilities,
-                symbolKinds: symbolKinds,
+                visibilityFilter: visibilityFilter,
+                symbolGroups: symbolKinds,
                 ignoredAttributes: ignoredAttributes,
                 projectFilter: projectFilter);
 
@@ -202,10 +202,10 @@ namespace Roslynator.CommandLine
             if (!options.TryGetProjectFilter(out ProjectFilter projectFilter))
                 return 1;
 
-            if (!TryParseOptionValueAsEnum(options.Depth, ParameterNames.Depth, out DefinitionListDepth depth, DefinitionListOptions.Default.Depth))
+            if (!TryParseOptionValueAsEnumFlags(options.Visibility, ParameterNames.Visibility, out VisibilityFilter visibilityFilter, SymbolFilterOptions.Default.VisibilityFilter))
                 return 1;
 
-            if (!TryParseOptionValueAsEnumValues(options.Visibility, ParameterNames.Visibility, out ImmutableArray<Visibility> visibilities, DefinitionListOptions.Default.Visibilities))
+            if (!TryParseOptionValueAsEnum(options.Depth, ParameterNames.Depth, out DocumentationDepth depth, DocumentationDepth.Member))
                 return 1;
 
             if (!TryParseMetadataNames(options.IgnoredNames, out ImmutableArray<MetadataName> ignoredNames))
@@ -216,15 +216,30 @@ namespace Roslynator.CommandLine
 
             var command = new ListSymbolsCommand(
                 options: options,
-                depth: depth,
-                visibilities: visibilities,
-                ignoredNames,
-                ignoredAttributeNames,
+                visibilityFilter: visibilityFilter,
+                symbolGroups: GetSymbolGroups(),
+                ignoredNames: ignoredNames,
+                ignoredAttributeNames: ignoredAttributeNames,
                 projectFilter: projectFilter);
 
             CommandResult result = await command.ExecuteAsync(options.Path, options.MSBuildPath, options.Properties);
 
             return (result.Kind == CommandResultKind.Success) ? 0 : 1;
+
+            SymbolGroups GetSymbolGroups()
+            {
+                switch (depth)
+                {
+                    case DocumentationDepth.Member:
+                        return SymbolGroups.NamespaceOrTypeOrMember;
+                    case DocumentationDepth.Type:
+                        return SymbolGroups.NamespaceOrType;
+                    case DocumentationDepth.Namespace:
+                        return SymbolGroups.Namespace;
+                    default:
+                        throw new InvalidOperationException();
+                }
+            }
         }
 
         private static async Task<int> FormatAsync(FormatCommandLineOptions options)

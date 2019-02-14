@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 
 namespace Roslynator
@@ -27,9 +26,6 @@ namespace Roslynator
 
         public int Compare(ISymbol x, ISymbol y)
         {
-            Debug.Assert(x.IsDefinition, $"symbol is not definition: {x.ToDisplayString()}");
-            Debug.Assert(y.IsDefinition, $"symbol is not definition: {y.ToDisplayString()}");
-
             if (object.ReferenceEquals(x, y))
                 return 0;
 
@@ -68,7 +64,7 @@ namespace Roslynator
                             case SymbolKind.Namespace:
                                 return CompareSymbolAndNamespaceSymbol(namedTypeSymbol, (INamespaceSymbol)y);
                             case SymbolKind.NamedType:
-                                return NamedTypeSymbolDefinitionComparer.GetInstance(SystemNamespaceFirst).Compare(namedTypeSymbol, (INamedTypeSymbol)y);
+                                return NamedTypeSymbolDefinitionComparer.Instance.Compare(namedTypeSymbol, (INamedTypeSymbol)y);
                             case SymbolKind.Event:
                             case SymbolKind.Field:
                             case SymbolKind.Method:
@@ -93,7 +89,7 @@ namespace Roslynator
                             case SymbolKind.Field:
                             case SymbolKind.Method:
                             case SymbolKind.Property:
-                                return MemberSymbolDefinitionComparer.GetInstance(SystemNamespaceFirst).Compare(x, y);
+                                return MemberSymbolDefinitionComparer.Instance.Compare(x, y);
                         }
 
                         break;
@@ -113,9 +109,9 @@ namespace Roslynator
             return 1;
         }
 
-        private int CompareSymbolAndNamedTypeSymbol(ISymbol symbol, INamedTypeSymbol namedTypeSymbol)
+        private static int CompareSymbolAndNamedTypeSymbol(ISymbol symbol, INamedTypeSymbol namedTypeSymbol)
         {
-            int diff = NamedTypeSymbolDefinitionComparer.GetInstance(SystemNamespaceFirst).Compare(symbol.ContainingType, namedTypeSymbol);
+            int diff = NamedTypeSymbolDefinitionComparer.Instance.Compare(symbol.ContainingType, namedTypeSymbol);
 
             if (diff != 0)
                 return diff;

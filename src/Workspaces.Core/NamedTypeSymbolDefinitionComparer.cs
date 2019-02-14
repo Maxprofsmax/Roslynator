@@ -8,27 +8,14 @@ namespace Roslynator
 {
     internal sealed class NamedTypeSymbolDefinitionComparer : IComparer<INamedTypeSymbol>
     {
-        public static NamedTypeSymbolDefinitionComparer Instance { get; } = new NamedTypeSymbolDefinitionComparer(systemNamespaceFirst: false);
+        public static NamedTypeSymbolDefinitionComparer Instance { get; } = new NamedTypeSymbolDefinitionComparer();
 
-        public static NamedTypeSymbolDefinitionComparer SystemNamespaceFirstInstance { get; } = new NamedTypeSymbolDefinitionComparer(systemNamespaceFirst: true);
-
-        public bool SystemNamespaceFirst { get; }
-
-        internal NamedTypeSymbolDefinitionComparer(bool systemNamespaceFirst = false)
+        internal NamedTypeSymbolDefinitionComparer()
         {
-            SystemNamespaceFirst = systemNamespaceFirst;
-        }
-
-        public static NamedTypeSymbolDefinitionComparer GetInstance(bool systemNamespaceFirst)
-        {
-            return (systemNamespaceFirst) ? SystemNamespaceFirstInstance : Instance;
         }
 
         public int Compare(INamedTypeSymbol x, INamedTypeSymbol y)
         {
-            Debug.Assert(x.IsDefinition, $"symbol is not definition: {x.ToDisplayString()}");
-            Debug.Assert(y.IsDefinition, $"symbol is not definition: {y.ToDisplayString()}");
-
             if (object.ReferenceEquals(x, y))
                 return 0;
 
@@ -38,12 +25,7 @@ namespace Roslynator
             if (y == null)
                 return 1;
 
-            int diff = NamespaceSymbolDefinitionComparer.GetInstance(SystemNamespaceFirst).Compare(x.ContainingNamespace, y.ContainingNamespace);
-
-            if (diff != 0)
-                return diff;
-
-            diff = GetRank(x).CompareTo(GetRank(y));
+            int diff = GetRank(x).CompareTo(GetRank(y));
 
             if (diff != 0)
                 return diff;

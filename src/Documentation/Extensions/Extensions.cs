@@ -5,8 +5,27 @@ using Microsoft.CodeAnalysis;
 
 namespace Roslynator.Documentation
 {
-    internal static class TypeKindExtensions
+    internal static class Extensions
     {
+        public static SymbolGroups ToSymbolGroups(this TypeKind typeKind)
+        {
+            switch (typeKind)
+            {
+                case TypeKind.Class:
+                    return SymbolGroups.Class;
+                case TypeKind.Delegate:
+                    return SymbolGroups.Delegate;
+                case TypeKind.Enum:
+                    return SymbolGroups.Enum;
+                case TypeKind.Interface:
+                    return SymbolGroups.Interface;
+                case TypeKind.Struct:
+                    return SymbolGroups.Struct;
+                default:
+                    throw new ArgumentException("", nameof(typeKind));
+            }
+        }
+
         public static NamespaceDocumentationParts ToNamespaceDocumentationPart(this TypeKind typeKind)
         {
             switch (typeKind)

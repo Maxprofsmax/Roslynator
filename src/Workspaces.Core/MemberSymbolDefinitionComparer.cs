@@ -9,27 +9,10 @@ namespace Roslynator
 {
     internal sealed class MemberSymbolDefinitionComparer : IComparer<ISymbol>
     {
-        public static MemberSymbolDefinitionComparer Instance { get; } = new MemberSymbolDefinitionComparer(systemNamespaceFirst: false);
-
-        public static MemberSymbolDefinitionComparer SystemNamespaceFirstInstance { get; } = new MemberSymbolDefinitionComparer(systemNamespaceFirst: true);
-
-        public bool SystemNamespaceFirst { get; }
-
-        internal MemberSymbolDefinitionComparer(bool systemNamespaceFirst = false)
-        {
-            SystemNamespaceFirst = systemNamespaceFirst;
-        }
-
-        public static MemberSymbolDefinitionComparer GetInstance(bool systemNamespaceFirst)
-        {
-            return (systemNamespaceFirst) ? SystemNamespaceFirstInstance : Instance;
-        }
+        public static MemberSymbolDefinitionComparer Instance { get; } = new MemberSymbolDefinitionComparer();
 
         public int Compare(ISymbol x, ISymbol y)
         {
-            Debug.Assert(x.IsDefinition, $"symbol is not definition: {x.ToDisplayString()}");
-            Debug.Assert(y.IsDefinition, $"symbol is not definition: {y.ToDisplayString()}");
-
             Debug.Assert(x.IsKind(SymbolKind.Event, SymbolKind.Field, SymbolKind.Method, SymbolKind.Property), x.Kind.ToString());
             Debug.Assert(y.IsKind(SymbolKind.Event, SymbolKind.Field, SymbolKind.Method, SymbolKind.Property), y.Kind.ToString());
 
@@ -42,15 +25,10 @@ namespace Roslynator
             if (y == null)
                 return 1;
 
-            int diff = NamedTypeSymbolDefinitionComparer.GetInstance(SystemNamespaceFirst).Compare(x.ContainingType, y.ContainingType);
-
-            if (diff != 0)
-                return diff;
-
             MemberDeclarationKind kind1 = x.GetMemberDeclarationKind();
             MemberDeclarationKind kind2 = y.GetMemberDeclarationKind();
 
-            diff = ((int)kind1).CompareTo((int)kind2);
+            int diff = ((int)kind1).CompareTo((int)kind2);
 
             if (diff != 0)
                 return diff;

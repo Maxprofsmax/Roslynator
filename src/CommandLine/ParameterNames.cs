@@ -15,7 +15,7 @@ namespace Roslynator.CommandLine
         public const string OmitContainingNamespaceParts = "omit-containing-namespace-parts";
         public const string Projects = "projects";
         public const string SeverityLevel = "severity-level";
-        public const string SymbolKinds = "symbol-kinds";
+        public const string SymbolGroups = "symbol-groups";
         public const string Visibility = "visibility";
     }
 }

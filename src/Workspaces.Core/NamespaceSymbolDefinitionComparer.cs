@@ -26,9 +26,6 @@ namespace Roslynator
 
         public int Compare(INamespaceSymbol x, INamespaceSymbol y)
         {
-            Debug.Assert(x.IsDefinition, $"symbol is not definition: {x.ToDisplayString()}");
-            Debug.Assert(y.IsDefinition, $"symbol is not definition: {y.ToDisplayString()}");
-
             if (object.ReferenceEquals(x, y))
                 return 0;
 
@@ -40,11 +37,11 @@ namespace Roslynator
 
             if (x.IsGlobalNamespace)
             {
-                return (y.IsGlobalNamespace) ? 0 : 1;
+                return (y.IsGlobalNamespace) ? 0 : -1;
             }
             else if (y.IsGlobalNamespace)
             {
-                return -1;
+                return 1;
             }
 
             int count1 = CountContainingNamespaces(x);

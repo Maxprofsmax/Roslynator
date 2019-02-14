@@ -51,7 +51,7 @@ namespace Roslynator.CommandLine
         //public bool IncludeIEnumerable { get; set; }
 
         [Option(longName: "indent-chars",
-            Default = DefinitionListOptions.DefaultValues.IndentChars,
+            Default = DefinitionListFormat.DefaultValues.IndentChars,
             HelpText = "Defines characters that should be used for indentation. Default value is two spaces.",
             MetaValue = "<INDENT_CHARS>")]
         public string IndentChars { get; set; }
@@ -77,9 +77,9 @@ namespace Roslynator.CommandLine
         public bool OmitContainingNamespace { get; set; }
 
         [Option(longName: "output",
-            HelpText = "Defines path to file that will store a list of symbol definitions.",
+            HelpText = "Defines path to file(s) that will store a list of symbol definitions.",
             MetaValue = "<OUTPUT_FILE>")]
-        public string Output { get; set; }
+        public IEnumerable<string> Output { get; set; }
 
         [Option(longName: ParameterNames.Visibility,
             Default = nameof(Roslynator.Visibility.Private),

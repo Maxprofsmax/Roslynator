@@ -22,7 +22,7 @@ namespace Roslynator.Documentation
             bool addParameterAttributes = false,
             bool addAccessorAttributes = false,
             Func<INamedTypeSymbol, bool> shouldDisplayAttribute = null,
-            bool formatAttributes = true,
+            bool formatAttributes = false,
             bool formatBaseList = false,
             bool formatConstraints = false,
             bool formatParameters = false,

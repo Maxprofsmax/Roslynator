@@ -1,5 +1,4 @@
-﻿* assembly Roslynator\.Core, Version=1\.0\.0\.10, Culture=neutral, PublicKeyToken=3aeedfaf14b2cebf
-
+* assembly Roslynator\.Core, Version=1\.0\.0\.10, Culture=neutral, PublicKeyToken=3aeedfaf14b2cebf
 * [namespace Roslynator](../../docs/api/Roslynator/README.md)
 * &emsp; [\[Bar, Foo\] public class Aaa](../../docs/api/Roslynator/Aaa/README.md)
 * &emsp; [public class BarAttribute : Attribute](../../docs/api/Roslynator/BarAttribute/README.md)
@@ -21,7 +20,6 @@
 * &emsp; [public readonly struct MetadataName : IEquatable\<MetadataName>](../../docs/api/Roslynator/MetadataName/README.md)
 * &emsp; [public interface ISelection\<T> : IReadOnlyList\<T>](../../docs/api/Roslynator/ISelection-1/README.md)
 * &emsp; [public enum Visibility](../../docs/api/Roslynator/Visibility/README.md)
-
 * [namespace Roslynator.Text](../../docs/api/Roslynator/Text/README.md)
 * &emsp; [public class TextLineCollectionSelection : ISelection\<TextLine>](../../docs/api/Roslynator/Text/TextLineCollectionSelection/README.md)
 * &emsp; \| &emsp; [public struct Enumerator](../../docs/api/Roslynator/Text/TextLineCollectionSelection/Enumerator/README.md)

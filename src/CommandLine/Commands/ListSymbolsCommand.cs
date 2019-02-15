@@ -59,7 +59,35 @@ namespace Roslynator.CommandLine
             SymbolDefinitionComparer comparer = SymbolDefinitionComparer.SystemNamespaceFirstInstance;
 
             IEnumerable<IAssemblySymbol> assemblies = compilations.Select(f => f.Assembly);
+#if DEBUG
+            DefinitionListWriter textWriter = new DefinitionListTextWriter(
+                ConsoleOut,
+                filter: SymbolFilterOptions,
+                format: format,
+                comparer: comparer);
 
+            textWriter.WriteAssemblies(assemblies);
+
+            WriteLine();
+
+            using (XmlWriter xmlWriter = XmlWriter.Create(ConsoleOut, new XmlWriterSettings() { Indent = true, IndentChars = Options.IndentChars }))
+            {
+                DefinitionListWriter writer = new DefinitionListXmlWriter(xmlWriter, SymbolFilterOptions, format, comparer);
+
+                writer.WriteDocument(assemblies);
+            }
+
+            WriteLine();
+
+            using (MarkdownWriter markdownWriter = MarkdownWriter.Create(ConsoleOut))
+            {
+                DefinitionListWriter writer = new DefinitionListMarkdownWriter(markdownWriter, SymbolFilterOptions, format, comparer, RootDirectoryUrl);
+
+                writer.WriteDocument(assemblies);
+            }
+
+            WriteLine();
+#endif
             using (var stringWriter = new StringWriter())
             {
                 DefinitionListWriter writer = new DefinitionListTextWriter(
@@ -85,16 +113,7 @@ namespace Roslynator.CommandLine
                 if (string.Equals(extension, ".xml", StringComparison.OrdinalIgnoreCase))
                 {
                     var xmlWriterSettings = new XmlWriterSettings() { Indent = true, IndentChars = Options.IndentChars };
-#if DEBUG
-                    using (XmlWriter xmlWriter = XmlWriter.Create(ConsoleOut, xmlWriterSettings))
-                    {
-                        DefinitionListWriter writer = new DefinitionListXmlWriter(xmlWriter, SymbolFilterOptions, format, comparer);
 
-                        writer.WriteDocument(assemblies);
-                    }
-
-                    WriteLine();
-#endif
                     using (XmlWriter xmlWriter = XmlWriter.Create(path, xmlWriterSettings))
                     {
                         DefinitionListWriter writer = new DefinitionListXmlWriter(xmlWriter, SymbolFilterOptions, format, comparer);
@@ -105,18 +124,10 @@ namespace Roslynator.CommandLine
                 else if (string.Equals(extension, ".md", StringComparison.OrdinalIgnoreCase))
                 {
                     var markdownWriterSettings = new MarkdownWriterSettings();
-#if DEBUG
-                    using (MarkdownWriter markdownWriter = MarkdownWriter.Create(ConsoleOut, markdownWriterSettings))
-                    {
-                        DefinitionListWriter writer = new DefinitionListMarkdownWriter(markdownWriter, SymbolFilterOptions, format, comparer, RootDirectoryUrl);
 
-                        writer.WriteDocument(assemblies);
-                    }
-
-                    WriteLine();
-#endif
                     using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read))
-                    using (MarkdownWriter markdownWriter = MarkdownWriter.Create(fileStream, markdownWriterSettings))
+                    using (var streamWriter = new StreamWriter(fileStream, Encodings.UTF8NoBom))
+                    using (MarkdownWriter markdownWriter = MarkdownWriter.Create(streamWriter, markdownWriterSettings))
                     {
                         DefinitionListWriter writer = new DefinitionListMarkdownWriter(markdownWriter, SymbolFilterOptions, format, comparer, RootDirectoryUrl);
 

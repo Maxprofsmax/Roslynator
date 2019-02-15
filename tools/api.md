@@ -1,13 +1,8 @@
-﻿* assembly Roslynator\.Core, Version=1\.0\.0\.10, Culture=neutral, PublicKeyToken=3aeedfaf14b2cebf
+* assembly Roslynator\.Core, Version=1\.0\.0\.10, Culture=neutral, PublicKeyToken=3aeedfaf14b2cebf
 * assembly Roslynator\.CSharp, Version=1\.0\.0\.10, Culture=neutral, PublicKeyToken=390be46f77b79f52
 * assembly Roslynator\.CSharp\.Workspaces, Version=1\.0\.0\.10, Culture=neutral, PublicKeyToken=ec3f0c29a7973f23
 * assembly Roslynator\.Workspaces\.Core, Version=1\.0\.0\.10, Culture=neutral, PublicKeyToken=be1ec334fe31b7bb
-
 * namespace Roslynator
-* &emsp; \[Bar, Foo\] public class Aaa
-* &emsp; \| &emsp; public Aaa\(\)
-* &emsp; public class BarAttribute : Attribute
-* &emsp; \| &emsp; public BarAttribute\(\)
 * &emsp; public static class DiagnosticsExtensions
 * &emsp; \| &emsp; public static void ReportDiagnostic\(this SymbolAnalysisContext context, DiagnosticDescriptor descriptor, Location location, params object\[\] messageArgs\)
 * &emsp; \| &emsp; public static void ReportDiagnostic\(this SyntaxNodeAnalysisContext context, DiagnosticDescriptor descriptor, Location location, params object\[\] messageArgs\)
@@ -53,8 +48,6 @@
 * &emsp; \| &emsp; public static bool IsMultiLine\(this FileLinePositionSpan fileLinePositionSpan\)
 * &emsp; \| &emsp; public static bool IsSingleLine\(this FileLinePositionSpan fileLinePositionSpan\)
 * &emsp; \| &emsp; public static int StartLine\(this FileLinePositionSpan fileLinePositionSpan\)
-* &emsp; public class FooAttribute : Attribute
-* &emsp; \| &emsp; public FooAttribute\(\)
 * &emsp; public sealed class MetadataNameEqualityComparer\<TSymbol> : EqualityComparer\<TSymbol> where TSymbol : ISymbol
 * &emsp; \| &emsp; public static MetadataNameEqualityComparer\<TSymbol> Instance \{ get; \}
 * &emsp; \| &emsp; public override bool Equals\(TSymbol x, TSymbol y\)
@@ -309,7 +302,6 @@
 * &emsp; \| &emsp; Private = 1
 * &emsp; \| &emsp; Internal = 2
 * &emsp; \| &emsp; Public = 3
-
 * namespace Roslynator\.CSharp
 * &emsp; public static class CSharpExtensions
 * &emsp; \| &emsp; public static IParameterSymbol DetermineParameter\(this SemanticModel semanticModel, ArgumentSyntax argument, bool allowParams = false, bool allowCandidate = false, CancellationToken cancellationToken = default\)
@@ -1131,7 +1123,6 @@
 * &emsp; \| &emsp; Bad = 32768
 * &emsp; \| &emsp; Shebang = 65536
 * &emsp; \| &emsp; All = If \| Elif \| Else \| EndIf \| Region \| EndRegion \| Define \| Undef \| Error \| Warning \| Line \| Pragma \| Reference \| Load \| Bad \| Shebang
-
 * namespace Roslynator\.CSharp\.Syntax
 * &emsp; public readonly struct AsExpressionInfo : IEquatable\<AsExpressionInfo>
 * &emsp; \| &emsp; public BinaryExpressionSyntax AsExpression \{ get; \}
@@ -1554,7 +1545,6 @@
 * &emsp; \| &emsp; public override string ToString\(\)
 * &emsp; \| &emsp; public static bool operator ==\(in XmlElementInfo info1, in XmlElementInfo info2\)
 * &emsp; \| &emsp; public static bool operator \!=\(in XmlElementInfo info1, in XmlElementInfo info2\)
-
 * namespace Roslynator\.Text
 * &emsp; public class TextLineCollectionSelection : ISelection\<TextLine>
 * &emsp; \| &emsp; protected TextLineCollectionSelection\(TextLineCollection lines, TextSpan span, int firstIndex, int lastIndex\)

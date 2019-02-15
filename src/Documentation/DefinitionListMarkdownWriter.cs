@@ -11,7 +11,6 @@ namespace Roslynator.Documentation
     internal class DefinitionListMarkdownWriter : AbstractDefinitionListTextWriter
     {
         private readonly MarkdownWriter _writer;
-        private bool _pendingIndentation;
 
         public DefinitionListMarkdownWriter(
             MarkdownWriter writer,
@@ -32,14 +31,32 @@ namespace Roslynator.Documentation
         {
             WriteStartBulletItem();
             base.WriteStartAssembly(assemblySymbol);
+        }
+
+        public override void WriteAssembly(IAssemblySymbol assemblySymbol)
+        {
+            base.WriteAssembly(assemblySymbol);
             WriteEndBulletItem();
+        }
+
+        public override void WriteStartNamespaces()
+        {
         }
 
         public override void WriteStartNamespace(INamespaceSymbol namespaceSymbol)
         {
             WriteStartBulletItem();
             base.WriteStartNamespace(namespaceSymbol);
+        }
+
+        public override void WriteNamespace(INamespaceSymbol namespaceSymbol)
+        {
+            base.WriteNamespace(namespaceSymbol);
             WriteEndBulletItem();
+        }
+
+        public override void WriteNamespaceSeparator()
+        {
         }
 
         public override void WriteStartTypes()
@@ -50,6 +67,11 @@ namespace Roslynator.Documentation
         {
             WriteStartBulletItem();
             base.WriteStartType(typeSymbol);
+        }
+
+        public override void WriteType(INamedTypeSymbol typeSymbol)
+        {
+            base.WriteType(typeSymbol);
             WriteEndBulletItem();
         }
 
@@ -65,6 +87,11 @@ namespace Roslynator.Documentation
         {
             WriteStartBulletItem();
             base.WriteStartMember(symbol);
+        }
+
+        public override void WriteMember(ISymbol symbol)
+        {
+            base.WriteMember(symbol);
             WriteEndBulletItem();
         }
 
@@ -80,13 +107,17 @@ namespace Roslynator.Documentation
         {
             WriteStartBulletItem();
             base.WriteStartEnumMember(symbol);
+        }
+
+        public override void WriteEnumMember(ISymbol symbol)
+        {
+            base.WriteEnumMember(symbol);
             WriteEndBulletItem();
         }
 
         private void WriteStartBulletItem()
         {
             _writer.WriteStartBulletItem();
-            WritePendingIndentation();
         }
 
         private void WriteEndBulletItem()
@@ -97,10 +128,7 @@ namespace Roslynator.Documentation
         public override void Write(ISymbol symbol, SymbolDisplayFormat format)
         {
             if (RootDirectoryUrl != null)
-            {
-                WritePendingIndentation();
                 _writer.WriteStartLink();
-            }
 
             base.Write(symbol, format);
 
@@ -123,41 +151,25 @@ namespace Roslynator.Documentation
             base.Write(part);
 
             Debug.Assert(part.Kind != SymbolDisplayPartKind.LineBreak, "");
-
-            if (part.Kind == SymbolDisplayPartKind.LineBreak)
-                _pendingIndentation = true;
         }
 
         public override void Write(string value)
         {
-            WritePendingIndentation();
-
             _writer.WriteString(value);
-        }
-
-        private void WritePendingIndentation()
-        {
-            if (_pendingIndentation)
-            {
-                _pendingIndentation = false;
-                WriteIndentation();
-            }
         }
 
         public override void WriteLine()
         {
             _writer.WriteLine();
-
-            _pendingIndentation = true;
         }
 
-        private void WriteIndentation()
+        protected override void WriteIndentation()
         {
-            if (IndentationLevel > 0)
+            if (Depth > 0)
             {
                 _writer.WriteEntityRef("emsp");
 
-                for (int i = 1; i < IndentationLevel; i++)
+                for (int i = 1; i < Depth; i++)
                 {
                     Write(" | ");
 

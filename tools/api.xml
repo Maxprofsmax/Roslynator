@@ -9,20 +9,6 @@
   <namespaces>
     <namespace name="Roslynator">
       <types>
-        <class def="public class Aaa">
-          <attributes>
-            <attribute>Bar</attribute>
-            <attribute>Foo</attribute>
-          </attributes>
-          <members>
-            <constructor def="public Aaa()" />
-          </members>
-        </class>
-        <class def="public class BarAttribute : Attribute">
-          <members>
-            <constructor def="public BarAttribute()" />
-          </members>
-        </class>
         <class def="public static class DiagnosticsExtensions">
           <members>
             <method def="public static void ReportDiagnostic(this SymbolAnalysisContext context, DiagnosticDescriptor descriptor, Location location, params object[] messageArgs)" />
@@ -75,11 +61,6 @@
             <method def="public static bool IsMultiLine(this FileLinePositionSpan fileLinePositionSpan)" />
             <method def="public static bool IsSingleLine(this FileLinePositionSpan fileLinePositionSpan)" />
             <method def="public static int StartLine(this FileLinePositionSpan fileLinePositionSpan)" />
-          </members>
-        </class>
-        <class def="public class FooAttribute : Attribute">
-          <members>
-            <constructor def="public FooAttribute()" />
           </members>
         </class>
         <class def="public sealed class MetadataNameEqualityComparer&lt;TSymbol&gt; : EqualityComparer&lt;TSymbol&gt; where TSymbol : ISymbol">

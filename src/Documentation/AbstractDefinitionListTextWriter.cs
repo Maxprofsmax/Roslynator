@@ -1,21 +1,20 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
-using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 
 namespace Roslynator.Documentation
 {
     internal abstract class AbstractDefinitionListTextWriter : DefinitionListWriter
     {
-        public int IndentationLevel { get; private set; }
-
         protected AbstractDefinitionListTextWriter(
             SymbolFilterOptions filter,
             DefinitionListFormat format = null,
             IComparer<ISymbol> comparer = null) : base(filter, format, comparer)
         {
         }
+
+        protected abstract void WriteIndentation();
 
         public override void WriteStartDocument()
         {
@@ -31,19 +30,23 @@ namespace Roslynator.Documentation
 
         public override void WriteEndAssemblies()
         {
-            WriteLine();
         }
 
         public override void WriteStartAssembly(IAssemblySymbol assemblySymbol)
         {
+            WriteIndentation();
+        }
+
+        public override void WriteAssembly(IAssemblySymbol assemblySymbol)
+        {
             Write("assembly ");
             WriteLine(assemblySymbol.Identity.ToString());
-            IncreaseIndentation();
+            IncreaseDepth();
         }
 
         public override void WriteEndAssembly(IAssemblySymbol assemblySymbol)
         {
-            DecreaseIndentation();
+            DecreaseDepth();
         }
 
         public override void WriteAssemblySeparator()
@@ -52,22 +55,23 @@ namespace Roslynator.Documentation
                 WriteLine();
         }
 
-        public override void WriteStartNamespaces()
-        {
-        }
-
         public override void WriteEndNamespaces()
         {
         }
 
         public override void WriteStartNamespace(INamespaceSymbol namespaceSymbol)
         {
+            WriteIndentation();
+        }
+
+        public override void WriteNamespace(INamespaceSymbol namespaceSymbol)
+        {
             if (namespaceSymbol.IsGlobalNamespace)
                 return;
 
             Write(namespaceSymbol, SymbolDefinitionDisplayFormats.NamespaceDefinition);
             WriteLine();
-            IncreaseIndentation();
+            IncreaseDepth();
         }
 
         public override void WriteEndNamespace(INamespaceSymbol namespaceSymbol)
@@ -75,12 +79,7 @@ namespace Roslynator.Documentation
             if (namespaceSymbol.IsGlobalNamespace)
                 return;
 
-            DecreaseIndentation();
-        }
-
-        public override void WriteNamespaceSeparator()
-        {
-            WriteLine();
+            DecreaseDepth();
         }
 
         public override void WriteEndTypes()
@@ -89,15 +88,20 @@ namespace Roslynator.Documentation
 
         public override void WriteStartType(INamedTypeSymbol typeSymbol)
         {
+            WriteIndentation();
+        }
+
+        public override void WriteType(INamedTypeSymbol typeSymbol)
+        {
             Write(typeSymbol, SymbolDefinitionDisplayFormats.FullDefinition_NameOnly);
             WriteLine();
 
-            IncreaseIndentation();
+            IncreaseDepth();
         }
 
         public override void WriteEndType(INamedTypeSymbol typeSymbol)
         {
-            DecreaseIndentation();
+            DecreaseDepth();
         }
 
         public override void WriteEndMembers()
@@ -106,18 +110,23 @@ namespace Roslynator.Documentation
 
         public override void WriteStartMember(ISymbol symbol)
         {
+            WriteIndentation();
+        }
+
+        public override void WriteMember(ISymbol symbol)
+        {
             SymbolDisplayFormat format = (Format.OmitContainingNamespace)
                 ? SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypes
                 : SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypesAndNamespaces;
 
             Write(symbol, format);
             WriteLine();
-            IncreaseIndentation();
+            IncreaseDepth();
         }
 
         public override void WriteEndMember(ISymbol symbol)
         {
-            DecreaseIndentation();
+            DecreaseDepth();
         }
 
         public override void WriteEndEnumMembers()
@@ -126,14 +135,19 @@ namespace Roslynator.Documentation
 
         public override void WriteStartEnumMember(ISymbol symbol)
         {
+            WriteIndentation();
+        }
+
+        public override void WriteEnumMember(ISymbol symbol)
+        {
             Write(symbol, SymbolDefinitionDisplayFormats.FullDefinition_NameOnly);
             WriteLine();
-            IncreaseIndentation();
+            IncreaseDepth();
         }
 
         public override void WriteEndEnumMember(ISymbol symbol)
         {
-            DecreaseIndentation();
+            DecreaseDepth();
         }
 
         public override void WriteEnumMemberSeparator()
@@ -186,17 +200,6 @@ namespace Roslynator.Documentation
         {
             WriteAttributes(symbol);
             base.Write(symbol, format);
-        }
-
-        public void IncreaseIndentation()
-        {
-            IndentationLevel++;
-        }
-
-        public void DecreaseIndentation()
-        {
-            Debug.Assert(IndentationLevel > 0, "Cannot decrease indentation level.");
-            IndentationLevel--;
         }
     }
 }

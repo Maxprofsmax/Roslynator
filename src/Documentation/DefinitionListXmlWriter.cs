@@ -47,6 +47,10 @@ namespace Roslynator.Documentation
         public override void WriteStartAssembly(IAssemblySymbol assemblySymbol)
         {
             WriteStartElement("assembly");
+        }
+
+        public override void WriteAssembly(IAssemblySymbol assemblySymbol)
+        {
             WriteStartAttribute("name");
             Write(assemblySymbol.Identity.ToString());
             WriteEndAttribute();
@@ -77,6 +81,10 @@ namespace Roslynator.Documentation
         public override void WriteStartNamespace(INamespaceSymbol namespaceSymbol)
         {
             WriteStartElement("namespace");
+        }
+
+        public override void WriteNamespace(INamespaceSymbol namespaceSymbol)
+        {
             WriteStartAttribute("name");
 
             if (!namespaceSymbol.IsGlobalNamespace)
@@ -107,10 +115,6 @@ namespace Roslynator.Documentation
         public override void WriteStartType(INamedTypeSymbol typeSymbol)
         {
             WriteStartElement(GetTypeName());
-            WriteStartAttribute("def");
-            Write(typeSymbol, SymbolDefinitionDisplayFormats.FullDefinition_NameOnly);
-            WriteEndAttribute();
-            WriteAttributes(typeSymbol);
 
             string GetTypeName()
             {
@@ -130,6 +134,14 @@ namespace Roslynator.Documentation
                         throw new InvalidOperationException();
                 }
             }
+        }
+
+        public override void WriteType(INamedTypeSymbol typeSymbol)
+        {
+            WriteStartAttribute("def");
+            Write(typeSymbol, SymbolDefinitionDisplayFormats.FullDefinition_NameOnly);
+            WriteEndAttribute();
+            WriteAttributes(typeSymbol);
         }
 
         public override void WriteEndType(INamedTypeSymbol typeSymbol)
@@ -154,15 +166,6 @@ namespace Roslynator.Documentation
         public override void WriteStartMember(ISymbol symbol)
         {
             WriteStartElement(GetMemberName());
-            WriteStartAttribute("def");
-
-            SymbolDisplayFormat format = (Format.OmitContainingNamespace)
-                ? SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypes
-                : SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypesAndNamespaces;
-
-            Write(symbol, format);
-            WriteEndAttribute();
-            WriteAttributes(symbol);
 
             string GetMemberName()
             {
@@ -194,6 +197,19 @@ namespace Roslynator.Documentation
             }
         }
 
+        public override void WriteMember(ISymbol symbol)
+        {
+            WriteStartAttribute("def");
+
+            SymbolDisplayFormat format = (Format.OmitContainingNamespace)
+                ? SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypes
+                : SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypesAndNamespaces;
+
+            Write(symbol, format);
+            WriteEndAttribute();
+            WriteAttributes(symbol);
+        }
+
         public override void WriteEndMember(ISymbol symbol)
         {
             WriteEndElement();
@@ -216,6 +232,10 @@ namespace Roslynator.Documentation
         public override void WriteStartEnumMember(ISymbol symbol)
         {
             WriteStartElement("field");
+        }
+
+        public override void WriteEnumMember(ISymbol symbol)
+        {
             WriteStartAttribute("def");
             Write(symbol, SymbolDefinitionDisplayFormats.FullDefinition_NameOnly);
             WriteEndAttribute();
@@ -262,7 +282,8 @@ namespace Roslynator.Documentation
 
         public override void WriteLine()
         {
-            throw new InvalidOperationException();
+            //TODO: tmp
+            //throw new InvalidOperationException();
         }
 
         public override void WriteLine(string value)
@@ -273,6 +294,7 @@ namespace Roslynator.Documentation
         private void WriteStartElement(string localName)
         {
             _writer.WriteStartElement(localName);
+            IncreaseDepth();
         }
 
         private void WriteStartAttribute(string localName)
@@ -283,6 +305,7 @@ namespace Roslynator.Documentation
         private void WriteEndElement()
         {
             _writer.WriteEndElement();
+            DecreaseDepth();
         }
 
         private void WriteEndAttribute()

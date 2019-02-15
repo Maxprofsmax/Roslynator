@@ -20,6 +20,16 @@ namespace Roslynator.Documentation
             _writer = writer;
         }
 
+        public override void WriteStartNamespaces()
+        {
+            WriteLine();
+        }
+
+        public override void WriteNamespaceSeparator()
+        {
+            WriteLine();
+        }
+
         public override void WriteStartTypes()
         {
             WriteLine();
@@ -56,10 +66,7 @@ namespace Roslynator.Documentation
         public override void Write(string value)
         {
             if (_pendingIndentation)
-            {
-                _pendingIndentation = false;
                 WriteIndentation();
-            }
 
             _writer.Write(value);
         }
@@ -71,9 +78,11 @@ namespace Roslynator.Documentation
             _pendingIndentation = true;
         }
 
-        private void WriteIndentation()
+        protected override void WriteIndentation()
         {
-            for (int i = 0; i < IndentationLevel; i++)
+            _pendingIndentation = false;
+
+            for (int i = 0; i < Depth; i++)
             {
                 Write(Format.IndentChars);
             }

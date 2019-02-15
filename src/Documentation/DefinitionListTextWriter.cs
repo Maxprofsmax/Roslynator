@@ -40,6 +40,11 @@ namespace Roslynator.Documentation
             WriteLine();
         }
 
+        public override void WriteStartEnumMembers()
+        {
+            WriteLine();
+        }
+
         public override void Write(SymbolDisplayPart part)
         {
             base.Write(part);

@@ -112,8 +112,14 @@ namespace Roslynator.Documentation
                 {
                     while (true)
                     {
-                        WriteStartAssembly(en.Current);
-                        WriteEndAssembly(en.Current);
+                        IAssemblySymbol assembly = en.Current;
+
+                        WriteStartAssembly(assembly);
+
+                        if (Format.AssemblyAttributes)
+                            WriteAttributes(assembly);
+
+                        WriteEndAssembly(assembly);
 
                         if (en.MoveNext())
                         {

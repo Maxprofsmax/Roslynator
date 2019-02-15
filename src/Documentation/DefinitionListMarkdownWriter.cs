@@ -28,8 +28,29 @@ namespace Roslynator.Documentation
 
         public override bool SupportsMultilineDefinitions => false;
 
+        public override void WriteStartAssembly(IAssemblySymbol assemblySymbol)
+        {
+            WriteStartBulletItem();
+            base.WriteStartAssembly(assemblySymbol);
+            WriteEndBulletItem();
+        }
+
+        public override void WriteStartNamespace(INamespaceSymbol namespaceSymbol)
+        {
+            WriteStartBulletItem();
+            base.WriteStartNamespace(namespaceSymbol);
+            WriteEndBulletItem();
+        }
+
         public override void WriteStartTypes()
         {
+        }
+
+        public override void WriteStartType(INamedTypeSymbol typeSymbol)
+        {
+            WriteStartBulletItem();
+            base.WriteStartType(typeSymbol);
+            WriteEndBulletItem();
         }
 
         public override void WriteTypeSeparator()
@@ -40,8 +61,37 @@ namespace Roslynator.Documentation
         {
         }
 
+        public override void WriteStartMember(ISymbol symbol)
+        {
+            WriteStartBulletItem();
+            base.WriteStartMember(symbol);
+            WriteEndBulletItem();
+        }
+
         public override void WriteMemberSeparator()
         {
+        }
+
+        public override void WriteStartEnumMembers()
+        {
+        }
+
+        public override void WriteStartEnumMember(ISymbol symbol)
+        {
+            WriteStartBulletItem();
+            base.WriteStartEnumMember(symbol);
+            WriteEndBulletItem();
+        }
+
+        private void WriteStartBulletItem()
+        {
+            _writer.WriteStartBulletItem();
+            WritePendingIndentation();
+        }
+
+        private void WriteEndBulletItem()
+        {
+            _writer.WriteEndBulletItem();
         }
 
         public override void Write(ISymbol symbol, SymbolDisplayFormat format)
@@ -105,8 +155,6 @@ namespace Roslynator.Documentation
         {
             if (IndentationLevel > 0)
             {
-                Write("| ");
-
                 _writer.WriteEntityRef("emsp");
 
                 for (int i = 1; i < IndentationLevel; i++)

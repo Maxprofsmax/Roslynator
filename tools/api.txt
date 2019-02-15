@@ -5,6 +5,15 @@ assembly Roslynator.Workspaces.Core, Version=1.0.0.10, Culture=neutral, PublicKe
 
 namespace Roslynator
 
+  [Bar, Foo]
+  public class Aaa
+
+    public Aaa()
+
+  public class BarAttribute : Attribute
+
+    public BarAttribute()
+
   public static class DiagnosticsExtensions
 
     public static void ReportDiagnostic(this SymbolAnalysisContext context, DiagnosticDescriptor descriptor, Location location, params object[] messageArgs)
@@ -55,6 +64,10 @@ namespace Roslynator
     public static bool IsMultiLine(this FileLinePositionSpan fileLinePositionSpan)
     public static bool IsSingleLine(this FileLinePositionSpan fileLinePositionSpan)
     public static int StartLine(this FileLinePositionSpan fileLinePositionSpan)
+
+  public class FooAttribute : Attribute
+
+    public FooAttribute()
 
   public sealed class MetadataNameEqualityComparer<TSymbol> : EqualityComparer<TSymbol> where TSymbol : ISymbol
 

@@ -37,31 +37,23 @@ namespace Roslynator.Documentation
         public override void WriteStartAssembly(IAssemblySymbol assemblySymbol)
         {
             Write("assembly ");
-            Write(assemblySymbol.Identity.ToString());
-
+            WriteLine(assemblySymbol.Identity.ToString());
             IncreaseIndentation();
-
-            if (Format.AssemblyAttributes)
-                WriteAttributes(assemblySymbol);
-
-            DecreaseIndentation();
         }
 
         public override void WriteEndAssembly(IAssemblySymbol assemblySymbol)
         {
+            DecreaseIndentation();
         }
 
         public override void WriteAssemblySeparator()
         {
             if (Format.AssemblyAttributes)
                 WriteLine();
-
-            WriteLine();
         }
 
         public override void WriteStartNamespaces()
         {
-            WriteLine();
         }
 
         public override void WriteEndNamespaces()
@@ -75,7 +67,6 @@ namespace Roslynator.Documentation
 
             Write(namespaceSymbol, SymbolDefinitionDisplayFormats.NamespaceDefinition);
             WriteLine();
-
             IncreaseIndentation();
         }
 
@@ -99,23 +90,14 @@ namespace Roslynator.Documentation
         public override void WriteStartType(INamedTypeSymbol typeSymbol)
         {
             Write(typeSymbol, SymbolDefinitionDisplayFormats.FullDefinition_NameOnly);
+            WriteLine();
 
-            TypeKind typeKind = typeSymbol.TypeKind;
-
-            if (typeSymbol.TypeKind != TypeKind.Delegate)
-            {
-                WriteLine();
-
-                IncreaseIndentation();
-            }
+            IncreaseIndentation();
         }
 
         public override void WriteEndType(INamedTypeSymbol typeSymbol)
         {
-            if (typeSymbol.TypeKind != TypeKind.Delegate)
-            {
-                DecreaseIndentation();
-            }
+            DecreaseIndentation();
         }
 
         public override void WriteEndMembers()
@@ -129,16 +111,13 @@ namespace Roslynator.Documentation
                 : SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypesAndNamespaces;
 
             Write(symbol, format);
+            WriteLine();
+            IncreaseIndentation();
         }
 
         public override void WriteEndMember(ISymbol symbol)
         {
-            WriteLine();
-        }
-
-        public override void WriteStartEnumMembers()
-        {
-            WriteLine();
+            DecreaseIndentation();
         }
 
         public override void WriteEndEnumMembers()
@@ -148,11 +127,13 @@ namespace Roslynator.Documentation
         public override void WriteStartEnumMember(ISymbol symbol)
         {
             Write(symbol, SymbolDefinitionDisplayFormats.FullDefinition_NameOnly);
+            WriteLine();
+            IncreaseIndentation();
         }
 
         public override void WriteEndEnumMember(ISymbol symbol)
         {
-            WriteLine();
+            DecreaseIndentation();
         }
 
         public override void WriteEnumMemberSeparator()
@@ -161,9 +142,6 @@ namespace Roslynator.Documentation
 
         public override void WriteStartAttributes(bool assemblyAttribute)
         {
-            if (assemblyAttribute)
-                WriteLine();
-
             Write("[");
         }
 
@@ -171,17 +149,13 @@ namespace Roslynator.Documentation
         {
             Write("]");
 
-            if (!assemblyAttribute)
+            if (assemblyAttribute || SupportsMultilineDefinitions)
             {
-                if (Format.FormatAttributes
-                    && SupportsMultilineDefinitions)
-                {
-                    WriteLine();
-                }
-                else
-                {
-                    Write(" ");
-                }
+                WriteLine();
+            }
+            else
+            {
+                Write(" ");
             }
         }
 

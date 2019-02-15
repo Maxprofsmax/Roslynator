@@ -9,12 +9,9 @@ set _msbuildPath="C:\Program Files\Microsoft Visual Studio\2017\Community\MSBuil
  --visibility public ^
  --depth member ^
  --omit-containing-namespace ^
- --assembly-attributes ^
  --output "api.txt" "api.xml" "api.md" ^
  --verbosity n ^
  --file-log "roslynator.log" ^
  --file-log-verbosity diag
-
-rem --ignored-attribute-names "System.ObsoleteAttribute" ^
 
 pause

@@ -5,9 +5,9 @@ using Microsoft.CodeAnalysis;
 
 namespace Roslynator.Documentation
 {
-    internal abstract class SymbolDefinitionAbstractTextWriter : SymbolDefinitionWriter
+    internal abstract class AbstractSymbolDefinitionTextWriter : SymbolDefinitionWriter
     {
-        protected SymbolDefinitionAbstractTextWriter(
+        protected AbstractSymbolDefinitionTextWriter(
             SymbolFilterOptions filter,
             DefinitionListFormat format = null,
             IComparer<ISymbol> comparer = null) : base(filter, format, comparer)

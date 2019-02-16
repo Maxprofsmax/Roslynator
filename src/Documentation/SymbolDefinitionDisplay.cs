@@ -30,16 +30,14 @@ namespace Roslynator.Documentation
                 typeSymbol = null;
             }
 
-            ImmutableArray<AttributeData> attributes = ImmutableArray<AttributeData>.Empty;
-            bool hasAttributes = false;
+            IEnumerable<AttributeData> attributes = ImmutableArray<AttributeData>.Empty;
 
             if (format.IncludeAttributes)
             {
                 attributes = symbol.GetAttributes();
 
-                hasAttributes = (shouldDisplayAttribute != null)
-                    ? attributes.Any(f => shouldDisplayAttribute(f.AttributeClass))
-                    : attributes.Any();
+                if (shouldDisplayAttribute != null)
+                    attributes = attributes.Where(f => shouldDisplayAttribute(f.AttributeClass));
             }
 
             int baseListCount = 0;
@@ -84,7 +82,7 @@ namespace Roslynator.Documentation
                 }
             }
 
-            if (!hasAttributes
+            if (!attributes.Any()
                 && baseListCount == 0
                 && constraintCount == 0
                 && (!format.FormatParameters || symbol.GetParameters().Length <= 1)
@@ -97,7 +95,11 @@ namespace Roslynator.Documentation
 
             ImmutableArray<SymbolDisplayPart>.Builder builder = ImmutableArray.CreateBuilder<SymbolDisplayPart>(parts.Length);
 
-            AddAttributes(builder, attributes, format, shouldDisplayAttribute, includeTrailingNewLine: true);
+            AddAttributes(
+                builder,
+                attributes,
+                format,
+                includeTrailingNewLine: true);
 
             if (baseListCount > 0)
             {
@@ -286,7 +288,10 @@ namespace Roslynator.Documentation
             bool includeTrailingNewLine = false,
             bool? formatAttributes = null)
         {
-            ImmutableArray<AttributeData> attributes = symbol.GetAttributes();
+            IEnumerable<AttributeData> attributes = symbol.GetAttributes();
+
+            if (shouldDisplayAttribute != null)
+                attributes = attributes.Where(f => shouldDisplayAttribute(f.AttributeClass));
 
             if (!attributes.Any())
                 return ImmutableArray<SymbolDisplayPart>.Empty;
@@ -297,7 +302,6 @@ namespace Roslynator.Documentation
                 parts: parts,
                 attributes: attributes,
                 format: format,
-                shouldDisplayAttribute: shouldDisplayAttribute,
                 includeTrailingNewLine: includeTrailingNewLine,
                 formatAttributes: formatAttributes);
 
@@ -306,24 +310,21 @@ namespace Roslynator.Documentation
 
         private static void AddAttributes(
             ImmutableArray<SymbolDisplayPart>.Builder parts,
-            ImmutableArray<AttributeData> attributes,
+            IEnumerable<AttributeData> attributes,
             SymbolDefinitionFormat format,
-            Func<INamedTypeSymbol, bool> shouldDisplayAttribute,
             bool includeTrailingNewLine = true,
             bool? formatAttributes = null)
         {
-            IEnumerable<AttributeData> sortedAttributes = attributes.Where(f => shouldDisplayAttribute(f.AttributeClass));
-
             if (format.OmitContainingNamespace)
             {
-                sortedAttributes = attributes.OrderBy(f => f.AttributeClass, NamedTypeSymbolDefinitionComparer.Instance);
+                attributes = attributes.OrderBy(f => f.AttributeClass, NamedTypeSymbolDefinitionComparer.Instance);
             }
             else
             {
-                sortedAttributes = attributes.OrderBy(f => f.AttributeClass, SymbolDefinitionComparer.SystemNamespaceFirstInstance);
+                attributes = attributes.OrderBy(f => f.AttributeClass, SymbolDefinitionComparer.SystemNamespaceFirstInstance);
             }
 
-            using (IEnumerator<AttributeData> en = sortedAttributes.GetEnumerator())
+            using (IEnumerator<AttributeData> en = attributes.GetEnumerator())
             {
                 if (en.MoveNext())
                 {

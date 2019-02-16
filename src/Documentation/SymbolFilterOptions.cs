@@ -12,6 +12,66 @@ namespace Roslynator.Documentation
     {
         public static SymbolFilterOptions Default { get; } = new SymbolFilterOptions();
 
+        private static readonly MetadataNameSet _nonVisibleAttributes = new MetadataNameSet(new string[]
+        {
+            "System.Diagnostics.CodeAnalysis.SuppressMessageAttribute",
+            "System.Diagnostics.ConditionalAttribute",
+            "System.Diagnostics.DebuggableAttribute",
+            "System.Diagnostics.DebuggerBrowsableAttribute",
+            "System.Diagnostics.DebuggerDisplayAttribute",
+            "System.Diagnostics.DebuggerHiddenAttribute",
+            "System.Diagnostics.DebuggerNonUserCodeAttribute",
+            "System.Diagnostics.DebuggerStepperBoundaryAttribute",
+            "System.Diagnostics.DebuggerStepThroughAttribute",
+            "System.Diagnostics.DebuggerTypeProxyAttribute",
+            "System.Diagnostics.DebuggerVisualizerAttribute",
+            "System.Reflection.DefaultMemberAttribute",
+            "System.Reflection.AssemblyConfigurationAttribute",
+            "System.Reflection.AssemblyCultureAttribute",
+            "System.Reflection.AssemblyVersionAttribute",
+            "System.Runtime.CompilerServices.AsyncStateMachineAttribute",
+            "System.Runtime.CompilerServices.CompilationRelaxationsAttribute",
+            "System.Runtime.CompilerServices.CompilerGeneratedAttribute",
+            "System.Runtime.CompilerServices.IsReadOnlyAttribute",
+            "System.Runtime.CompilerServices.InternalsVisibleToAttribute",
+            "System.Runtime.CompilerServices.IteratorStateMachineAttribute",
+            "System.Runtime.CompilerServices.MethodImplAttribute",
+            "System.Runtime.CompilerServices.RuntimeCompatibilityAttribute",
+            "System.Runtime.CompilerServices.StateMachineAttribute",
+            "System.Runtime.CompilerServices.TupleElementNamesAttribute",
+            "System.Runtime.CompilerServices.TypeForwardedFromAttribute",
+            "System.Runtime.CompilerServices.TypeForwardedToAttribute"
+        });
+
+#if DEBUG
+        private static readonly MetadataNameSet _knownVisibleAttributes = new MetadataNameSet(new string[]
+        {
+            "System.AttributeUsageAttribute",
+            "System.CLSCompliantAttribute",
+            "System.ComVisibleAttribute",
+            "System.FlagsAttribute",
+            "System.ObsoleteAttribute",
+            "System.ComponentModel.DefaultValueAttribute",
+            "System.ComponentModel.EditorBrowsableAttribute",
+            "System.Composition.MetadataAttributeAttribute",
+            "System.Reflection.AssemblyCompanyAttribute",
+            "System.Reflection.AssemblyCopyrightAttribute",
+            "System.Reflection.AssemblyDescriptionAttribute",
+            "System.Reflection.AssemblyFileVersionAttribute",
+            "System.Reflection.AssemblyInformationalVersionAttribute",
+            "System.Reflection.AssemblyProductAttribute",
+            "System.Reflection.AssemblyTitleAttribute",
+            "System.Reflection.AssemblyTrademarkAttribute",
+            "System.Runtime.CompilerServices.InternalImplementationOnlyAttribute",
+            "System.Runtime.InteropServices.GuidAttribute",
+            "System.Runtime.Versioning.TargetFrameworkAttribute",
+            "System.Xml.Serialization.XmlArrayItemAttribute",
+            "System.Xml.Serialization.XmlAttributeAttribute",
+            "System.Xml.Serialization.XmlElementAttribute",
+            "System.Xml.Serialization.XmlRootAttribute",
+        });
+#endif
+
         internal SymbolFilterOptions(
             VisibilityFilter visibilityFilter = VisibilityFilter.All,
             SymbolGroupFilter symbolGroupFilter = SymbolGroupFilter.NamespaceOrTypeOrMember,
@@ -169,67 +229,21 @@ namespace Roslynator.Documentation
 
         public virtual bool IsVisibleAttribute(INamedTypeSymbol attributeType)
         {
+            if (_nonVisibleAttributes.Contains(attributeType))
+                return false;
+#if DEBUG
             switch (attributeType.MetadataName)
             {
-                case "ConditionalAttribute":
-                case "DebuggableAttribute":
-                case "DebuggerBrowsableAttribute":
-                case "DebuggerDisplayAttribute":
-                case "DebuggerHiddenAttribute":
-                case "DebuggerNonUserCodeAttribute":
-                case "DebuggerStepperBoundaryAttribute":
-                case "DebuggerStepThroughAttribute":
-                case "DebuggerTypeProxyAttribute":
-                case "DebuggerVisualizerAttribute":
-                    return !attributeType.ContainingNamespace.HasMetadataName(MetadataNames.System_Diagnostics);
-                case "SuppressMessageAttribute":
-                    return !attributeType.ContainingNamespace.HasMetadataName(MetadataNames.System_Diagnostics_CodeAnalysis);
-                case "DefaultMemberAttribute":
-                case "AssemblyConfigurationAttribute":
-                case "AssemblyCultureAttribute":
-                case "AssemblyVersionAttribute":
-                    return !attributeType.ContainingNamespace.HasMetadataName(MetadataNames.System_Reflection);
-                case "AsyncStateMachineAttribute":
-                case "CompilationRelaxationsAttribute":
-                case "CompilerGeneratedAttribute":
-                case "IsReadOnlyAttribute":
-                case "InternalsVisibleToAttribute":
-                case "IteratorStateMachineAttribute":
-                case "MethodImplAttribute":
-                case "RuntimeCompatibilityAttribute":
-                case "StateMachineAttribute":
-                case "TupleElementNamesAttribute":
-                case "TypeForwardedFromAttribute":
-                case "TypeForwardedToAttribute":
-                    return !attributeType.ContainingNamespace.HasMetadataName(MetadataNames.System_Runtime_CompilerServices);
-#if DEBUG
-                case "AssemblyCompanyAttribute":
-                case "AssemblyCopyrightAttribute":
-                case "AssemblyDescriptionAttribute":
-                case "AssemblyFileVersionAttribute":
-                case "AssemblyInformationalVersionAttribute":
-                case "AssemblyProductAttribute":
-                case "AssemblyTitleAttribute":
-                case "AssemblyTrademarkAttribute":
-                case "AttributeUsageAttribute":
-                case "BarAttribute":
-                case "CLSCompliantAttribute":
-                case "ComVisibleAttribute":
-                case "DefaultValueAttribute":
-                case "FlagsAttribute":
                 case "FooAttribute":
-                case "GuidAttribute":
-                case "ObsoleteAttribute":
-                case "TargetFrameworkAttribute":
-                case "XmlArrayItemAttribute":
-                case "XmlAttributeAttribute":
-                case "XmlElementAttribute":
-                case "XmlRootAttribute":
+                case "BarAttribute":
                     return true;
-#endif
             }
 
+            if (_knownVisibleAttributes.Contains(attributeType))
+                return true;
+
             Debug.Fail(attributeType.ToDisplayString());
+#endif
             return true;
         }
 

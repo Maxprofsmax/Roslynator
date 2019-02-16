@@ -81,6 +81,9 @@ namespace Roslynator.CommandLine
             MetaValue = "<OUTPUT_FILE>")]
         public IEnumerable<string> Output { get; set; }
 
+        [Option(longName: "references")]
+        public IEnumerable<string> References { get; set; }
+
         [Option(longName: ParameterNames.RootDirectoryUrl,
             HelpText = "Defines a relative url to the documentation root directory. This option is relevant only for markdown output.",
             MetaValue = "<ROOT_DIRECTORY_URL>")]

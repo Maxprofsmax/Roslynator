@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 
 namespace Roslynator.Documentation
 {
-    internal class SymbolDefinitionTextWriter : SymbolDefinitionAbstractTextWriter
+    internal class SymbolDefinitionTextWriter : AbstractSymbolDefinitionTextWriter
     {
         private readonly TextWriter _writer;
         private bool _pendingIndentation;

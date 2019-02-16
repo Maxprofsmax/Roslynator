@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis;
 
 namespace Roslynator.Documentation
 {
-    internal class SymbolDefinitionMarkdownWriter : SymbolDefinitionAbstractTextWriter
+    internal class SymbolDefinitionMarkdownWriter : AbstractSymbolDefinitionTextWriter
     {
         private readonly MarkdownWriter _writer;
 
@@ -155,6 +155,9 @@ namespace Roslynator.Documentation
 
         public override void Write(string value)
         {
+            Debug.Assert(value?.Contains("\n") != true, @"\n");
+            Debug.Assert(value?.Contains("\r") != true, @"\r");
+
             _writer.WriteString(value);
         }
 

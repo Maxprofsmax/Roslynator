@@ -59,6 +59,25 @@ namespace Roslynator.CommandLine
             SymbolDefinitionComparer comparer = SymbolDefinitionComparer.SystemNamespaceFirstInstance;
 
             IEnumerable<IAssemblySymbol> assemblies = compilations.Select(f => f.Assembly);
+
+            HashSet<IAssemblySymbol> externalAssemblies = null;
+
+            foreach (string reference in Options.References)
+            {
+                IAssemblySymbol externalAssembly = FindExternalAssembly(compilations, reference);
+
+                if (externalAssembly == null)
+                {
+                    WriteLine($"Cannot find external assembly '{reference}'", Verbosity.Quiet);
+                    return CommandResult.Fail;
+                }
+
+                (externalAssemblies ?? (externalAssemblies = new HashSet<IAssemblySymbol>())).Add(externalAssembly);
+            }
+
+            if (externalAssemblies != null)
+                assemblies = assemblies.Concat(externalAssemblies);
+
 #if DEBUG
             SymbolDefinitionWriter textWriter = new SymbolDefinitionTextWriter(
                 ConsoleOut,
@@ -185,6 +204,26 @@ namespace Roslynator.CommandLine
             }
 
             WriteLine(verbosity);
+        }
+
+        private static IAssemblySymbol FindExternalAssembly(IEnumerable<Compilation> compilations, string path)
+        {
+            foreach (Compilation compilation in compilations)
+            {
+                foreach (MetadataReference externalReference in compilation.ExternalReferences)
+                {
+                    if (externalReference is PortableExecutableReference reference)
+                    {
+                        if (string.Equals(path, reference.FilePath, StringComparison.OrdinalIgnoreCase)
+                            || string.Equals(path, Path.GetFileName(reference.FilePath), StringComparison.OrdinalIgnoreCase))
+                        {
+                            return compilation.GetAssemblyOrModuleSymbol(reference) as IAssemblySymbol;
+                        }
+                    }
+                }
+            }
+
+            return null;
         }
     }
 }

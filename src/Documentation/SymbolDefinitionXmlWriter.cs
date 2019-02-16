@@ -2,11 +2,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Xml;
 using Microsoft.CodeAnalysis;
 
 namespace Roslynator.Documentation
 {
+    //TODO: replace <> with {}
     internal class SymbolDefinitionXmlWriter : SymbolDefinitionWriter
     {
         private readonly XmlWriter _writer;
@@ -289,6 +291,9 @@ namespace Roslynator.Documentation
 
         public override void Write(string value)
         {
+            Debug.Assert(value?.Contains("\n") != true, @"\n");
+            Debug.Assert(value?.Contains("\r") != true, @"\r");
+
             _writer.WriteString(value);
         }
 

@@ -11,9 +11,9 @@ namespace Roslynator.CommandLine
 #endif
     public class ListSymbolsCommandLineOptions : MSBuildCommandLineOptions
     {
-        [Option(longName: "assembly-attributes",
+        [Option(longName: "include-assembly-attributes",
             HelpText = "Indicates whether assembly attributes should be displayed.")]
-        public bool AssemblyAttributes { get; set; }
+        public bool IncludeAssemblyAttributes { get; set; }
 
         [Option(longName: ParameterNames.Depth,
             HelpText = "Defines a depth of a list. Allowed values are member, type or namespace. Default value is member.",

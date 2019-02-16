@@ -50,7 +50,7 @@ namespace Roslynator.CommandLine
                 formatConstraints: Options.FormatConstraints,
                 includeAttributeArguments: !Options.NoAttributeArguments,
                 omitIEnumerable: true,
-                assemblyAttributes: Options.AssemblyAttributes);
+                includeAssemblyAttributes: Options.IncludeAssemblyAttributes);
 
             ImmutableArray<Compilation> compilations = await GetCompilationsAsync(projectOrSolution, cancellationToken);
 
@@ -60,19 +60,19 @@ namespace Roslynator.CommandLine
 
             IEnumerable<IAssemblySymbol> assemblies = compilations.Select(f => f.Assembly);
 #if DEBUG
-            DefinitionListWriter textWriter = new DefinitionListTextWriter(
+            SymbolDefinitionWriter textWriter = new SymbolDefinitionTextWriter(
                 ConsoleOut,
                 filter: SymbolFilterOptions,
                 format: format,
                 comparer: comparer);
 
-            textWriter.WriteAssemblies(assemblies);
+            textWriter.WriteDocument(assemblies);
 
             WriteLine();
 
             using (XmlWriter xmlWriter = XmlWriter.Create(ConsoleOut, new XmlWriterSettings() { Indent = true, IndentChars = Options.IndentChars }))
             {
-                DefinitionListWriter writer = new DefinitionListXmlWriter(xmlWriter, SymbolFilterOptions, format, comparer);
+                SymbolDefinitionWriter writer = new SymbolDefinitionXmlWriter(xmlWriter, SymbolFilterOptions, format, comparer);
 
                 writer.WriteDocument(assemblies);
             }
@@ -81,7 +81,7 @@ namespace Roslynator.CommandLine
 
             using (MarkdownWriter markdownWriter = MarkdownWriter.Create(ConsoleOut))
             {
-                DefinitionListWriter writer = new DefinitionListMarkdownWriter(markdownWriter, SymbolFilterOptions, format, comparer, RootDirectoryUrl);
+                SymbolDefinitionWriter writer = new SymbolDefinitionMarkdownWriter(markdownWriter, SymbolFilterOptions, format, comparer, RootDirectoryUrl);
 
                 writer.WriteDocument(assemblies);
             }
@@ -90,13 +90,13 @@ namespace Roslynator.CommandLine
 #endif
             using (var stringWriter = new StringWriter())
             {
-                DefinitionListWriter writer = new DefinitionListTextWriter(
+                SymbolDefinitionWriter writer = new SymbolDefinitionTextWriter(
                     stringWriter,
                     filter: SymbolFilterOptions,
                     format: format,
                     comparer: comparer);
 
-                writer.WriteAssemblies(assemblies);
+                writer.WriteDocument(assemblies);
 
                 text = stringWriter.ToString();
             }
@@ -116,7 +116,7 @@ namespace Roslynator.CommandLine
 
                     using (XmlWriter xmlWriter = XmlWriter.Create(path, xmlWriterSettings))
                     {
-                        DefinitionListWriter writer = new DefinitionListXmlWriter(xmlWriter, SymbolFilterOptions, format, comparer);
+                        SymbolDefinitionWriter writer = new SymbolDefinitionXmlWriter(xmlWriter, SymbolFilterOptions, format, comparer);
 
                         writer.WriteDocument(assemblies);
                     }
@@ -129,7 +129,7 @@ namespace Roslynator.CommandLine
                     using (var streamWriter = new StreamWriter(fileStream, Encodings.UTF8NoBom))
                     using (MarkdownWriter markdownWriter = MarkdownWriter.Create(streamWriter, markdownWriterSettings))
                     {
-                        DefinitionListWriter writer = new DefinitionListMarkdownWriter(markdownWriter, SymbolFilterOptions, format, comparer, RootDirectoryUrl);
+                        SymbolDefinitionWriter writer = new SymbolDefinitionMarkdownWriter(markdownWriter, SymbolFilterOptions, format, comparer, RootDirectoryUrl);
 
                         writer.WriteDocument(assemblies);
                     }

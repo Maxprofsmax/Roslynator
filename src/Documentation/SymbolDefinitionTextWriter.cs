@@ -6,12 +6,12 @@ using Microsoft.CodeAnalysis;
 
 namespace Roslynator.Documentation
 {
-    internal class DefinitionListTextWriter : AbstractDefinitionListTextWriter
+    internal class SymbolDefinitionTextWriter : SymbolDefinitionAbstractTextWriter
     {
         private readonly TextWriter _writer;
         private bool _pendingIndentation;
 
-        public DefinitionListTextWriter(
+        public SymbolDefinitionTextWriter(
             TextWriter writer,
             SymbolFilterOptions filter,
             DefinitionListFormat format = null,

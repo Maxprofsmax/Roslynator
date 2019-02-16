@@ -16,6 +16,7 @@ namespace Roslynator.Documentation
     public abstract class DocumentationWriter : IDisposable
     {
         private bool _disposed;
+        private readonly SymbolDefinitionFormat _definitionFormat;
 
         protected DocumentationWriter(
             DocumentationModel documentationModel,
@@ -27,6 +28,18 @@ namespace Roslynator.Documentation
             UrlProvider = urlProvider;
             Options = options ?? DocumentationOptions.Default;
             Resources = resources ?? DocumentationResources.Default;
+
+            _definitionFormat = new SymbolDefinitionFormat(
+                SymbolDisplayFormats.FullDeclaration,
+                typeDeclarationOptions: SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
+                omitContainingNamespace: false,
+                includeAttributes: true,
+                formatAttributes: true,
+                formatBaseList: Options.FormatDeclarationBaseList,
+                formatConstraints: Options.FormatDeclarationConstraints,
+                includeAttributeArguments: Options.IncludeAttributeArguments,
+                omitIEnumerable: Options.OmitIEnumerable,
+                preferDefaultLiteral: true);
         }
 
         public DocumentationModel DocumentationModel { get; }
@@ -444,17 +457,8 @@ namespace Roslynator.Documentation
         {
             ImmutableArray<SymbolDisplayPart> parts = SymbolDefinitionDisplay.GetDisplayParts(
                 symbol,
-                SymbolDisplayFormats.FullDeclaration,
-                typeDeclarationOptions: SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
-                omitContainingNamespace: false,
-                addAttributes: true,
-                shouldDisplayAttribute: f => SymbolFilterOptions.Default.IsVisibleAttribute(f),
-                formatAttributes: true,
-                formatBaseList: Options.FormatDeclarationBaseList,
-                formatConstraints: Options.FormatDeclarationConstraints,
-                includeAttributeArguments: Options.IncludeAttributeArguments,
-                omitIEnumerable: Options.OmitIEnumerable,
-                useDefaultLiteral: true);
+                _definitionFormat,
+                shouldDisplayAttribute: f => SymbolFilterOptions.Default.IsVisibleAttribute(f));
 
             WriteCodeBlock(parts.ToDisplayString(), symbol.Language);
         }

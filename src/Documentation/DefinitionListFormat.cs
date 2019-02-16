@@ -16,8 +16,8 @@ namespace Roslynator.Documentation
             bool formatConstraints = DefaultValues.FormatConstraints,
             bool includeAttributeArguments = DefaultValues.IncludeAttributeArguments,
             bool omitIEnumerable = DefaultValues.OmitIEnumerable,
-            bool useDefaultLiteral = DefaultValues.UseDefaultLiteral,
-            bool assemblyAttributes = DefaultValues.AssemblyAttributes)
+            bool preferDefaultLiteral = DefaultValues.PreferDefaultLiteral,
+            bool includeAssemblyAttributes = DefaultValues.IncludeAssemblyAttributes)
         {
             IndentChars = indentChars;
             OmitContainingNamespace = omitContainingNamespace;
@@ -29,8 +29,8 @@ namespace Roslynator.Documentation
             FormatAttributes = formatAttributes;
             IncludeAttributeArguments = includeAttributeArguments;
             OmitIEnumerable = omitIEnumerable;
-            UseDefaultLiteral = useDefaultLiteral;
-            AssemblyAttributes = assemblyAttributes;
+            PreferDefaultLiteral = preferDefaultLiteral;
+            IncludeAssemblyAttributes = includeAssemblyAttributes;
         }
 
         public static DefinitionListFormat Default { get; } = new DefinitionListFormat();
@@ -55,9 +55,9 @@ namespace Roslynator.Documentation
 
         public bool OmitIEnumerable { get; }
 
-        public bool UseDefaultLiteral { get; }
+        public bool PreferDefaultLiteral { get; }
 
-        public bool AssemblyAttributes { get; }
+        public bool IncludeAssemblyAttributes { get; }
 
         internal static class DefaultValues
         {
@@ -73,8 +73,8 @@ namespace Roslynator.Documentation
             public const bool FormatConstraints = false;
             public const bool IncludeAttributeArguments = true;
             public const bool OmitIEnumerable = true;
-            public const bool UseDefaultLiteral = true;
-            public const bool AssemblyAttributes = false;
+            public const bool PreferDefaultLiteral = true;
+            public const bool IncludeAssemblyAttributes = false;
         }
     }
 }

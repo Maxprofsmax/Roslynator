@@ -24,15 +24,17 @@ namespace Roslynator
             genericsOptions: SymbolDisplayGenericsOptions.None,
             memberOptions: SymbolDisplayMemberOptions.IncludeContainingType);
 
+        public static SymbolDisplayFormat TypeNameAndContainingTypesAndTypeParameters { get; } = TypeNameAndContainingTypes.Update(
+            genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters);
+
         public static SymbolDisplayFormat TypeNameAndContainingTypesAndNamespaces { get; } = Default.Update(
             globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining,
             typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
             genericsOptions: SymbolDisplayGenericsOptions.None,
             memberOptions: SymbolDisplayMemberOptions.IncludeContainingType);
 
-        public static SymbolDisplayFormat NamespaceDefinition { get; } = Default.Update(
-            typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
-            kindOptions: SymbolDisplayKindOptions.IncludeNamespaceKeyword);
+        public static SymbolDisplayFormat TypeNameAndContainingTypesAndNamespacesAndTypeParameters { get; } = TypeNameAndContainingTypesAndNamespaces.Update(
+            genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters);
 
         public static SymbolDisplayFormat FullDefinition_NameOnly { get; } = Default.Update(
             typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameOnly,

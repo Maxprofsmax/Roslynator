@@ -8,11 +8,11 @@ using Microsoft.CodeAnalysis;
 
 namespace Roslynator.Documentation
 {
-    internal class DefinitionListMarkdownWriter : AbstractDefinitionListTextWriter
+    internal class SymbolDefinitionMarkdownWriter : SymbolDefinitionAbstractTextWriter
     {
         private readonly MarkdownWriter _writer;
 
-        public DefinitionListMarkdownWriter(
+        public SymbolDefinitionMarkdownWriter(
             MarkdownWriter writer,
             SymbolFilterOptions filter,
             DefinitionListFormat format = null,
@@ -125,7 +125,7 @@ namespace Roslynator.Documentation
             _writer.WriteEndBulletItem();
         }
 
-        public override void Write(ISymbol symbol, SymbolDisplayFormat format)
+        public override void Write(ISymbol symbol, SymbolDefinitionFormat format)
         {
             if (RootDirectoryUrl != null)
                 _writer.WriteStartLink();

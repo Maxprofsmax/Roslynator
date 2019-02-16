@@ -7,11 +7,11 @@ using Microsoft.CodeAnalysis;
 
 namespace Roslynator.Documentation
 {
-    internal class DefinitionListXmlWriter : DefinitionListWriter
+    internal class SymbolDefinitionXmlWriter : SymbolDefinitionWriter
     {
         private readonly XmlWriter _writer;
 
-        public DefinitionListXmlWriter(
+        public SymbolDefinitionXmlWriter(
             XmlWriter writer,
             SymbolFilterOptions filter,
             DefinitionListFormat format = null,
@@ -21,6 +21,23 @@ namespace Roslynator.Documentation
         }
 
         public override bool SupportsMultilineDefinitions => false;
+
+        public override SymbolDefinitionFormat GetNamespaceFormat(INamespaceSymbol namespaceSymbol)
+        {
+            return new SymbolDefinitionFormat(SymbolDefinitionDisplayFormats.TypeNameAndContainingTypesAndNamespaces,
+                SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
+                omitContainingNamespace: Format.OmitContainingNamespace,
+                includeAttributes: false,
+                includeParameterAttributes: true,
+                includeAccessorAttributes: true,
+                formatAttributes: Format.FormatAttributes && SupportsMultilineDefinitions,
+                formatBaseList: Format.FormatBaseList && SupportsMultilineDefinitions,
+                formatConstraints: Format.FormatConstraints && SupportsMultilineDefinitions,
+                formatParameters: Format.FormatParameters && SupportsMultilineDefinitions,
+                includeAttributeArguments: Format.IncludeAttributeArguments,
+                omitIEnumerable: Format.OmitIEnumerable,
+                preferDefaultLiteral: Format.PreferDefaultLiteral);
+        }
 
         public override void WriteStartDocument()
         {
@@ -55,7 +72,7 @@ namespace Roslynator.Documentation
             Write(assemblySymbol.Identity.ToString());
             WriteEndAttribute();
 
-            if (Format.AssemblyAttributes)
+            if (Format.IncludeAssemblyAttributes)
                 WriteAttributes(assemblySymbol);
         }
 
@@ -88,7 +105,7 @@ namespace Roslynator.Documentation
             WriteStartAttribute("name");
 
             if (!namespaceSymbol.IsGlobalNamespace)
-                Write(namespaceSymbol, SymbolDefinitionDisplayFormats.TypeNameAndContainingTypesAndNamespaces);
+                Write(namespaceSymbol, GetNamespaceFormat(namespaceSymbol));
 
             WriteEndAttribute();
         }
@@ -139,7 +156,7 @@ namespace Roslynator.Documentation
         public override void WriteType(INamedTypeSymbol typeSymbol)
         {
             WriteStartAttribute("def");
-            Write(typeSymbol, SymbolDefinitionDisplayFormats.FullDefinition_NameOnly);
+            Write(typeSymbol, GetTypeFormat(typeSymbol));
             WriteEndAttribute();
             WriteAttributes(typeSymbol);
         }
@@ -200,12 +217,7 @@ namespace Roslynator.Documentation
         public override void WriteMember(ISymbol symbol)
         {
             WriteStartAttribute("def");
-
-            SymbolDisplayFormat format = (Format.OmitContainingNamespace)
-                ? SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypes
-                : SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypesAndNamespaces;
-
-            Write(symbol, format);
+            Write(symbol, GetMemberFormat(symbol));
             WriteEndAttribute();
             WriteAttributes(symbol);
         }
@@ -237,7 +249,7 @@ namespace Roslynator.Documentation
         public override void WriteEnumMember(ISymbol symbol)
         {
             WriteStartAttribute("def");
-            Write(symbol, SymbolDefinitionDisplayFormats.FullDefinition_NameOnly);
+            Write(symbol, GetEnumMemberFormat(symbol));
             WriteEndAttribute();
             WriteAttributes(symbol);
         }
@@ -282,8 +294,7 @@ namespace Roslynator.Documentation
 
         public override void WriteLine()
         {
-            //TODO: tmp
-            //throw new InvalidOperationException();
+            throw new InvalidOperationException();
         }
 
         public override void WriteLine(string value)

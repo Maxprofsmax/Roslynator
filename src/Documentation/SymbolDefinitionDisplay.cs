@@ -15,37 +15,25 @@ namespace Roslynator.Documentation
     {
         public static ImmutableArray<SymbolDisplayPart> GetDisplayParts(
             ISymbol symbol,
-            SymbolDisplayFormat format,
-            SymbolDisplayTypeDeclarationOptions typeDeclarationOptions = SymbolDisplayTypeDeclarationOptions.None,
-            bool omitContainingNamespace = false,
-            bool addAttributes = false,
-            bool addParameterAttributes = false,
-            bool addAccessorAttributes = false,
-            Func<INamedTypeSymbol, bool> shouldDisplayAttribute = null,
-            bool formatAttributes = false,
-            bool formatBaseList = false,
-            bool formatConstraints = false,
-            bool formatParameters = false,
-            bool includeAttributeArguments = false,
-            bool omitIEnumerable = false,
-            bool useDefaultLiteral = true)
+            SymbolDefinitionFormat format,
+            Func<INamedTypeSymbol, bool> shouldDisplayAttribute = null)
         {
             ImmutableArray<SymbolDisplayPart> parts;
 
             if (symbol is INamedTypeSymbol typeSymbol)
             {
-                parts = typeSymbol.ToDisplayParts(format, typeDeclarationOptions);
+                parts = typeSymbol.ToDisplayParts(format.Format, format.TypeDeclarationOptions);
             }
             else
             {
-                parts = symbol.ToDisplayParts(format);
+                parts = symbol.ToDisplayParts(format.Format);
                 typeSymbol = null;
             }
 
             ImmutableArray<AttributeData> attributes = ImmutableArray<AttributeData>.Empty;
             bool hasAttributes = false;
 
-            if (addAttributes)
+            if (format.IncludeAttributes)
             {
                 attributes = symbol.GetAttributes();
 
@@ -70,7 +58,7 @@ namespace Roslynator.Documentation
 
                 interfaces = typeSymbol.Interfaces;
 
-                if (omitIEnumerable
+                if (format.OmitIEnumerable
                     && interfaces.Any(f => f.OriginalDefinition.SpecialType == SpecialType.System_Collections_Generic_IEnumerable_T))
                 {
                     interfaces = interfaces.RemoveAll(f => f.SpecialType == SpecialType.System_Collections_IEnumerable);
@@ -99,17 +87,17 @@ namespace Roslynator.Documentation
             if (!hasAttributes
                 && baseListCount == 0
                 && constraintCount == 0
-                && (!formatParameters || symbol.GetParameters().Length <= 1)
-                && (!useDefaultLiteral || symbol.GetParameters().All(f => !f.HasExplicitDefaultValue))
-                && (!addAccessorAttributes || !symbol.IsKind(SymbolKind.Property, SymbolKind.Event))
-                && (!addParameterAttributes || !symbol.GetParameters().Any()))
+                && (!format.FormatParameters || symbol.GetParameters().Length <= 1)
+                && (!format.PreferDefaultLiteral || symbol.GetParameters().All(f => !f.HasExplicitDefaultValue))
+                && (!format.IncludeAccessorAttributes || !symbol.IsKind(SymbolKind.Property, SymbolKind.Event))
+                && (!format.IncludeParameterAttributes || !symbol.GetParameters().Any()))
             {
                 return parts;
             }
 
             ImmutableArray<SymbolDisplayPart>.Builder builder = ImmutableArray.CreateBuilder<SymbolDisplayPart>(parts.Length);
 
-            AddAttributes(builder, attributes, shouldDisplayAttribute, omitContainingNamespace, formatAttributes: formatAttributes, includeAttributeArguments: includeAttributeArguments);
+            AddAttributes(builder, attributes, format, shouldDisplayAttribute, includeTrailingNewLine: true);
 
             if (baseListCount > 0)
             {
@@ -128,13 +116,13 @@ namespace Roslynator.Documentation
 
                 if (baseType != null)
                 {
-                    builder.AddDisplayParts(baseType, omitContainingNamespace);
+                    builder.AddDisplayParts(baseType, format.OmitContainingNamespace);
 
                     if (interfaces.Any())
                     {
                         builder.AddPunctuation(",");
 
-                        if (formatBaseList)
+                        if (format.FormatBaseList)
                         {
                             builder.AddLineBreak();
                             builder.AddIndentation();
@@ -148,7 +136,7 @@ namespace Roslynator.Documentation
 
                 interfaces = interfaces.Sort((x, y) =>
                 {
-                    if (omitContainingNamespace)
+                    if (format.OmitContainingNamespace)
                     {
                         return NamedTypeSymbolDefinitionComparer.Instance.Compare(x, y);
                     }
@@ -164,13 +152,13 @@ namespace Roslynator.Documentation
                 {
                     while (true)
                     {
-                        builder.AddDisplayParts(en.Current, omitContainingNamespace);
+                        builder.AddDisplayParts(en.Current, format.OmitContainingNamespace);
 
                         if (en.MoveNext())
                         {
                             builder.AddPunctuation(",");
 
-                            if (formatBaseList)
+                            if (format.FormatBaseList)
                             {
                                 builder.AddLineBreak();
                                 builder.AddIndentation();
@@ -189,7 +177,7 @@ namespace Roslynator.Documentation
 
                 if (whereIndex != -1)
                 {
-                    if (!formatConstraints
+                    if (!format.FormatConstraints
                         || (baseListCount == 1 && constraintCount == 1))
                     {
                         builder.AddSpace();
@@ -211,7 +199,7 @@ namespace Roslynator.Documentation
                 {
                     if (parts[i].IsKeyword("where"))
                     {
-                        if (formatConstraints
+                        if (format.FormatConstraints
                             && (baseListCount > 1 || constraintCount > 1))
                         {
                             builder.AddLineBreak();
@@ -223,7 +211,7 @@ namespace Roslynator.Documentation
                     else if (parts[i].IsTypeName()
                         && parts[i].Symbol is INamedTypeSymbol namedTypeSymbol)
                     {
-                        builder.AddDisplayParts(namedTypeSymbol, omitContainingNamespace);
+                        builder.AddDisplayParts(namedTypeSymbol, format.OmitContainingNamespace);
                     }
                     else
                     {
@@ -232,7 +220,7 @@ namespace Roslynator.Documentation
                 }
             }
 
-            if (addAccessorAttributes)
+            if (format.IncludeAccessorAttributes)
             {
                 if (symbol.Kind == SymbolKind.Property)
                 {
@@ -246,35 +234,31 @@ namespace Roslynator.Documentation
                     AddEventAccessorAttributes(
                         builder,
                         (IEventSymbol)symbol,
-                        predicate: shouldDisplayAttribute,
-                        omitContainingNamespace: omitContainingNamespace,
-                        formatAttributes: false,
-                        includeAttributeArguments: includeAttributeArguments);
+                        format,
+                        shouldDisplayAttribute: shouldDisplayAttribute);
                 }
             }
 
             ImmutableArray<IParameterSymbol> parameters = symbol.GetParameters();
 
-            if (addParameterAttributes
+            if (format.IncludeParameterAttributes
                 && parameters.Any())
             {
                 AddParameterAttributes(
                     builder,
                     symbol,
                     parameters,
-                    predicate: shouldDisplayAttribute,
-                    omitContainingNamespace: omitContainingNamespace,
-                    formatAttributes: false,
-                    includeAttributeArguments: includeAttributeArguments);
+                    format,
+                    shouldDisplayAttribute: shouldDisplayAttribute);
             }
 
-            if (formatParameters
+            if (format.FormatParameters
                 && parameters.Length > 1)
             {
                 FormatParameters(symbol, builder, DefinitionListFormat.Default.IndentChars);
             }
 
-            if (useDefaultLiteral
+            if (format.PreferDefaultLiteral
                 && parameters.Any(f => f.HasExplicitDefaultValue))
             {
                 return ReplaceDefaultExpressionWithDefaultLiteral(symbol, builder.ToImmutableArray());
@@ -290,20 +274,17 @@ namespace Roslynator.Documentation
                 AddAccessorAttributes(
                     builder,
                     accessorMethod,
-                    predicate: shouldDisplayAttribute,
-                    omitContainingNamespace: omitContainingNamespace,
-                    formatAttributes: false,
-                    includeAttributeArguments: includeAttributeArguments);
+                    format,
+                    shouldDisplayAttribute: shouldDisplayAttribute);
             }
         }
 
-        public static ImmutableArray<SymbolDisplayPart> GetAttributesParts(
+        private static ImmutableArray<SymbolDisplayPart> GetAttributesParts(
             ISymbol symbol,
-            Func<INamedTypeSymbol, bool> predicate,
-            bool omitContainingNamespace = false,
-            bool formatAttributes = true,
-            bool includeAttributeArguments = false,
-            bool addNewLine = true)
+            SymbolDefinitionFormat format,
+            Func<INamedTypeSymbol, bool> shouldDisplayAttribute,
+            bool includeTrailingNewLine = false,
+            bool? formatAttributes = null)
         {
             ImmutableArray<AttributeData> attributes = symbol.GetAttributes();
 
@@ -315,11 +296,10 @@ namespace Roslynator.Documentation
             AddAttributes(
                 parts: parts,
                 attributes: attributes,
-                predicate: predicate,
-                omitContainingNamespace: omitContainingNamespace,
-                formatAttributes: formatAttributes,
-                includeAttributeArguments: includeAttributeArguments,
-                addNewLine: addNewLine);
+                format: format,
+                shouldDisplayAttribute: shouldDisplayAttribute,
+                includeTrailingNewLine: includeTrailingNewLine,
+                formatAttributes: formatAttributes);
 
             return parts.ToImmutableArray();
         }
@@ -327,15 +307,14 @@ namespace Roslynator.Documentation
         private static void AddAttributes(
             ImmutableArray<SymbolDisplayPart>.Builder parts,
             ImmutableArray<AttributeData> attributes,
-            Func<INamedTypeSymbol, bool> predicate = null,
-            bool omitContainingNamespace = false,
-            bool formatAttributes = true,
-            bool includeAttributeArguments = false,
-            bool addNewLine = true)
+            SymbolDefinitionFormat format,
+            Func<INamedTypeSymbol, bool> shouldDisplayAttribute,
+            bool includeTrailingNewLine = true,
+            bool? formatAttributes = null)
         {
-            IEnumerable<AttributeData> sortedAttributes = attributes.Where(f => predicate(f.AttributeClass));
+            IEnumerable<AttributeData> sortedAttributes = attributes.Where(f => shouldDisplayAttribute(f.AttributeClass));
 
-            if (omitContainingNamespace)
+            if (format.OmitContainingNamespace)
             {
                 sortedAttributes = attributes.OrderBy(f => f.AttributeClass, NamedTypeSymbolDefinitionComparer.Instance);
             }
@@ -352,15 +331,15 @@ namespace Roslynator.Documentation
 
                     while (true)
                     {
-                        AddAttribute(parts, en.Current, omitContainingNamespace, includeAttributeArguments);
+                        AddAttribute(parts, en.Current, format);
 
                         if (en.MoveNext())
                         {
-                            if (formatAttributes)
+                            if (formatAttributes ?? format.FormatAttributes)
                             {
                                 parts.AddPunctuation("]");
 
-                                if (addNewLine)
+                                if (includeTrailingNewLine)
                                 {
                                     parts.AddLineBreak();
                                 }
@@ -385,33 +364,20 @@ namespace Roslynator.Documentation
 
                     parts.AddPunctuation("]");
 
-                    if (addNewLine)
+                    if (includeTrailingNewLine)
                         parts.AddLineBreak();
                 }
             }
         }
 
-        internal static ImmutableArray<SymbolDisplayPart> GetAttributeParts(
-            AttributeData attribute,
-            bool omitContainingNamespace = false,
-            bool includeAttributeArguments = false)
-        {
-            ImmutableArray<SymbolDisplayPart>.Builder parts = ImmutableArray.CreateBuilder<SymbolDisplayPart>();
-
-            AddAttribute(parts, attribute, omitContainingNamespace, includeAttributeArguments);
-
-            return parts.ToImmutableArray();
-        }
-
         private static void AddAttribute(
             ImmutableArray<SymbolDisplayPart>.Builder parts,
             AttributeData attribute,
-            bool omitContainingNamespace,
-            bool includeAttributeArguments)
+            SymbolDefinitionFormat format)
         {
-            parts.AddDisplayParts(attribute.AttributeClass, omitContainingNamespace, removeAttributeSuffix: true);
+            parts.AddDisplayParts(attribute.AttributeClass, format.OmitContainingNamespace, removeAttributeSuffix: true);
 
-            if (includeAttributeArguments)
+            if (format.IncludeAttributeArguments)
                 AddAttributeArguments();
 
             void AddAttributeArguments()
@@ -516,7 +482,7 @@ namespace Roslynator.Documentation
                             {
                                 while (true)
                                 {
-                                    AddDisplayParts(parts, en.Current.Symbol, omitContainingNamespace);
+                                    AddDisplayParts(parts, en.Current.Symbol, format.OmitContainingNamespace);
 
                                     if (en.MoveNext())
                                     {
@@ -533,7 +499,7 @@ namespace Roslynator.Documentation
                             else
                             {
                                 parts.AddPunctuation("(");
-                                AddDisplayParts(parts, (INamedTypeSymbol)typedConstant.Type, omitContainingNamespace);
+                                AddDisplayParts(parts, (INamedTypeSymbol)typedConstant.Type, format.OmitContainingNamespace);
                                 parts.AddPunctuation(")");
                                 parts.Add(new SymbolDisplayPart(SymbolDisplayPartKind.NumericLiteral, null, typedConstant.Value.ToString()));
                             }
@@ -544,7 +510,7 @@ namespace Roslynator.Documentation
                         {
                             parts.AddKeyword("typeof");
                             parts.AddPunctuation("(");
-                            AddDisplayParts(parts, (ISymbol)typedConstant.Value, omitContainingNamespace);
+                            AddDisplayParts(parts, (ISymbol)typedConstant.Value, format.OmitContainingNamespace);
                             parts.AddPunctuation(")");
 
                             break;
@@ -555,7 +521,7 @@ namespace Roslynator.Documentation
 
                             parts.AddKeyword("new");
                             parts.AddSpace();
-                            AddDisplayParts(parts, arrayType.ElementType, omitContainingNamespace);
+                            AddDisplayParts(parts, arrayType.ElementType, format.OmitContainingNamespace);
 
                             parts.AddPunctuation("[");
                             parts.AddPunctuation("]");
@@ -624,10 +590,8 @@ namespace Roslynator.Documentation
             ImmutableArray<SymbolDisplayPart>.Builder parts,
             ISymbol symbol,
             ImmutableArray<IParameterSymbol> parameters,
-            Func<INamedTypeSymbol, bool> predicate = null,
-            bool omitContainingNamespace = false,
-            bool formatAttributes = true,
-            bool includeAttributeArguments = false)
+            SymbolDefinitionFormat format,
+            Func<INamedTypeSymbol, bool> shouldDisplayAttribute)
         {
             int i = FindParameterListStart(symbol, parts);
 
@@ -743,11 +707,8 @@ namespace Roslynator.Documentation
 
                 ImmutableArray<SymbolDisplayPart> attributeParts = GetAttributesParts(
                     parameter,
-                    predicate: predicate,
-                    omitContainingNamespace: omitContainingNamespace,
-                    formatAttributes: formatAttributes,
-                    includeAttributeArguments: includeAttributeArguments,
-                    addNewLine: false);
+                    format,
+                    shouldDisplayAttribute: shouldDisplayAttribute);
 
                 if (attributeParts.Any())
                 {
@@ -761,18 +722,14 @@ namespace Roslynator.Documentation
         private static void AddAccessorAttributes(
             ImmutableArray<SymbolDisplayPart>.Builder parts,
             IMethodSymbol methodSymbol,
-            Func<INamedTypeSymbol, bool> predicate,
-            bool omitContainingNamespace,
-            bool formatAttributes,
-            bool includeAttributeArguments)
+            SymbolDefinitionFormat format,
+            Func<INamedTypeSymbol, bool> shouldDisplayAttribute)
         {
             ImmutableArray<SymbolDisplayPart> attributeParts = GetAttributesParts(
                 methodSymbol,
-                predicate: predicate,
-                omitContainingNamespace: omitContainingNamespace,
-                formatAttributes: formatAttributes,
-                includeAttributeArguments: includeAttributeArguments,
-                addNewLine: false);
+                format: format,
+                shouldDisplayAttribute: shouldDisplayAttribute,
+                formatAttributes: false);
 
             if (attributeParts.Any())
             {
@@ -812,10 +769,8 @@ namespace Roslynator.Documentation
         private static void AddEventAccessorAttributes(
             ImmutableArray<SymbolDisplayPart>.Builder parts,
             IEventSymbol eventSymbol,
-            Func<INamedTypeSymbol, bool> predicate,
-            bool omitContainingNamespace,
-            bool formatAttributes,
-            bool includeAttributeArguments)
+            SymbolDefinitionFormat format,
+            Func<INamedTypeSymbol, bool> shouldDisplayAttribute)
         {
             bool addMethodHasAttributes = HasAttributes(eventSymbol.AddMethod);
             bool removeMethodHasAttributes = HasAttributes(eventSymbol.RemoveMethod);
@@ -850,9 +805,9 @@ namespace Roslynator.Documentation
                     ImmutableArray<AttributeData> attributes = accessorSymbol.GetAttributes();
                     addMethodHasAttributes = attributes.Any();
 
-                    if (predicate != null)
+                    if (shouldDisplayAttribute != null)
                     {
-                        addMethodHasAttributes = attributes.Any(f => predicate(f.AttributeClass));
+                        addMethodHasAttributes = attributes.Any(f => shouldDisplayAttribute(f.AttributeClass));
                     }
                     else
                     {
@@ -867,11 +822,9 @@ namespace Roslynator.Documentation
             {
                 ImmutableArray<SymbolDisplayPart> attributeParts = GetAttributesParts(
                     accessorMethod,
-                    predicate: predicate,
-                    omitContainingNamespace: omitContainingNamespace,
-                    formatAttributes: formatAttributes,
-                    includeAttributeArguments: includeAttributeArguments,
-                    addNewLine: false);
+                    format: format,
+                    shouldDisplayAttribute: shouldDisplayAttribute,
+                    formatAttributes: false);
 
                 parts.AddRange(attributeParts);
                 parts.AddSpace();

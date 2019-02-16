@@ -7,7 +7,6 @@ List symbol definitions from the specified project or solution.
 
 ```
 roslynator list-symbols <PROJECT|SOLUTION>
-[--assembly-attributes]
 [--depth]
 [--empty-line-between-members]
 [--file-log]
@@ -19,6 +18,7 @@ roslynator list-symbols <PROJECT|SOLUTION>
 [--ignored-attribute-names]
 [--ignored-names]
 [--ignored-projects]
+[--include-assembly-attributes]
 [--indent-chars]
 [--language]
 [--msbuild-path]
@@ -39,10 +39,6 @@ roslynator list-symbols <PROJECT|SOLUTION>
 The project or solution to analyze.
 
 ### Optional Options
-
-**`[--assembly-attributes]`**
-
-Indicates whether assembly attributes should be displayed.
 
 **`[--depth]`** `{member|type|namespace}`
 
@@ -79,6 +75,10 @@ Defines a list of metadata names that should be excluded from a documentation. N
 **`--ignored-projects`** <PROJECT_NAME>
 
 Defines projects that should be skipped.
+
+**`[--include-assembly-attributes]`**
+
+Indicates whether assembly attributes should be displayed.
 
 **`[--indent-chars]`** `<INDENT_CHARS>`
 

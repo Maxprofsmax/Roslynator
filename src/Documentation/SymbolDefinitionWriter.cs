@@ -1,16 +1,18 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace Roslynator.Documentation
 {
-    internal abstract class DefinitionListWriter
+    internal abstract class SymbolDefinitionWriter
     {
-        protected DefinitionListWriter(
+        protected SymbolDefinitionWriter(
             SymbolFilterOptions filter = null,
             DefinitionListFormat format = null,
             IComparer<ISymbol> comparer = null)
@@ -115,10 +117,83 @@ namespace Roslynator.Documentation
 
         public abstract void WriteAttributeSeparator(bool assemblyAttribute);
 
+        public virtual SymbolDefinitionFormat GetNamespaceFormat(INamespaceSymbol namespaceSymbol)
+        {
+            return new SymbolDefinitionFormat(SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypesAndNamespaces,
+                SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
+                omitContainingNamespace: Format.OmitContainingNamespace,
+                includeAttributes: false,
+                includeParameterAttributes: true,
+                includeAccessorAttributes: true,
+                formatAttributes: Format.FormatAttributes && SupportsMultilineDefinitions,
+                formatBaseList: Format.FormatBaseList && SupportsMultilineDefinitions,
+                formatConstraints: Format.FormatConstraints && SupportsMultilineDefinitions,
+                formatParameters: Format.FormatParameters && SupportsMultilineDefinitions,
+                includeAttributeArguments: Format.IncludeAttributeArguments,
+                omitIEnumerable: Format.OmitIEnumerable,
+                preferDefaultLiteral: Format.PreferDefaultLiteral);
+        }
+
+        public virtual SymbolDefinitionFormat GetTypeFormat(INamedTypeSymbol typeSymbol)
+        {
+            return new SymbolDefinitionFormat(SymbolDefinitionDisplayFormats.FullDefinition_NameOnly,
+                SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
+                omitContainingNamespace: Format.OmitContainingNamespace,
+                includeAttributes: false,
+                includeParameterAttributes: true,
+                includeAccessorAttributes: true,
+                formatAttributes: Format.FormatAttributes && SupportsMultilineDefinitions,
+                formatBaseList: Format.FormatBaseList && SupportsMultilineDefinitions,
+                formatConstraints: Format.FormatConstraints && SupportsMultilineDefinitions,
+                formatParameters: Format.FormatParameters && SupportsMultilineDefinitions,
+                includeAttributeArguments: Format.IncludeAttributeArguments,
+                omitIEnumerable: Format.OmitIEnumerable,
+                preferDefaultLiteral: Format.PreferDefaultLiteral);
+        }
+
+        public virtual SymbolDefinitionFormat GetMemberFormat(ISymbol symbol)
+        {
+            SymbolDisplayFormat format = (Format.OmitContainingNamespace)
+                ? SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypes
+                : SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypesAndNamespaces;
+
+            return new SymbolDefinitionFormat(format,
+                SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
+                omitContainingNamespace: Format.OmitContainingNamespace,
+                includeAttributes: false,
+                includeParameterAttributes: true,
+                includeAccessorAttributes: true,
+                formatAttributes: Format.FormatAttributes && SupportsMultilineDefinitions,
+                formatBaseList: Format.FormatBaseList && SupportsMultilineDefinitions,
+                formatConstraints: Format.FormatConstraints && SupportsMultilineDefinitions,
+                formatParameters: Format.FormatParameters && SupportsMultilineDefinitions,
+                includeAttributeArguments: Format.IncludeAttributeArguments,
+                omitIEnumerable: Format.OmitIEnumerable,
+                preferDefaultLiteral: Format.PreferDefaultLiteral);
+        }
+
+        public virtual SymbolDefinitionFormat GetEnumMemberFormat(ISymbol symbol)
+        {
+            return new SymbolDefinitionFormat(SymbolDefinitionDisplayFormats.FullDefinition_NameOnly,
+                SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
+                omitContainingNamespace: Format.OmitContainingNamespace,
+                includeAttributes: false,
+                includeParameterAttributes: true,
+                includeAccessorAttributes: true,
+                formatAttributes: Format.FormatAttributes && SupportsMultilineDefinitions,
+                formatBaseList: Format.FormatBaseList && SupportsMultilineDefinitions,
+                formatConstraints: Format.FormatConstraints && SupportsMultilineDefinitions,
+                formatParameters: Format.FormatParameters && SupportsMultilineDefinitions,
+                includeAttributeArguments: Format.IncludeAttributeArguments,
+                omitIEnumerable: Format.OmitIEnumerable,
+                preferDefaultLiteral: Format.PreferDefaultLiteral);
+        }
+
         public void WriteDocument(IEnumerable<IAssemblySymbol> assemblies)
         {
             WriteStartDocument();
             WriteAssemblies(assemblies);
+            WriteNamespaces(assemblies);
             WriteEndDocument();
         }
 
@@ -140,7 +215,7 @@ namespace Roslynator.Documentation
                         WriteStartAssembly(assembly);
                         WriteAssembly(assembly);
 
-                        if (Format.AssemblyAttributes)
+                        if (Format.IncludeAssemblyAttributes)
                             WriteAttributes(assembly);
 
                         WriteEndAssembly(assembly);
@@ -158,7 +233,10 @@ namespace Roslynator.Documentation
             }
 
             WriteEndAssemblies();
+        }
 
+        public void WriteNamespaces(IEnumerable<IAssemblySymbol> assemblies)
+        {
             IEnumerable<IGrouping<INamespaceSymbol, INamedTypeSymbol>> typesByNamespace = assemblies
                 .SelectMany(a => a.GetTypes(t => t.ContainingType == null && Filter.IsVisibleType(t)))
                 .GroupBy(t => t.ContainingNamespace, MetadataNameEqualityComparer<INamespaceSymbol>.Instance)
@@ -459,14 +537,7 @@ namespace Roslynator.Documentation
                     while (true)
                     {
                         WriteStartAttribute(en.Current, assemblyAttribute);
-
-                        ImmutableArray<SymbolDisplayPart> parts = SymbolDefinitionDisplay.GetAttributeParts(
-                            attribute: en.Current,
-                            omitContainingNamespace: Format.OmitContainingNamespace,
-                            includeAttributeArguments: Format.IncludeAttributeArguments);
-
-                        Write(parts);
-
+                        WriteAttribute(en.Current);
                         WriteEndAttribute(en.Current, assemblyAttribute);
 
                         if (en.MoveNext())
@@ -484,24 +555,211 @@ namespace Roslynator.Documentation
             }
         }
 
-        public virtual void Write(ISymbol symbol, SymbolDisplayFormat format)
+        public void WriteAttribute(AttributeData attribute)
+        {
+            SymbolDisplayFormat format = (Format.OmitContainingNamespace)
+                ? SymbolDefinitionDisplayFormats.TypeNameAndContainingTypesAndTypeParameters
+                : SymbolDefinitionDisplayFormats.TypeNameAndContainingTypesAndNamespacesAndTypeParameters;
+
+            ImmutableArray<SymbolDisplayPart> parts = attribute.AttributeClass.ToDisplayParts(format);
+
+            SymbolDisplayPart part = parts.FirstOrDefault(f => f.Kind == SymbolDisplayPartKind.ClassName);
+
+            Debug.Assert(part.Kind == SymbolDisplayPartKind.ClassName, part.Kind.ToString());
+
+            if (part.Kind == SymbolDisplayPartKind.ClassName)
+            {
+                const string attributeSuffix = "Attribute";
+
+                string text = part.ToString();
+
+                if (text.EndsWith(attributeSuffix, StringComparison.Ordinal))
+                {
+                    parts = parts.Replace(part, part.WithText(text.Remove(text.Length - attributeSuffix.Length)));
+                }
+            }
+
+            Write(parts);
+
+            if (!Format.IncludeAttributeArguments)
+                return;
+
+            bool hasConstructorArgument = false;
+            bool hasNamedArgument = false;
+
+            AppendConstructorArguments();
+            AppendNamedArguments();
+
+            if (hasConstructorArgument || hasNamedArgument)
+            {
+                Write(")");
+            }
+
+            void AppendConstructorArguments()
+            {
+                ImmutableArray<TypedConstant>.Enumerator en = attribute.ConstructorArguments.GetEnumerator();
+
+                if (en.MoveNext())
+                {
+                    hasConstructorArgument = true;
+                    Write("(");
+
+                    while (true)
+                    {
+                        AddConstantValue(en.Current);
+
+                        if (en.MoveNext())
+                        {
+                            Write(", ");
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            void AppendNamedArguments()
+            {
+                ImmutableArray<KeyValuePair<string, TypedConstant>>.Enumerator en = attribute.NamedArguments.GetEnumerator();
+
+                if (en.MoveNext())
+                {
+                    hasNamedArgument = true;
+
+                    if (hasConstructorArgument)
+                    {
+                        Write(", ");
+                    }
+                    else
+                    {
+                        Write("(");
+                    }
+
+                    while (true)
+                    {
+                        Write(en.Current.Key);
+                        Write(" = ");
+                        AddConstantValue(en.Current.Value);
+
+                        if (en.MoveNext())
+                        {
+                            Write(", ");
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            void AddConstantValue(TypedConstant typedConstant)
+            {
+                switch (typedConstant.Kind)
+                {
+                    case TypedConstantKind.Primitive:
+                        {
+                            Write(SymbolDisplay.FormatPrimitive(typedConstant.Value, quoteStrings: true, useHexadecimalNumbers: false));
+                            break;
+                        }
+                    case TypedConstantKind.Enum:
+                        {
+                            OneOrMany<EnumFieldSymbolInfo> oneOrMany = EnumUtility.GetConstituentFields(typedConstant.Value, (INamedTypeSymbol)typedConstant.Type);
+
+                            OneOrMany<EnumFieldSymbolInfo>.Enumerator en = oneOrMany.GetEnumerator();
+
+                            if (en.MoveNext())
+                            {
+                                while (true)
+                                {
+                                    WriteSymbol(en.Current.Symbol);
+
+                                    if (en.MoveNext())
+                                    {
+                                        Write(" | ");
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Write("(");
+                                WriteSymbol((INamedTypeSymbol)typedConstant.Type);
+                                Write(")");
+                                Write(typedConstant.Value.ToString());
+                            }
+
+                            break;
+                        }
+                    case TypedConstantKind.Type:
+                        {
+                            Write("typeof");
+                            Write("(");
+                            WriteSymbol((ISymbol)typedConstant.Value);
+                            Write(")");
+
+                            break;
+                        }
+                    case TypedConstantKind.Array:
+                        {
+                            var arrayType = (IArrayTypeSymbol)typedConstant.Type;
+
+                            Write("new ");
+                            WriteSymbol(arrayType.ElementType);
+
+                            Write("[] { ");
+
+                            ImmutableArray<TypedConstant>.Enumerator en = typedConstant.Values.GetEnumerator();
+
+                            if (en.MoveNext())
+                            {
+                                while (true)
+                                {
+                                    AddConstantValue(en.Current);
+
+                                    if (en.MoveNext())
+                                    {
+                                        Write(", ");
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+
+                            Write(" }");
+                            break;
+                        }
+                    default:
+                        {
+                            throw new InvalidOperationException();
+                        }
+                }
+            }
+
+            void WriteSymbol(ISymbol symbol)
+            {
+                //TODO: SymbolDisplayMemberOptions.IncludeContainingType, SymbolDisplayMiscellaneousOptions.UseSpecialTypes
+                SymbolDisplayFormat format2 = (Format.OmitContainingNamespace)
+                    ? SymbolDefinitionDisplayFormats.TypeNameAndContainingTypesAndTypeParameters
+                    : SymbolDefinitionDisplayFormats.TypeNameAndContainingTypesAndNamespacesAndTypeParameters;
+
+                Write(symbol.ToDisplayParts(format2));
+            }
+        }
+
+        public virtual void Write(ISymbol symbol, SymbolDefinitionFormat format)
         {
             ImmutableArray<SymbolDisplayPart> parts = SymbolDefinitionDisplay.GetDisplayParts(
                 symbol,
                 format,
-                SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
-                omitContainingNamespace: Format.OmitContainingNamespace,
-                addAttributes: false,
-                addParameterAttributes: true,
-                addAccessorAttributes: true,
-                shouldDisplayAttribute: Filter.IsVisibleAttribute,
-                formatAttributes: Format.FormatAttributes && SupportsMultilineDefinitions,
-                formatBaseList: Format.FormatBaseList && SupportsMultilineDefinitions,
-                formatConstraints: Format.FormatConstraints && SupportsMultilineDefinitions,
-                formatParameters: Format.FormatParameters && SupportsMultilineDefinitions,
-                includeAttributeArguments: Format.IncludeAttributeArguments,
-                omitIEnumerable: Format.OmitIEnumerable,
-                useDefaultLiteral: Format.UseDefaultLiteral);
+                shouldDisplayAttribute: Filter.IsVisibleAttribute);
 
             Write(parts);
         }

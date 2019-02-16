@@ -5,9 +5,9 @@ using Microsoft.CodeAnalysis;
 
 namespace Roslynator.Documentation
 {
-    internal abstract class AbstractDefinitionListTextWriter : DefinitionListWriter
+    internal abstract class SymbolDefinitionAbstractTextWriter : SymbolDefinitionWriter
     {
-        protected AbstractDefinitionListTextWriter(
+        protected SymbolDefinitionAbstractTextWriter(
             SymbolFilterOptions filter,
             DefinitionListFormat format = null,
             IComparer<ISymbol> comparer = null) : base(filter, format, comparer)
@@ -51,7 +51,7 @@ namespace Roslynator.Documentation
 
         public override void WriteAssemblySeparator()
         {
-            if (Format.AssemblyAttributes)
+            if (Format.IncludeAssemblyAttributes)
                 WriteLine();
         }
 
@@ -69,7 +69,7 @@ namespace Roslynator.Documentation
             if (namespaceSymbol.IsGlobalNamespace)
                 return;
 
-            Write(namespaceSymbol, SymbolDefinitionDisplayFormats.NamespaceDefinition);
+            Write(namespaceSymbol, GetNamespaceFormat(namespaceSymbol));
             WriteLine();
             IncreaseDepth();
         }
@@ -93,7 +93,7 @@ namespace Roslynator.Documentation
 
         public override void WriteType(INamedTypeSymbol typeSymbol)
         {
-            Write(typeSymbol, SymbolDefinitionDisplayFormats.FullDefinition_NameOnly);
+            Write(typeSymbol, GetTypeFormat(typeSymbol));
             WriteLine();
 
             IncreaseDepth();
@@ -119,7 +119,7 @@ namespace Roslynator.Documentation
                 ? SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypes
                 : SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypesAndNamespaces;
 
-            Write(symbol, format);
+            Write(symbol, GetMemberFormat(symbol));
             WriteLine();
             IncreaseDepth();
         }
@@ -140,7 +140,7 @@ namespace Roslynator.Documentation
 
         public override void WriteEnumMember(ISymbol symbol)
         {
-            Write(symbol, SymbolDefinitionDisplayFormats.FullDefinition_NameOnly);
+            Write(symbol, GetEnumMemberFormat(symbol));
             WriteLine();
             IncreaseDepth();
         }
@@ -196,7 +196,7 @@ namespace Roslynator.Documentation
             }
         }
 
-        public override void Write(ISymbol symbol, SymbolDisplayFormat format)
+        public override void Write(ISymbol symbol, SymbolDefinitionFormat format)
         {
             WriteAttributes(symbol);
             base.Write(symbol, format);

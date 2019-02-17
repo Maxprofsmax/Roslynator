@@ -3,12 +3,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Xml;
 using Microsoft.CodeAnalysis;
 
-namespace Roslynator.Documentation
+namespace Roslynator.Documentation.Xml
 {
-    //TODO: replace <> with {}
     internal class SymbolDefinitionXmlWriter : SymbolDefinitionWriter
     {
         private readonly XmlWriter _writer;
@@ -17,28 +17,20 @@ namespace Roslynator.Documentation
             XmlWriter writer,
             SymbolFilterOptions filter,
             DefinitionListFormat format = null,
+            SymbolDocumentationProvider documentationProvider = null,
             IComparer<ISymbol> comparer = null) : base(filter, format, comparer)
         {
             _writer = writer;
+            DocumentationProvider = documentationProvider;
         }
 
         public override bool SupportsMultilineDefinitions => false;
 
-        public override SymbolDefinitionFormat GetNamespaceFormat(INamespaceSymbol namespaceSymbol)
+        public SymbolDocumentationProvider DocumentationProvider { get; }
+
+        public override SymbolDisplayFormat GetNamespaceFormat(INamespaceSymbol namespaceSymbol)
         {
-            return new SymbolDefinitionFormat(SymbolDefinitionDisplayFormats.TypeNameAndContainingTypesAndNamespaces,
-                SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
-                omitContainingNamespace: Format.OmitContainingNamespace,
-                includeAttributes: false,
-                includeParameterAttributes: true,
-                includeAccessorAttributes: true,
-                formatAttributes: Format.FormatAttributes && SupportsMultilineDefinitions,
-                formatBaseList: Format.FormatBaseList && SupportsMultilineDefinitions,
-                formatConstraints: Format.FormatConstraints && SupportsMultilineDefinitions,
-                formatParameters: Format.FormatParameters && SupportsMultilineDefinitions,
-                includeAttributeArguments: Format.IncludeAttributeArguments,
-                omitIEnumerable: Format.OmitIEnumerable,
-                preferDefaultLiteral: Format.PreferDefaultLiteral);
+            return SymbolDefinitionDisplayFormats.TypeNameAndContainingTypesAndNamespaces;
         }
 
         public override void WriteStartDocument()
@@ -150,7 +142,7 @@ namespace Roslynator.Documentation
                     case TypeKind.Struct:
                         return "struct";
                     default:
-                        throw new InvalidOperationException();
+                        throw new ArgumentException("", nameof(typeSymbol));
                 }
             }
         }
@@ -160,6 +152,7 @@ namespace Roslynator.Documentation
             WriteStartAttribute("def");
             Write(typeSymbol, GetTypeFormat(typeSymbol));
             WriteEndAttribute();
+            WriteDocumentation(typeSymbol);
             WriteAttributes(typeSymbol);
         }
 
@@ -211,7 +204,7 @@ namespace Roslynator.Documentation
                     case MemberDeclarationKind.Operator:
                         return "operator";
                     default:
-                        throw new InvalidOperationException();
+                        throw new ArgumentException("", nameof(symbol));
                 }
             }
         }
@@ -221,6 +214,7 @@ namespace Roslynator.Documentation
             WriteStartAttribute("def");
             Write(symbol, GetMemberFormat(symbol));
             WriteEndAttribute();
+            WriteDocumentation(symbol);
             WriteAttributes(symbol);
         }
 
@@ -327,6 +321,41 @@ namespace Roslynator.Documentation
         private void WriteEndAttribute()
         {
             _writer.WriteEndAttribute();
+        }
+
+        private void WriteDocumentation(ISymbol symbol)
+        {
+            if (DocumentationProvider == null)
+                return;
+
+            SymbolXmlDocumentation xmlDocumentation = DocumentationProvider.GetXmlDocumentation(symbol);
+
+            if (xmlDocumentation == null)
+                return;
+
+            WriteStartElement("doc");
+
+            string xml = xmlDocumentation.GetInnerXml();
+
+            _writer.WriteWhitespace(_writer.Settings.NewLineChars);
+
+            using (var sr = new StringReader(xml))
+            {
+                string line = null;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    for (int i = 0; i < Depth; i++)
+                        _writer.WriteWhitespace(_writer.Settings.IndentChars);
+
+                    _writer.WriteRaw(line);
+                    _writer.WriteWhitespace(_writer.Settings.NewLineChars);
+                }
+            }
+
+            for (int i = 1; i < Depth; i++)
+                _writer.WriteWhitespace(_writer.Settings.IndentChars);
+
+            WriteEndElement();
         }
     }
 }

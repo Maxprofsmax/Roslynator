@@ -39,7 +39,9 @@ namespace Roslynator.Documentation
 
         protected void DecreaseDepth()
         {
-            Debug.Assert(Depth > 0, "Cannot decrease depth.");
+            if (Depth == 0)
+                throw new InvalidOperationException("Cannot decrease depth.");
+
             Depth--;
         }
 
@@ -117,76 +119,61 @@ namespace Roslynator.Documentation
 
         public abstract void WriteAttributeSeparator(bool assemblyAttribute);
 
-        public virtual SymbolDefinitionFormat GetNamespaceFormat(INamespaceSymbol namespaceSymbol)
+        internal SymbolDisplayAdditionalOptions GetAdditionalOptions()
         {
-            return new SymbolDefinitionFormat(SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypesAndNamespaces,
-                SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
-                omitContainingNamespace: Format.OmitContainingNamespace,
-                includeAttributes: false,
-                includeParameterAttributes: true,
-                includeAccessorAttributes: true,
-                formatAttributes: Format.FormatAttributes && SupportsMultilineDefinitions,
-                formatBaseList: Format.FormatBaseList && SupportsMultilineDefinitions,
-                formatConstraints: Format.FormatConstraints && SupportsMultilineDefinitions,
-                formatParameters: Format.FormatParameters && SupportsMultilineDefinitions,
-                includeAttributeArguments: Format.IncludeAttributeArguments,
-                omitIEnumerable: Format.OmitIEnumerable,
-                preferDefaultLiteral: Format.PreferDefaultLiteral);
+            SymbolDisplayAdditionalOptions options = SymbolDisplayAdditionalOptions.IncludeParameterAttributes
+                | SymbolDisplayAdditionalOptions.IncludeAccessorAttributes;
+
+            if (Format.OmitContainingNamespace)
+                options |= SymbolDisplayAdditionalOptions.OmitContainingNamespace;
+
+            if (SupportsMultilineDefinitions)
+            {
+                if (Format.FormatBaseList)
+                    options |= SymbolDisplayAdditionalOptions.FormatBaseList;
+
+                if (Format.FormatConstraints)
+                    options |= SymbolDisplayAdditionalOptions.FormatConstraints;
+
+                if (Format.FormatParameters)
+                    options |= SymbolDisplayAdditionalOptions.FormatParameters;
+
+                if (Format.FormatAttributes)
+                    options |= SymbolDisplayAdditionalOptions.FormatAttributes;
+            }
+
+            if (Format.IncludeAttributeArguments)
+                options |= SymbolDisplayAdditionalOptions.IncludeAttributeArguments;
+
+            if (Format.OmitIEnumerable)
+                options |= SymbolDisplayAdditionalOptions.OmitIEnumerable;
+
+            if (Format.PreferDefaultLiteral)
+                options |= SymbolDisplayAdditionalOptions.PreferDefaultLiteral;
+
+            return options;
         }
 
-        public virtual SymbolDefinitionFormat GetTypeFormat(INamedTypeSymbol typeSymbol)
+        public virtual SymbolDisplayFormat GetNamespaceFormat(INamespaceSymbol namespaceSymbol)
         {
-            return new SymbolDefinitionFormat(SymbolDefinitionDisplayFormats.FullDefinition_NameOnly,
-                SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
-                omitContainingNamespace: Format.OmitContainingNamespace,
-                includeAttributes: false,
-                includeParameterAttributes: true,
-                includeAccessorAttributes: true,
-                formatAttributes: Format.FormatAttributes && SupportsMultilineDefinitions,
-                formatBaseList: Format.FormatBaseList && SupportsMultilineDefinitions,
-                formatConstraints: Format.FormatConstraints && SupportsMultilineDefinitions,
-                formatParameters: Format.FormatParameters && SupportsMultilineDefinitions,
-                includeAttributeArguments: Format.IncludeAttributeArguments,
-                omitIEnumerable: Format.OmitIEnumerable,
-                preferDefaultLiteral: Format.PreferDefaultLiteral);
+            return SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypesAndNamespaces;
         }
 
-        public virtual SymbolDefinitionFormat GetMemberFormat(ISymbol symbol)
+        public virtual SymbolDisplayFormat GetTypeFormat(INamedTypeSymbol typeSymbol)
         {
-            SymbolDisplayFormat format = (Format.OmitContainingNamespace)
+            return SymbolDefinitionDisplayFormats.FullDefinition_NameOnly;
+        }
+
+        public virtual SymbolDisplayFormat GetMemberFormat(ISymbol symbol)
+        {
+            return (Format.OmitContainingNamespace)
                 ? SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypes
                 : SymbolDefinitionDisplayFormats.FullDefinition_NameAndContainingTypesAndNamespaces;
-
-            return new SymbolDefinitionFormat(format,
-                SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
-                omitContainingNamespace: Format.OmitContainingNamespace,
-                includeAttributes: false,
-                includeParameterAttributes: true,
-                includeAccessorAttributes: true,
-                formatAttributes: Format.FormatAttributes && SupportsMultilineDefinitions,
-                formatBaseList: Format.FormatBaseList && SupportsMultilineDefinitions,
-                formatConstraints: Format.FormatConstraints && SupportsMultilineDefinitions,
-                formatParameters: Format.FormatParameters && SupportsMultilineDefinitions,
-                includeAttributeArguments: Format.IncludeAttributeArguments,
-                omitIEnumerable: Format.OmitIEnumerable,
-                preferDefaultLiteral: Format.PreferDefaultLiteral);
         }
 
-        public virtual SymbolDefinitionFormat GetEnumMemberFormat(ISymbol symbol)
+        public virtual SymbolDisplayFormat GetEnumMemberFormat(ISymbol symbol)
         {
-            return new SymbolDefinitionFormat(SymbolDefinitionDisplayFormats.FullDefinition_NameOnly,
-                SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
-                omitContainingNamespace: Format.OmitContainingNamespace,
-                includeAttributes: false,
-                includeParameterAttributes: true,
-                includeAccessorAttributes: true,
-                formatAttributes: Format.FormatAttributes && SupportsMultilineDefinitions,
-                formatBaseList: Format.FormatBaseList && SupportsMultilineDefinitions,
-                formatConstraints: Format.FormatConstraints && SupportsMultilineDefinitions,
-                formatParameters: Format.FormatParameters && SupportsMultilineDefinitions,
-                includeAttributeArguments: Format.IncludeAttributeArguments,
-                omitIEnumerable: Format.OmitIEnumerable,
-                preferDefaultLiteral: Format.PreferDefaultLiteral);
+            return SymbolDefinitionDisplayFormats.FullDefinition_NameOnly;
         }
 
         public void WriteDocument(IEnumerable<IAssemblySymbol> assemblies)
@@ -745,7 +732,6 @@ namespace Roslynator.Documentation
 
             void WriteSymbol(ISymbol symbol)
             {
-                //TODO: SymbolDisplayMemberOptions.IncludeContainingType, SymbolDisplayMiscellaneousOptions.UseSpecialTypes
                 SymbolDisplayFormat format2 = (Format.OmitContainingNamespace)
                     ? SymbolDefinitionDisplayFormats.TypeNameAndContainingTypesAndTypeParameters
                     : SymbolDefinitionDisplayFormats.TypeNameAndContainingTypesAndNamespacesAndTypeParameters;
@@ -754,11 +740,13 @@ namespace Roslynator.Documentation
             }
         }
 
-        public virtual void Write(ISymbol symbol, SymbolDefinitionFormat format)
+        public virtual void Write(ISymbol symbol, SymbolDisplayFormat format)
         {
             ImmutableArray<SymbolDisplayPart> parts = SymbolDefinitionDisplay.GetDisplayParts(
                 symbol,
                 format,
+                typeDeclarationOptions: SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
+                additionalOptions: GetAdditionalOptions(),
                 shouldDisplayAttribute: Filter.IsVisibleAttribute);
 
             Write(parts);

@@ -19,6 +19,7 @@ roslynator list-symbols <PROJECT|SOLUTION>
 [--ignored-names]
 [--ignored-projects]
 [--include-assembly-attributes]
+[--include-documentation]
 [--indent-chars]
 [--language]
 [--msbuild-path]
@@ -79,6 +80,10 @@ Defines projects that should be skipped.
 **`[--include-assembly-attributes]`**
 
 Indicates whether assembly attributes should be displayed.
+
+**`[--include-documentation]`**
+
+Indicates whether XML documentation should be included. This option is relevant only for XML output.
 
 **`[--indent-chars]`** `<INDENT_CHARS>`
 

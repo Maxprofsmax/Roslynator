@@ -12,6 +12,8 @@ using System.Xml;
 using DotMarkdown;
 using Microsoft.CodeAnalysis;
 using Roslynator.Documentation;
+using Roslynator.Documentation.Markdown;
+using Roslynator.Documentation.Xml;
 using static Roslynator.Logger;
 
 namespace Roslynator.CommandLine
@@ -91,7 +93,7 @@ namespace Roslynator.CommandLine
 
             using (XmlWriter xmlWriter = XmlWriter.Create(ConsoleOut, new XmlWriterSettings() { Indent = true, IndentChars = Options.IndentChars }))
             {
-                SymbolDefinitionWriter writer = new SymbolDefinitionXmlWriter(xmlWriter, SymbolFilterOptions, format, comparer);
+                SymbolDefinitionWriter writer = new SymbolDefinitionXmlWriter(xmlWriter, SymbolFilterOptions, format, new SymbolDocumentationProvider(compilations), comparer);
 
                 writer.WriteDocument(assemblies);
             }
@@ -131,11 +133,15 @@ namespace Roslynator.CommandLine
 
                 if (string.Equals(extension, ".xml", StringComparison.OrdinalIgnoreCase))
                 {
+                    SymbolDocumentationProvider documentationProvider = (Options.IncludeDocumentation)
+                        ? new SymbolDocumentationProvider(compilations)
+                        : null;
+
                     var xmlWriterSettings = new XmlWriterSettings() { Indent = true, IndentChars = Options.IndentChars };
 
                     using (XmlWriter xmlWriter = XmlWriter.Create(path, xmlWriterSettings))
                     {
-                        SymbolDefinitionWriter writer = new SymbolDefinitionXmlWriter(xmlWriter, SymbolFilterOptions, format, comparer);
+                        SymbolDefinitionWriter writer = new SymbolDefinitionXmlWriter(xmlWriter, SymbolFilterOptions, format, documentationProvider, comparer);
 
                         writer.WriteDocument(assemblies);
                     }

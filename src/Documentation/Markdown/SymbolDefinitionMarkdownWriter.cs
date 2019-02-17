@@ -6,7 +6,7 @@ using System.Diagnostics;
 using DotMarkdown;
 using Microsoft.CodeAnalysis;
 
-namespace Roslynator.Documentation
+namespace Roslynator.Documentation.Markdown
 {
     internal class SymbolDefinitionMarkdownWriter : AbstractSymbolDefinitionTextWriter
     {
@@ -125,7 +125,7 @@ namespace Roslynator.Documentation
             _writer.WriteEndBulletItem();
         }
 
-        public override void Write(ISymbol symbol, SymbolDefinitionFormat format)
+        public override void Write(ISymbol symbol, SymbolDisplayFormat format)
         {
             if (RootDirectoryUrl != null)
                 _writer.WriteStartLink();

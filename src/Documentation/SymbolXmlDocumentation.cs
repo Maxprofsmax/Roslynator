@@ -2,27 +2,33 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Xml;
 using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 
 namespace Roslynator.Documentation
 {
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class SymbolXmlDocumentation
     {
         private readonly XElement _element;
 
-        internal static SymbolXmlDocumentation Default { get; } = new SymbolXmlDocumentation(null, null, null);
+        internal static SymbolXmlDocumentation Default { get; } = new SymbolXmlDocumentation(null, null);
 
-        internal SymbolXmlDocumentation(ISymbol symbol, string commentId, XElement element)
+        public SymbolXmlDocumentation(ISymbol symbol, XElement element)
         {
             Symbol = symbol;
-            CommentId = commentId;
             _element = element;
         }
 
         public ISymbol Symbol { get; }
 
-        public string CommentId { get; }
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private string DebuggerDisplay
+        {
+            get { return $"{_element}"; }
+        }
 
         public XElement Element(string name)
         {
@@ -61,6 +67,27 @@ namespace Roslynator.Documentation
         public bool HasElement(string name)
         {
             return Element(name) != null;
+        }
+
+        public string GetInnerXml()
+        {
+            using (XmlReader reader = _element.CreateReader())
+            {
+                if (reader.Read()
+                    && reader.NodeType == XmlNodeType.Element
+                    && reader.Name == "member"
+                    && reader.Read()
+                    && reader.NodeType == XmlNodeType.Text
+                    && reader.Read()
+                    && reader.NodeType == XmlNodeType.Element)
+                {
+                    return reader.ReadOuterXml();
+                }
+            }
+
+            Debug.Fail(_element.ToString());
+
+            return null;
         }
     }
 }

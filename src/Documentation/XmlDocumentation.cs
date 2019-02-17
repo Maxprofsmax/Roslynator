@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Collections.Immutable;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
@@ -16,6 +18,7 @@ namespace Roslynator.Documentation
 
         private readonly XDocument _document;
         private readonly XElement _membersElement;
+        private ImmutableDictionary<string, XElement> _elementsById;
 
         private XmlDocumentation(XDocument document)
         {
@@ -82,15 +85,22 @@ namespace Roslynator.Documentation
 
         internal SymbolXmlDocumentation GetXmlDocumentation(ISymbol symbol, string commentId)
         {
-            foreach (XElement element in _membersElement.Elements())
+            if (_elementsById == null)
             {
-                if (element.Attribute("name")?.Value == commentId)
-                {
-                    return new SymbolXmlDocumentation(symbol, commentId, element);
-                }
+                _elementsById = Interlocked.CompareExchange(ref _elementsById, LoadElements(), null);
+            }
+
+            if (_elementsById.TryGetValue(commentId, out XElement element))
+            {
+                return new SymbolXmlDocumentation(symbol, element);
             }
 
             return null;
+
+            ImmutableDictionary<string, XElement> LoadElements()
+            {
+                return _membersElement.Elements().ToImmutableDictionary(f => f.Attribute("name").Value, f => f);
+            }
         }
     }
 }

@@ -313,7 +313,7 @@ namespace Roslynator.Documentation
 
                     XElement element = XElement.Parse(xml, LoadOptions.PreserveWhitespace);
 
-                    xmlDocumentation = new SymbolXmlDocumentation(symbol, symbol.GetDocumentationCommentId(), element);
+                    xmlDocumentation = new SymbolXmlDocumentation(symbol, element);
 
                     _symbolData[symbol] = data.WithXmlDocumentation(xmlDocumentation);
                     return xmlDocumentation;

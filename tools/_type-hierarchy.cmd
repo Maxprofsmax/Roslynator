@@ -4,13 +4,16 @@ set _msbuildPath="C:\Program Files\Microsoft Visual Studio\2017\Community\MSBuil
 
 %_msbuildPath%\msbuild "..\src\CommandLine.sln" /t:Build /p:Configuration=Debug /v:m /m
 
-"..\src\CommandLine\bin\Debug\net461\roslynator" list-symbols "..\src\Core.sln" ^
+"..\src\CommandLine\bin\Debug\net461\roslynator" type-hierarchy "..\src\Core.sln" ^
  --msbuild-path %_msbuildPath% ^
  --visibility public ^
- --depth member ^
+ --references ^
+    Microsoft.CodeAnalysis.dll ^
+    Microsoft.CodeAnalysis.CSharp.dll ^
+    Microsoft.CodeAnalysis.Workspaces.dll ^
+    Microsoft.CodeAnalysis.CSharp.Workspaces.dll ^
  --omit-containing-namespace ^
- --include-documentation ^
- --output "api.txt" "api.xml" "api.md" ^
+ --output "roslyn.txt" ^
  --verbosity n ^
  --file-log "roslynator.log" ^
  --file-log-verbosity diag

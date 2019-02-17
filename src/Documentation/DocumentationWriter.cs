@@ -16,7 +16,6 @@ namespace Roslynator.Documentation
     public abstract class DocumentationWriter : IDisposable
     {
         private bool _disposed;
-        private readonly SymbolDefinitionFormat _definitionFormat;
 
         protected DocumentationWriter(
             DocumentationModel documentationModel,
@@ -28,18 +27,6 @@ namespace Roslynator.Documentation
             UrlProvider = urlProvider;
             Options = options ?? DocumentationOptions.Default;
             Resources = resources ?? DocumentationResources.Default;
-
-            _definitionFormat = new SymbolDefinitionFormat(
-                SymbolDisplayFormats.FullDeclaration,
-                typeDeclarationOptions: SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
-                omitContainingNamespace: false,
-                includeAttributes: true,
-                formatAttributes: true,
-                formatBaseList: Options.FormatDeclarationBaseList,
-                formatConstraints: Options.FormatDeclarationConstraints,
-                includeAttributeArguments: Options.IncludeAttributeArguments,
-                omitIEnumerable: Options.OmitIEnumerable,
-                preferDefaultLiteral: true);
         }
 
         public DocumentationModel DocumentationModel { get; }
@@ -453,11 +440,30 @@ namespace Roslynator.Documentation
                 headingLevelBase: headingLevelBase);
         }
 
+        //TODO: WriteDeclaration > WriteDefinition
         public virtual void WriteDeclaration(ISymbol symbol)
         {
+            SymbolDisplayAdditionalOptions additionalOptions = SymbolDisplayAdditionalOptions.IncludeAttributes
+                | SymbolDisplayAdditionalOptions.FormatAttributes
+                | SymbolDisplayAdditionalOptions.PreferDefaultLiteral;
+
+            if (Options.IncludeAttributeArguments)
+                additionalOptions |= SymbolDisplayAdditionalOptions.IncludeAttributeArguments;
+
+            if (Options.FormatDeclarationBaseList)
+                additionalOptions |= SymbolDisplayAdditionalOptions.FormatBaseList;
+
+            if (Options.FormatDeclarationConstraints)
+                additionalOptions |= SymbolDisplayAdditionalOptions.FormatConstraints;
+
+            if (Options.OmitIEnumerable)
+                additionalOptions |= SymbolDisplayAdditionalOptions.OmitIEnumerable;
+
             ImmutableArray<SymbolDisplayPart> parts = SymbolDefinitionDisplay.GetDisplayParts(
                 symbol,
-                _definitionFormat,
+                SymbolDisplayFormats.FullDeclaration,
+                typeDeclarationOptions: SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
+                additionalOptions: additionalOptions,
                 shouldDisplayAttribute: f => SymbolFilterOptions.Default.IsVisibleAttribute(f));
 
             WriteCodeBlock(parts.ToDisplayString(), symbol.Language);

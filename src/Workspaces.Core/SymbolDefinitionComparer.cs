@@ -57,19 +57,19 @@ namespace Roslynator
                     }
                 case SymbolKind.NamedType:
                     {
-                        var namedTypeSymbol = (INamedTypeSymbol)x;
+                        var typeSymbol = (INamedTypeSymbol)x;
 
                         switch (y.Kind)
                         {
                             case SymbolKind.Namespace:
-                                return CompareSymbolAndNamespaceSymbol(namedTypeSymbol, (INamespaceSymbol)y);
+                                return CompareSymbolAndNamespaceSymbol(typeSymbol, (INamespaceSymbol)y);
                             case SymbolKind.NamedType:
-                                return NamedTypeSymbolDefinitionComparer.Instance.Compare(namedTypeSymbol, (INamedTypeSymbol)y);
+                                return CompareNamedTypeSymbol(typeSymbol, (INamedTypeSymbol)y);
                             case SymbolKind.Event:
                             case SymbolKind.Field:
                             case SymbolKind.Method:
                             case SymbolKind.Property:
-                                return -CompareSymbolAndNamedTypeSymbol(y, namedTypeSymbol);
+                                return -CompareSymbolAndNamedTypeSymbol(y, typeSymbol);
                         }
 
                         break;
@@ -89,7 +89,7 @@ namespace Roslynator
                             case SymbolKind.Field:
                             case SymbolKind.Method:
                             case SymbolKind.Property:
-                                return MemberSymbolDefinitionComparer.Instance.Compare(x, y);
+                                return CompareMemberSymbol(x, y);
                         }
 
                         break;
@@ -97,6 +97,26 @@ namespace Roslynator
             }
 
             throw new InvalidOperationException();
+        }
+
+        private int CompareNamedTypeSymbol(INamedTypeSymbol typeSymbol1, INamedTypeSymbol typeSymbol2)
+        {
+            int diff = NamespaceSymbolDefinitionComparer.GetInstance(SystemNamespaceFirst).Compare(typeSymbol1.ContainingNamespace, typeSymbol2.ContainingNamespace);
+
+            if (diff != 0)
+                return diff;
+
+            return NamedTypeSymbolDefinitionComparer.Instance.Compare(typeSymbol1, typeSymbol2);
+        }
+
+        private int CompareMemberSymbol(ISymbol symbol1, ISymbol symbol2)
+        {
+            int diff = CompareNamedTypeSymbol(symbol1.ContainingType, symbol2.ContainingType);
+
+            if (diff != 0)
+                return diff;
+
+            return MemberSymbolDefinitionComparer.Instance.Compare(symbol1, symbol2);
         }
 
         private int CompareSymbolAndNamespaceSymbol(ISymbol symbol, INamespaceSymbol namespaceSymbol)
@@ -109,9 +129,9 @@ namespace Roslynator
             return 1;
         }
 
-        private static int CompareSymbolAndNamedTypeSymbol(ISymbol symbol, INamedTypeSymbol namedTypeSymbol)
+        private static int CompareSymbolAndNamedTypeSymbol(ISymbol symbol, INamedTypeSymbol typeSymbol)
         {
-            int diff = NamedTypeSymbolDefinitionComparer.Instance.Compare(symbol.ContainingType, namedTypeSymbol);
+            int diff = NamedTypeSymbolDefinitionComparer.Instance.Compare(symbol.ContainingType, typeSymbol);
 
             if (diff != 0)
                 return diff;

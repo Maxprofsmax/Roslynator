@@ -16,6 +16,29 @@ namespace Roslynator.Documentation
 
         public SymbolHierarchyItem Root { get; }
 
+        public static SymbolHierarchy Create(
+            IEnumerable<IAssemblySymbol> assemblies,
+            SymbolFilterOptions filter = null,
+            IComparer<INamedTypeSymbol> comparer = null)
+        {
+            Func<INamedTypeSymbol, bool> predicate;
+
+            if (filter != null)
+            {
+                predicate = t => !t.IsStatic
+                    && filter.IsVisibleType(t)
+                    && filter.IsVisibleNamespace(t.ContainingNamespace);
+            }
+            else
+            {
+                predicate = t => !t.IsStatic;
+            }
+
+            IEnumerable<INamedTypeSymbol> types = assemblies.SelectMany(a => a.GetTypes(predicate));
+
+            return Create(types, comparer);
+        }
+
         public static SymbolHierarchy Create(IEnumerable<INamedTypeSymbol> types, IComparer<INamedTypeSymbol> comparer = null)
         {
             if (comparer == null)
@@ -45,7 +68,7 @@ namespace Roslynator.Documentation
 
             SymbolHierarchyItem CreateHierarchyItem(INamedTypeSymbol baseType, SymbolHierarchyItem parent)
             {
-                var item = new SymbolHierarchyItem(baseType) { Parent = parent };
+                var item = new SymbolHierarchyItem(baseType, parent);
 
                 allTypes.Remove(baseType);
 

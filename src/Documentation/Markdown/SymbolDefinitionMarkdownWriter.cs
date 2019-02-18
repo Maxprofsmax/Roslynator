@@ -14,7 +14,7 @@ namespace Roslynator.Documentation.Markdown
 
         public SymbolDefinitionMarkdownWriter(
             MarkdownWriter writer,
-            SymbolFilterOptions filter,
+            SymbolFilterOptions filter = null,
             DefinitionListFormat format = null,
             IComparer<ISymbol> comparer = null,
             string rootDirectoryUrl = null) : base(filter, format, comparer)

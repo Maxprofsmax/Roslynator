@@ -19,7 +19,7 @@ namespace Roslynator.Documentation
         {
             Filter = filter ?? SymbolFilterOptions.Default;
             Format = format ?? DefinitionListFormat.Default;
-            Comparer = comparer ?? SymbolDefinitionComparer.Instance;
+            Comparer = comparer ?? SymbolDefinitionComparer.SystemNamespaceFirstInstance;
         }
 
         public SymbolFilterOptions Filter { get; }
@@ -119,7 +119,14 @@ namespace Roslynator.Documentation
 
         public abstract void WriteAttributeSeparator(bool assemblyAttribute);
 
-        internal SymbolDisplayAdditionalOptions GetAdditionalOptions()
+        public virtual SymbolDisplayTypeDeclarationOptions GetTypeDeclarationOptions()
+        {
+            return SymbolDisplayTypeDeclarationOptions.IncludeAccessibility
+                | SymbolDisplayTypeDeclarationOptions.IncludeModifiers
+                | SymbolDisplayTypeDeclarationOptions.BaseList;
+        }
+
+        private SymbolDisplayAdditionalOptions GetAdditionalOptions()
         {
             SymbolDisplayAdditionalOptions options = SymbolDisplayAdditionalOptions.IncludeParameterAttributes
                 | SymbolDisplayAdditionalOptions.IncludeAccessorAttributes;
@@ -745,7 +752,7 @@ namespace Roslynator.Documentation
             ImmutableArray<SymbolDisplayPart> parts = SymbolDefinitionDisplay.GetDisplayParts(
                 symbol,
                 format,
-                typeDeclarationOptions: SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
+                typeDeclarationOptions: GetTypeDeclarationOptions(),
                 additionalOptions: GetAdditionalOptions(),
                 shouldDisplayAttribute: Filter.IsVisibleAttribute);
 

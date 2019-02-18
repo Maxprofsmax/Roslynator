@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-
 namespace Roslynator.Documentation
 {
     //TODO: order by: namespace, accessibility, typekind, memberkind, name. group by: assembly, namespace, hierarchy
-    //TODO: DefinitionListFormat > SymbolDefinitionWriterOptions
     internal class DefinitionListFormat
     {
         public DefinitionListFormat(
@@ -12,6 +10,7 @@ namespace Roslynator.Documentation
             bool nestNamespaces = DefaultValues.NestNamespaces,
             bool emptyLineBetweenMembers = DefaultValues.EmptyLineBetweenMembers,
             bool omitContainingNamespace = DefaultValues.OmitContainingNamespace,
+            bool includeAttributes = DefaultValues.IncludeAttributes,
             bool includeAssemblyAttributes = DefaultValues.IncludeAssemblyAttributes,
             bool includeAttributeArguments = DefaultValues.IncludeAttributeArguments,
             bool formatAttributes = DefaultValues.FormatAttributes,
@@ -25,6 +24,7 @@ namespace Roslynator.Documentation
             NestNamespaces = nestNamespaces;
             EmptyLineBetweenMembers = emptyLineBetweenMembers;
             OmitContainingNamespace = omitContainingNamespace;
+            IncludeAttributes = includeAttributes;
             IncludeAssemblyAttributes = includeAssemblyAttributes;
             IncludeAttributeArguments = includeAttributeArguments;
             FormatAttributes = formatAttributes;
@@ -44,6 +44,8 @@ namespace Roslynator.Documentation
         public bool EmptyLineBetweenMembers { get; }
 
         public bool OmitContainingNamespace { get; }
+
+        public bool IncludeAttributes { get; }
 
         public bool IncludeAssemblyAttributes { get; }
 
@@ -69,6 +71,7 @@ namespace Roslynator.Documentation
             public const bool NestNamespaces = false;
             public const bool EmptyLineBetweenMembers = false;
             public const bool OmitContainingNamespace = false;
+            public const bool IncludeAttributes = true;
             public const bool IncludeAssemblyAttributes = false;
             public const bool IncludeAttributeArguments = true;
             public const bool FormatAttributes = false;

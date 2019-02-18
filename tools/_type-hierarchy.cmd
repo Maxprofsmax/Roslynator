@@ -13,7 +13,7 @@ set _msbuildPath="C:\Program Files\Microsoft Visual Studio\2017\Community\MSBuil
     Microsoft.CodeAnalysis.Workspaces.dll ^
     Microsoft.CodeAnalysis.CSharp.Workspaces.dll ^
  --omit-containing-namespace ^
- --output "roslyn.txt" ^
+ --output "hierarchy.txt" "hierarchy.xml" "hierarchy.md" ^
  --verbosity n ^
  --file-log "roslynator.log" ^
  --file-log-verbosity diag

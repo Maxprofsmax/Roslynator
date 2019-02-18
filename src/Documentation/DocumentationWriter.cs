@@ -462,7 +462,9 @@ namespace Roslynator.Documentation
             ImmutableArray<SymbolDisplayPart> parts = SymbolDefinitionDisplay.GetDisplayParts(
                 symbol,
                 SymbolDisplayFormats.FullDeclaration,
-                typeDeclarationOptions: SymbolDisplayTypeDeclarationOptions.IncludeAccessibility | SymbolDisplayTypeDeclarationOptions.IncludeModifiers,
+                typeDeclarationOptions: SymbolDisplayTypeDeclarationOptions.IncludeAccessibility
+                    | SymbolDisplayTypeDeclarationOptions.IncludeModifiers
+                    | SymbolDisplayTypeDeclarationOptions.BaseList,
                 additionalOptions: additionalOptions,
                 shouldDisplayAttribute: f => SymbolFilterOptions.Default.IsVisibleAttribute(f));
 

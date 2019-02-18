@@ -13,7 +13,7 @@ namespace Roslynator.Documentation
 
         public SymbolDefinitionTextWriter(
             TextWriter writer,
-            SymbolFilterOptions filter,
+            SymbolFilterOptions filter = null,
             DefinitionListFormat format = null,
             IComparer<ISymbol> comparer = null) : base(filter, format, comparer)
         {

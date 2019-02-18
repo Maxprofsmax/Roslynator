@@ -198,7 +198,9 @@ namespace Roslynator.Documentation
 
         public override void Write(ISymbol symbol, SymbolDisplayFormat format)
         {
-            WriteAttributes(symbol);
+            if (Format.IncludeAttributes)
+                WriteAttributes(symbol);
+
             base.Write(symbol, format);
         }
     }

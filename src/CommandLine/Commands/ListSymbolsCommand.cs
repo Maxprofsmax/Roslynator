@@ -42,21 +42,20 @@ namespace Roslynator.CommandLine
             AssemblyResolver.Register();
 
             var format = new DefinitionListFormat(
-                omitContainingNamespace: Options.OmitContainingNamespace,
                 indentChars: Options.IndentChars,
                 nestNamespaces: Options.NestNamespaces,
                 emptyLineBetweenMembers: Options.EmptyLineBetweenMembers,
+                omitContainingNamespace: Options.OmitContainingNamespace,
+                includeAttributes: true,
+                includeAssemblyAttributes: Options.IncludeAssemblyAttributes,
+                includeAttributeArguments: !Options.NoAttributeArguments,
                 formatAttributes: Options.FormatAttributes,
                 formatParameters: Options.FormatParameters,
                 formatBaseList: Options.FormatBaseList,
                 formatConstraints: Options.FormatConstraints,
-                includeAttributeArguments: !Options.NoAttributeArguments,
-                omitIEnumerable: true,
-                includeAssemblyAttributes: Options.IncludeAssemblyAttributes);
+                omitIEnumerable: true);
 
             ImmutableArray<Compilation> compilations = await GetCompilationsAsync(projectOrSolution, cancellationToken);
-
-            string text = null;
 
             SymbolDefinitionComparer comparer = SymbolDefinitionComparer.SystemNamespaceFirstInstance;
 
@@ -109,6 +108,8 @@ namespace Roslynator.CommandLine
 
             WriteLine();
 #endif
+            string text = null;
+
             using (var stringWriter = new StringWriter())
             {
                 SymbolDefinitionWriter writer = new SymbolDefinitionTextWriter(

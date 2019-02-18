@@ -15,7 +15,7 @@ namespace Roslynator.Documentation.Xml
 
         public SymbolDefinitionXmlWriter(
             XmlWriter writer,
-            SymbolFilterOptions filter,
+            SymbolFilterOptions filter = null,
             DefinitionListFormat format = null,
             SymbolDocumentationProvider documentationProvider = null,
             IComparer<ISymbol> comparer = null) : base(filter, format, comparer)
@@ -153,7 +153,9 @@ namespace Roslynator.Documentation.Xml
             Write(typeSymbol, GetTypeFormat(typeSymbol));
             WriteEndAttribute();
             WriteDocumentation(typeSymbol);
-            WriteAttributes(typeSymbol);
+
+            if (Format.IncludeAttributes)
+                WriteAttributes(typeSymbol);
         }
 
         public override void WriteEndType(INamedTypeSymbol typeSymbol)
@@ -215,7 +217,9 @@ namespace Roslynator.Documentation.Xml
             Write(symbol, GetMemberFormat(symbol));
             WriteEndAttribute();
             WriteDocumentation(symbol);
-            WriteAttributes(symbol);
+
+            if (Format.IncludeAttributes)
+                WriteAttributes(symbol);
         }
 
         public override void WriteEndMember(ISymbol symbol)
@@ -247,7 +251,9 @@ namespace Roslynator.Documentation.Xml
             WriteStartAttribute("def");
             Write(symbol, GetEnumMemberFormat(symbol));
             WriteEndAttribute();
-            WriteAttributes(symbol);
+
+            if (Format.IncludeAttributes)
+                WriteAttributes(symbol);
         }
 
         public override void WriteEndEnumMember(ISymbol symbol)

@@ -120,7 +120,7 @@ namespace Roslynator.CommandLine
                         .Distinct()
                         .Max(f => f.ToString().Length);
 
-                    foreach (ISymbol symbol in projectSymbols.OrderBy(f => f, SymbolDefinitionComparer.Instance))
+                    foreach (ISymbol symbol in projectSymbols.OrderBy(f => f, SymbolDefinitionComparer.SystemNamespaceFirstInstance))
                     {
                         WriteSymbol(symbol, Verbosity.Normal, indentation: "    ", addCommentId: true, padding: maxKindLength);
                     }
@@ -149,7 +149,7 @@ namespace Roslynator.CommandLine
 
                 WriteLine(Verbosity.Normal);
 
-                foreach (ISymbol symbol in allSymbols.OrderBy(f => f, SymbolDefinitionComparer.Instance))
+                foreach (ISymbol symbol in allSymbols.OrderBy(f => f, SymbolDefinitionComparer.SystemNamespaceFirstInstance))
                 {
                     WriteSymbol(symbol, Verbosity.Normal, colorNamespace: true, padding: maxKindLength);
                 }

@@ -6,19 +6,20 @@ using Microsoft.CodeAnalysis;
 
 namespace Roslynator.Documentation
 {
+    //TODO: IsExternal
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     internal class SymbolHierarchyItem
     {
         internal SymbolHierarchyItem lastChild;
         internal SymbolHierarchyItem next;
 
-        internal SymbolHierarchyItem(ISymbol symbol, SymbolHierarchyItem parent)
+        internal SymbolHierarchyItem(INamedTypeSymbol symbol, SymbolHierarchyItem parent)
         {
             Symbol = symbol;
             Parent = parent;
         }
 
-        public ISymbol Symbol { get; }
+        public INamedTypeSymbol Symbol { get; }
 
         public SymbolHierarchyItem Parent { get; }
 

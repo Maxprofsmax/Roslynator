@@ -46,9 +46,11 @@ namespace Roslynator.Documentation
             INamedTypeSymbol baseType = null;
             ImmutableArray<INamedTypeSymbol> interfaces = default;
 
-            if (typeSymbol != null)
+            if (typeSymbol != null
+                && (typeDeclarationOptions & SymbolDisplayTypeDeclarationOptions.BaseList) != 0)
             {
-                if (typeSymbol.TypeKind.Is(TypeKind.Class, TypeKind.Interface))
+                if ((typeDeclarationOptions & SymbolDisplayTypeDeclarationOptions.BaseType) != 0
+                    && typeSymbol.TypeKind.Is(TypeKind.Class, TypeKind.Interface))
                 {
                     baseType = typeSymbol.BaseType;
 
@@ -56,15 +58,18 @@ namespace Roslynator.Documentation
                         baseType = null;
                 }
 
-                interfaces = typeSymbol.Interfaces;
-
-                if (additionalOptions.HasOption(SymbolDisplayAdditionalOptions.OmitIEnumerable)
-                    && interfaces.Any(f => f.OriginalDefinition.SpecialType == SpecialType.System_Collections_Generic_IEnumerable_T))
+                if ((typeDeclarationOptions & SymbolDisplayTypeDeclarationOptions.Interfaces) != 0)
                 {
-                    interfaces = interfaces.RemoveAll(f => f.SpecialType == SpecialType.System_Collections_IEnumerable);
-                }
+                    interfaces = typeSymbol.Interfaces;
 
-                baseListCount = interfaces.Length;
+                    if (additionalOptions.HasOption(SymbolDisplayAdditionalOptions.OmitIEnumerable)
+                        && interfaces.Any(f => f.OriginalDefinition.SpecialType == SpecialType.System_Collections_Generic_IEnumerable_T))
+                    {
+                        interfaces = interfaces.RemoveAll(f => f.SpecialType == SpecialType.System_Collections_IEnumerable);
+                    }
+
+                    baseListCount = interfaces.Length;
+                }
 
                 if (baseType != null)
                     baseListCount++;

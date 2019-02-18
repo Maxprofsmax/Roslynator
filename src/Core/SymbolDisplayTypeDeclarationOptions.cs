@@ -10,5 +10,8 @@ namespace Roslynator
         None = 0,
         IncludeModifiers = 1,
         IncludeAccessibility = 2,
+        BaseType = 4,
+        Interfaces = 8,
+        BaseList = BaseType | Interfaces
     }
 }

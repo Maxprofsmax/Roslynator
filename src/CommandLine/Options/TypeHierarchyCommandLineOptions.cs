@@ -6,6 +6,7 @@ using Roslynator.Documentation;
 
 namespace Roslynator.CommandLine
 {
+    //TODO: --include-all-derived
 #if DEBUG
     [Verb("type-hierarchy", HelpText = "Displays hierarchy of types from the specified project or solution.")]
 #endif
@@ -61,7 +62,5 @@ namespace Roslynator.CommandLine
             HelpText = "Defines one or more visibility of a type or a member. Allowed values are public, internal or private.",
             MetaValue = "<VISIBILITY>")]
         public IEnumerable<string> Visibility { get; set; }
-
-        public bool IncludeAllChildren { get; set; }
     }
 }

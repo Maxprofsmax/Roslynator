@@ -49,9 +49,9 @@ namespace Roslynator.Documentation.Markdown
             base.WriteStartNamespace(namespaceSymbol);
         }
 
-        public override void WriteNamespace(INamespaceSymbol namespaceSymbol)
+        public override void WriteNamespace(INamespaceSymbol namespaceSymbol, SymbolDisplayFormat format = null)
         {
-            base.WriteNamespace(namespaceSymbol);
+            base.WriteNamespace(namespaceSymbol, format);
             WriteEndBulletItem();
         }
 
@@ -69,9 +69,9 @@ namespace Roslynator.Documentation.Markdown
             base.WriteStartType(typeSymbol);
         }
 
-        public override void WriteType(INamedTypeSymbol typeSymbol)
+        public override void WriteType(INamedTypeSymbol typeSymbol, SymbolDisplayFormat format = null, SymbolDisplayTypeDeclarationOptions? typeDeclarationOptions = null)
         {
-            base.WriteType(typeSymbol);
+            base.WriteType(typeSymbol, format, typeDeclarationOptions);
             WriteEndBulletItem();
         }
 
@@ -89,9 +89,9 @@ namespace Roslynator.Documentation.Markdown
             base.WriteStartMember(symbol);
         }
 
-        public override void WriteMember(ISymbol symbol)
+        public override void WriteMember(ISymbol symbol, SymbolDisplayFormat format = null)
         {
-            base.WriteMember(symbol);
+            base.WriteMember(symbol, format);
             WriteEndBulletItem();
         }
 
@@ -109,9 +109,9 @@ namespace Roslynator.Documentation.Markdown
             base.WriteStartEnumMember(symbol);
         }
 
-        public override void WriteEnumMember(ISymbol symbol)
+        public override void WriteEnumMember(ISymbol symbol, SymbolDisplayFormat format = null)
         {
-            base.WriteEnumMember(symbol);
+            base.WriteEnumMember(symbol, format);
             WriteEndBulletItem();
         }
 
@@ -125,12 +125,12 @@ namespace Roslynator.Documentation.Markdown
             _writer.WriteEndBulletItem();
         }
 
-        public override void Write(ISymbol symbol, SymbolDisplayFormat format)
+        public override void Write(ISymbol symbol, SymbolDisplayFormat format, SymbolDisplayTypeDeclarationOptions? typeDeclarationOptions = null, SymbolDisplayAdditionalOptions? additionalOptions = null)
         {
             if (RootDirectoryUrl != null)
                 _writer.WriteStartLink();
 
-            base.Write(symbol, format);
+            base.Write(symbol, format, typeDeclarationOptions, additionalOptions);
 
             if (RootDirectoryUrl != null)
             {

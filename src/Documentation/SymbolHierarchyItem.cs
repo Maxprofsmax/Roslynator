@@ -6,22 +6,23 @@ using Microsoft.CodeAnalysis;
 
 namespace Roslynator.Documentation
 {
-    //TODO: IsExternal
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     internal class SymbolHierarchyItem
     {
         internal SymbolHierarchyItem lastChild;
         internal SymbolHierarchyItem next;
 
-        internal SymbolHierarchyItem(INamedTypeSymbol symbol, SymbolHierarchyItem parent)
+        internal SymbolHierarchyItem(INamedTypeSymbol symbol, bool isExternal = false)
         {
             Symbol = symbol;
-            Parent = parent;
+            IsExternal = isExternal;
         }
 
         public INamedTypeSymbol Symbol { get; }
 
-        public SymbolHierarchyItem Parent { get; }
+        public SymbolHierarchyItem Parent { get; internal set; }
+
+        public bool IsExternal { get; }
 
         public int Depth
         {

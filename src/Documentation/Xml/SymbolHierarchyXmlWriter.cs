@@ -18,15 +18,5 @@ namespace Roslynator.Documentation.Xml
         }
 
         public override bool SupportsMultilineDefinitions => false;
-
-        public override SymbolDisplayFormat GetTypeFormat(INamedTypeSymbol typeSymbol)
-        {
-            return SymbolDefinitionDisplayFormats.HierarchyType;
-        }
-
-        public override SymbolDisplayTypeDeclarationOptions GetTypeDeclarationOptions()
-        {
-            return SymbolDisplayTypeDeclarationOptions.Interfaces;
-        }
     }
 }

@@ -36,6 +36,10 @@ namespace Roslynator.CommandLine
             HelpText = "Indicates whether parameters should be formatted on a multiple lines.")]
         public bool FormatParameters { get; set; }
 
+        [Option(longName: "hierarchy",
+            HelpText = "Indicates whether symbol should be displayed in hierarchy.")]
+        public bool Hierarchy { get; set; }
+
         [Option(longName: "ignored-attribute-names",
             HelpText = "Defines a list of attributes' names that should be ignored, i.e. if the symbol has an attribute with the specified name it will be ignored.",
             MetaValue = "<FULLY_QUALIFIED_METADATA_NAME>")]

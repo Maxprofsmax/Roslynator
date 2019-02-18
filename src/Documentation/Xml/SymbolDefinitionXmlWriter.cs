@@ -94,12 +94,12 @@ namespace Roslynator.Documentation.Xml
             WriteStartElement("namespace");
         }
 
-        public override void WriteNamespace(INamespaceSymbol namespaceSymbol)
+        public override void WriteNamespace(INamespaceSymbol namespaceSymbol, SymbolDisplayFormat format = null)
         {
             WriteStartAttribute("name");
 
             if (!namespaceSymbol.IsGlobalNamespace)
-                Write(namespaceSymbol, GetNamespaceFormat(namespaceSymbol));
+                Write(namespaceSymbol, format ?? GetNamespaceFormat(namespaceSymbol));
 
             WriteEndAttribute();
         }
@@ -147,10 +147,10 @@ namespace Roslynator.Documentation.Xml
             }
         }
 
-        public override void WriteType(INamedTypeSymbol typeSymbol)
+        public override void WriteType(INamedTypeSymbol typeSymbol, SymbolDisplayFormat format = null, SymbolDisplayTypeDeclarationOptions? typeDeclarationOptions = null)
         {
             WriteStartAttribute("def");
-            Write(typeSymbol, GetTypeFormat(typeSymbol));
+            Write(typeSymbol, format ?? GetTypeFormat(typeSymbol), typeDeclarationOptions);
             WriteEndAttribute();
             WriteDocumentation(typeSymbol);
 
@@ -211,10 +211,10 @@ namespace Roslynator.Documentation.Xml
             }
         }
 
-        public override void WriteMember(ISymbol symbol)
+        public override void WriteMember(ISymbol symbol, SymbolDisplayFormat format = null)
         {
             WriteStartAttribute("def");
-            Write(symbol, GetMemberFormat(symbol));
+            Write(symbol, format ?? GetMemberFormat(symbol));
             WriteEndAttribute();
             WriteDocumentation(symbol);
 
@@ -246,10 +246,10 @@ namespace Roslynator.Documentation.Xml
             WriteStartElement("field");
         }
 
-        public override void WriteEnumMember(ISymbol symbol)
+        public override void WriteEnumMember(ISymbol symbol, SymbolDisplayFormat format = null)
         {
             WriteStartAttribute("def");
-            Write(symbol, GetEnumMemberFormat(symbol));
+            Write(symbol, format ?? GetEnumMemberFormat(symbol));
             WriteEndAttribute();
 
             if (Format.IncludeAttributes)

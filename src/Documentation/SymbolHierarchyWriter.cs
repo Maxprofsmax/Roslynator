@@ -22,7 +22,10 @@ namespace Roslynator.Documentation
                 if (item.Symbol.HasAttribute(MetadataNames.System_ObsoleteAttribute))
                     _writer.Write("[deprecated] ");
 
-                _writer.WriteType(item.Symbol);
+                _writer.WriteType(
+                    item.Symbol,
+                    format: SymbolDefinitionDisplayFormats.HierarchyType,
+                    typeDeclarationOptions: (SymbolDisplayTypeDeclarationOptions?)SymbolDisplayTypeDeclarationOptions.Interfaces);
 
                 foreach (SymbolHierarchyItem derivedItem in item.Children())
                     WriteTypeHierarchy(derivedItem);

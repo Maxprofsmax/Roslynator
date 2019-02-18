@@ -8,6 +8,7 @@ namespace Roslynator.Documentation
         public DefinitionListFormat(
             string indentChars = DefaultValues.IndentChars,
             bool nestNamespaces = DefaultValues.NestNamespaces,
+            bool hierarchy = DefaultValues.Hierarchy,
             bool emptyLineBetweenMembers = DefaultValues.EmptyLineBetweenMembers,
             bool omitContainingNamespace = DefaultValues.OmitContainingNamespace,
             bool includeAttributes = DefaultValues.IncludeAttributes,
@@ -22,6 +23,7 @@ namespace Roslynator.Documentation
         {
             IndentChars = indentChars;
             NestNamespaces = nestNamespaces;
+            Hierarchy = hierarchy;
             EmptyLineBetweenMembers = emptyLineBetweenMembers;
             OmitContainingNamespace = omitContainingNamespace;
             IncludeAttributes = includeAttributes;
@@ -40,6 +42,8 @@ namespace Roslynator.Documentation
         public string IndentChars { get; }
 
         public bool NestNamespaces { get; }
+
+        public bool Hierarchy { get; }
 
         public bool EmptyLineBetweenMembers { get; }
 
@@ -69,6 +73,7 @@ namespace Roslynator.Documentation
             public const SymbolGroupFilter SymbolGroupFilter = Roslynator.SymbolGroupFilter.NamespaceOrTypeOrMember;
             public const string IndentChars = "  ";
             public const bool NestNamespaces = false;
+            public const bool Hierarchy = false;
             public const bool EmptyLineBetweenMembers = false;
             public const bool OmitContainingNamespace = false;
             public const bool IncludeAttributes = true;

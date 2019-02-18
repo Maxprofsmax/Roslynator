@@ -1,0 +1,597 @@
+﻿System.Object
+  System.Attribute
+    System.Composition.ExportAttribute
+      Microsoft.CodeAnalysis.CodeFixes.ExportCodeFixProviderAttribute
+      Microsoft.CodeAnalysis.CodeRefactorings.ExportCodeRefactoringProviderAttribute
+      Microsoft.CodeAnalysis.Host.Mef.ExportLanguageServiceAttribute
+      Microsoft.CodeAnalysis.Host.Mef.ExportLanguageServiceFactoryAttribute
+      Microsoft.CodeAnalysis.Host.Mef.ExportWorkspaceServiceAttribute
+      Microsoft.CodeAnalysis.Host.Mef.ExportWorkspaceServiceFactoryAttribute
+    Microsoft.CodeAnalysis.ExtensionOrderAttribute
+    Microsoft.CodeAnalysis.Diagnostics.DiagnosticAnalyzerAttribute
+  System.Delegate
+    System.MulticastDelegate
+      System.Threading.Tasks.Task Microsoft.CodeAnalysis.Editing.SymbolEditor.AsyncDeclarationEditAction(Microsoft.CodeAnalysis.Editing.DocumentEditor editor, Microsoft.CodeAnalysis.SyntaxNode declaration, System.Threading.CancellationToken cancellationToken)
+      void Microsoft.CodeAnalysis.Editing.SymbolEditor.DeclarationEditAction(Microsoft.CodeAnalysis.Editing.DocumentEditor editor, Microsoft.CodeAnalysis.SyntaxNode declaration)
+      System.Boolean Microsoft.CodeAnalysis.Host.HostWorkspaceServices.MetadataFilter(System.Collections.Generic.IReadOnlyDictionary<System.String, System.Object> metadata)
+  System.EventArgs
+    Microsoft.CodeAnalysis.DocumentActiveContextChangedEventArgs
+    Microsoft.CodeAnalysis.DocumentEventArgs
+    Microsoft.CodeAnalysis.WorkspaceChangeEventArgs
+    Microsoft.CodeAnalysis.WorkspaceDiagnosticEventArgs
+    Microsoft.CodeAnalysis.Diagnostics.AnalyzerLoadFailureEventArgs
+    Microsoft.CodeAnalysis.Text.TextChangeEventArgs
+  System.ValueType
+    System.Enum : IComparable, IConvertible, IFormattable
+      Microsoft.CodeAnalysis.Accessibility
+      Microsoft.CodeAnalysis.ApplyChangesKind
+      Microsoft.CodeAnalysis.AssemblyIdentityComparer.ComparisonResult
+      Microsoft.CodeAnalysis.AssemblyIdentityParts
+      Microsoft.CodeAnalysis.CandidateReason
+      Microsoft.CodeAnalysis.DiagnosticSeverity
+      Microsoft.CodeAnalysis.DocumentationMode
+      Microsoft.CodeAnalysis.LineVisibility
+      Microsoft.CodeAnalysis.LocationKind
+      Microsoft.CodeAnalysis.MetadataImageKind
+      Microsoft.CodeAnalysis.MethodKind
+      Microsoft.CodeAnalysis.NamespaceKind
+      Microsoft.CodeAnalysis.OperationKind
+      Microsoft.CodeAnalysis.OptimizationLevel
+      Microsoft.CodeAnalysis.OutputKind
+      Microsoft.CodeAnalysis.Platform
+      Microsoft.CodeAnalysis.PreservationMode
+      Microsoft.CodeAnalysis.RefKind
+      Microsoft.CodeAnalysis.ReportDiagnostic
+      Microsoft.CodeAnalysis.SourceCodeKind
+      Microsoft.CodeAnalysis.SpecialType
+      Microsoft.CodeAnalysis.SpeculativeBindingOption
+      Microsoft.CodeAnalysis.SymbolDisplayDelegateStyle
+      Microsoft.CodeAnalysis.SymbolDisplayExtensionMethodStyle
+      Microsoft.CodeAnalysis.SymbolDisplayGenericsOptions
+      Microsoft.CodeAnalysis.SymbolDisplayGlobalNamespaceStyle
+      Microsoft.CodeAnalysis.SymbolDisplayKindOptions
+      Microsoft.CodeAnalysis.SymbolDisplayLocalOptions
+      Microsoft.CodeAnalysis.SymbolDisplayMemberOptions
+      Microsoft.CodeAnalysis.SymbolDisplayMiscellaneousOptions
+      Microsoft.CodeAnalysis.SymbolDisplayParameterOptions
+      Microsoft.CodeAnalysis.SymbolDisplayPartKind
+      Microsoft.CodeAnalysis.SymbolDisplayPropertyStyle
+      Microsoft.CodeAnalysis.SymbolDisplayTypeQualificationStyle
+      Microsoft.CodeAnalysis.SymbolFilter
+      Microsoft.CodeAnalysis.SymbolKind
+      Microsoft.CodeAnalysis.SyntaxRemoveOptions
+      Microsoft.CodeAnalysis.SyntaxWalkerDepth
+      Microsoft.CodeAnalysis.TypeKind
+      Microsoft.CodeAnalysis.TypeParameterKind
+      Microsoft.CodeAnalysis.TypedConstantKind
+      Microsoft.CodeAnalysis.VarianceKind
+      Microsoft.CodeAnalysis.WorkspaceChangeKind
+      Microsoft.CodeAnalysis.WorkspaceDiagnosticKind
+      Microsoft.CodeAnalysis.CSharp.LanguageVersion
+      Microsoft.CodeAnalysis.CSharp.SyntaxKind
+      Microsoft.CodeAnalysis.CSharp.Formatting.BinaryOperatorSpacingOptions
+      Microsoft.CodeAnalysis.CSharp.Formatting.LabelPositionOptions
+      Microsoft.CodeAnalysis.CSharp.Syntax.XmlNameAttributeElementKind
+      Microsoft.CodeAnalysis.CodeFixes.FixAllScope
+      Microsoft.CodeAnalysis.Diagnostics.AnalyzerLoadFailureEventArgs.FailureErrorCode
+      Microsoft.CodeAnalysis.Diagnostics.GeneratedCodeAnalysisFlags
+      Microsoft.CodeAnalysis.Differencing.EditKind
+      Microsoft.CodeAnalysis.Editing.DeclarationKind
+      Microsoft.CodeAnalysis.Editing.OperatorKind
+      Microsoft.CodeAnalysis.Editing.SpecialTypeConstraintKind
+      Microsoft.CodeAnalysis.Emit.DebugInformationFormat
+      Microsoft.CodeAnalysis.Emit.InstrumentationKind
+      Microsoft.CodeAnalysis.Emit.SemanticEditKind
+      Microsoft.CodeAnalysis.Formatting.FormattingOptions.IndentStyle
+      Microsoft.CodeAnalysis.Rename.RenameEntityKind
+      Microsoft.CodeAnalysis.Semantics.ArgumentKind
+      Microsoft.CodeAnalysis.Semantics.BinaryOperandsKind
+      Microsoft.CodeAnalysis.Semantics.BinaryOperationKind
+      Microsoft.CodeAnalysis.Semantics.BranchKind
+      Microsoft.CodeAnalysis.Semantics.CaseKind
+      Microsoft.CodeAnalysis.Semantics.ConversionKind
+      Microsoft.CodeAnalysis.Semantics.InstanceReferenceKind
+      Microsoft.CodeAnalysis.Semantics.LoopKind
+      Microsoft.CodeAnalysis.Semantics.SimpleBinaryOperationKind
+      Microsoft.CodeAnalysis.Semantics.SimpleUnaryOperationKind
+      Microsoft.CodeAnalysis.Semantics.SyntheticLocalKind
+      Microsoft.CodeAnalysis.Semantics.UnaryOperandKind
+      Microsoft.CodeAnalysis.Semantics.UnaryOperationKind
+      Microsoft.CodeAnalysis.Text.SourceHashAlgorithm
+      Roslynator.Visibility
+      Roslynator.CSharp.CommentKinds
+      Roslynator.CSharp.ModifierKinds
+      Roslynator.CSharp.NullCheckStyles
+      Roslynator.CSharp.PreprocessorDirectiveKinds
+    Microsoft.CodeAnalysis.ChildSyntaxList : IEnumerable<SyntaxNodeOrToken>, IEquatable<ChildSyntaxList>, IReadOnlyCollection<SyntaxNodeOrToken>, IReadOnlyList<SyntaxNodeOrToken>
+    Microsoft.CodeAnalysis.ChildSyntaxList.Enumerator
+    Microsoft.CodeAnalysis.ChildSyntaxList.Reversed : IEnumerable<SyntaxNodeOrToken>, IEquatable<ChildSyntaxList.Reversed>
+    Microsoft.CodeAnalysis.ChildSyntaxList.Reversed.Enumerator
+    Microsoft.CodeAnalysis.CommandLineAnalyzerReference : IEquatable<CommandLineAnalyzerReference>
+    Microsoft.CodeAnalysis.CommandLineReference : IEquatable<CommandLineReference>
+    Microsoft.CodeAnalysis.CommandLineSourceFile
+    Microsoft.CodeAnalysis.FileLinePositionSpan : IEquatable<FileLinePositionSpan>
+    Microsoft.CodeAnalysis.MetadataReferenceProperties : IEquatable<MetadataReferenceProperties>
+    Microsoft.CodeAnalysis.Optional<T>
+    Microsoft.CodeAnalysis.PreprocessingSymbolInfo : IEquatable<PreprocessingSymbolInfo>
+    Microsoft.CodeAnalysis.ProjectChanges
+    Microsoft.CodeAnalysis.SeparatedSyntaxList<TNode> : IEnumerable<TNode>, IEquatable<SeparatedSyntaxList<TNode>>, IReadOnlyCollection<TNode>, IReadOnlyList<TNode>
+    Microsoft.CodeAnalysis.SeparatedSyntaxList<TNode>.Enumerator
+    Microsoft.CodeAnalysis.SolutionChanges
+    Microsoft.CodeAnalysis.SubsystemVersion : IEquatable<SubsystemVersion>
+    Microsoft.CodeAnalysis.SymbolDisplayPart
+    Microsoft.CodeAnalysis.SymbolInfo : IEquatable<SymbolInfo>
+    Microsoft.CodeAnalysis.SyntaxList<TNode> : IEnumerable<TNode>, IEquatable<SyntaxList<TNode>>, IReadOnlyCollection<TNode>, IReadOnlyList<TNode>
+    Microsoft.CodeAnalysis.SyntaxList<TNode>.Enumerator
+    Microsoft.CodeAnalysis.SyntaxNodeOrToken : IEquatable<SyntaxNodeOrToken>
+    Microsoft.CodeAnalysis.SyntaxNodeOrTokenList : IEnumerable<SyntaxNodeOrToken>, IEquatable<SyntaxNodeOrTokenList>, IReadOnlyCollection<SyntaxNodeOrToken>
+    Microsoft.CodeAnalysis.SyntaxNodeOrTokenList.Enumerator : IDisposable, IEnumerator, IEnumerator<SyntaxNodeOrToken>
+    Microsoft.CodeAnalysis.SyntaxToken : IEquatable<SyntaxToken>
+    Microsoft.CodeAnalysis.SyntaxTokenList : IEnumerable<SyntaxToken>, IEquatable<SyntaxTokenList>, IReadOnlyCollection<SyntaxToken>, IReadOnlyList<SyntaxToken>
+    Microsoft.CodeAnalysis.SyntaxTokenList.Enumerator
+    Microsoft.CodeAnalysis.SyntaxTokenList.Reversed : IEnumerable<SyntaxToken>, IEquatable<SyntaxTokenList.Reversed>
+    Microsoft.CodeAnalysis.SyntaxTokenList.Reversed.Enumerator
+    Microsoft.CodeAnalysis.SyntaxTrivia : IEquatable<SyntaxTrivia>
+    Microsoft.CodeAnalysis.SyntaxTriviaList : IEnumerable<SyntaxTrivia>, IEquatable<SyntaxTriviaList>, IReadOnlyCollection<SyntaxTrivia>, IReadOnlyList<SyntaxTrivia>
+    Microsoft.CodeAnalysis.SyntaxTriviaList.Enumerator
+    Microsoft.CodeAnalysis.SyntaxTriviaList.Reversed : IEnumerable<SyntaxTrivia>, IEquatable<SyntaxTriviaList.Reversed>
+    Microsoft.CodeAnalysis.SyntaxTriviaList.Reversed.Enumerator
+    Microsoft.CodeAnalysis.TypeInfo : IEquatable<TypeInfo>
+    Microsoft.CodeAnalysis.TypedConstant : IEquatable<TypedConstant>
+    Microsoft.CodeAnalysis.VersionStamp : IEquatable<VersionStamp>, IObjectWritable
+    Microsoft.CodeAnalysis.CSharp.AwaitExpressionInfo : IEquatable<AwaitExpressionInfo>
+    Microsoft.CodeAnalysis.CSharp.Conversion : IEquatable<Conversion>
+    Microsoft.CodeAnalysis.CSharp.ForEachStatementInfo : IEquatable<ForEachStatementInfo>
+    Microsoft.CodeAnalysis.CSharp.QueryClauseInfo : IEquatable<QueryClauseInfo>
+    Microsoft.CodeAnalysis.Classification.ClassifiedSpan : IEquatable<ClassifiedSpan>
+    Microsoft.CodeAnalysis.CodeFixes.CodeFixContext
+    Microsoft.CodeAnalysis.CodeRefactorings.CodeRefactoringContext
+    Microsoft.CodeAnalysis.Diagnostics.CodeBlockAnalysisContext
+    Microsoft.CodeAnalysis.Diagnostics.CompilationAnalysisContext
+    Microsoft.CodeAnalysis.Diagnostics.OperationAnalysisContext
+    Microsoft.CodeAnalysis.Diagnostics.OperationBlockAnalysisContext
+    Microsoft.CodeAnalysis.Diagnostics.SemanticModelAnalysisContext
+    Microsoft.CodeAnalysis.Diagnostics.SymbolAnalysisContext
+    Microsoft.CodeAnalysis.Diagnostics.SyntaxNodeAnalysisContext
+    Microsoft.CodeAnalysis.Diagnostics.SyntaxTreeAnalysisContext
+    Microsoft.CodeAnalysis.Differencing.Edit<TNode> : IEquatable<Edit<TNode>>
+    Microsoft.CodeAnalysis.Editing.DeclarationModifiers : IEquatable<DeclarationModifiers>
+    Microsoft.CodeAnalysis.Emit.EditAndContinueMethodDebugInformation
+    Microsoft.CodeAnalysis.Emit.SemanticEdit : IEquatable<SemanticEdit>
+    Microsoft.CodeAnalysis.FindSymbols.ReferenceLocation : IComparable<ReferenceLocation>, IEquatable<ReferenceLocation>
+    Microsoft.CodeAnalysis.FindSymbols.SymbolCallerInfo
+    Microsoft.CodeAnalysis.Options.OptionKey : IEquatable<OptionKey>
+    Microsoft.CodeAnalysis.Text.LinePosition : IComparable<LinePosition>, IEquatable<LinePosition>
+    Microsoft.CodeAnalysis.Text.LinePositionSpan : IEquatable<LinePositionSpan>
+    Microsoft.CodeAnalysis.Text.TextChange : IEquatable<TextChange>
+    Microsoft.CodeAnalysis.Text.TextChangeRange : IEquatable<TextChangeRange>
+    Microsoft.CodeAnalysis.Text.TextLine : IEquatable<TextLine>
+    Microsoft.CodeAnalysis.Text.TextLineCollection.Enumerator : IDisposable, IEnumerator, IEnumerator<TextLine>
+    Microsoft.CodeAnalysis.Text.TextSpan : IComparable<TextSpan>, IEquatable<TextSpan>
+    Roslynator.ExtensionMethodSymbolInfo : IEquatable<ExtensionMethodSymbolInfo>
+    Roslynator.MetadataName : IEquatable<MetadataName>
+    Roslynator.SeparatedSyntaxListSelection<TNode>.Enumerator
+    Roslynator.SyntaxListSelection<TNode>.Enumerator
+    Roslynator.CSharp.ExpressionChain : IEnumerable<ExpressionSyntax>, IEquatable<ExpressionChain>
+    Roslynator.CSharp.ExpressionChain.Enumerator
+    Roslynator.CSharp.ExpressionChain.Reversed : IEnumerable<ExpressionSyntax>, IEquatable<ExpressionChain.Reversed>
+    Roslynator.CSharp.ExpressionChain.Reversed.Enumerator
+    Roslynator.CSharp.IfStatementCascade : IEnumerable<IfStatementOrElseClause>, IEquatable<IfStatementCascade>
+    Roslynator.CSharp.IfStatementCascade.Enumerator
+    Roslynator.CSharp.IfStatementCascadeInfo : IEquatable<IfStatementCascadeInfo>
+    Roslynator.CSharp.IfStatementOrElseClause : IEquatable<IfStatementOrElseClause>
+    Roslynator.CSharp.Syntax.AsExpressionInfo : IEquatable<AsExpressionInfo>
+    Roslynator.CSharp.Syntax.AssignmentExpressionInfo : IEquatable<AssignmentExpressionInfo>
+    Roslynator.CSharp.Syntax.BinaryExpressionInfo : IEquatable<BinaryExpressionInfo>
+    Roslynator.CSharp.Syntax.ConditionalExpressionInfo : IEquatable<ConditionalExpressionInfo>
+    Roslynator.CSharp.Syntax.GenericInfo : IEquatable<GenericInfo>
+    Roslynator.CSharp.Syntax.IsExpressionInfo : IEquatable<IsExpressionInfo>
+    Roslynator.CSharp.Syntax.LocalDeclarationStatementInfo : IEquatable<LocalDeclarationStatementInfo>
+    Roslynator.CSharp.Syntax.MemberDeclarationListInfo : IEquatable<MemberDeclarationListInfo>, IReadOnlyList<MemberDeclarationSyntax>
+    Roslynator.CSharp.Syntax.ModifierListInfo : IEquatable<ModifierListInfo>
+    Roslynator.CSharp.Syntax.NullCheckExpressionInfo : IEquatable<NullCheckExpressionInfo>
+    Roslynator.CSharp.Syntax.RegionInfo : IEquatable<RegionInfo>
+    Roslynator.CSharp.Syntax.SimpleAssignmentExpressionInfo : IEquatable<SimpleAssignmentExpressionInfo>
+    Roslynator.CSharp.Syntax.SimpleAssignmentStatementInfo : IEquatable<SimpleAssignmentStatementInfo>
+    Roslynator.CSharp.Syntax.SimpleIfElseInfo : IEquatable<SimpleIfElseInfo>
+    Roslynator.CSharp.Syntax.SimpleIfStatementInfo : IEquatable<SimpleIfStatementInfo>
+    Roslynator.CSharp.Syntax.SimpleMemberInvocationExpressionInfo : IEquatable<SimpleMemberInvocationExpressionInfo>
+    Roslynator.CSharp.Syntax.SimpleMemberInvocationStatementInfo : IEquatable<SimpleMemberInvocationStatementInfo>
+    Roslynator.CSharp.Syntax.SingleLocalDeclarationStatementInfo : IEquatable<SingleLocalDeclarationStatementInfo>
+    Roslynator.CSharp.Syntax.SingleParameterLambdaExpressionInfo : IEquatable<SingleParameterLambdaExpressionInfo>
+    Roslynator.CSharp.Syntax.StatementListInfo : IEquatable<StatementListInfo>, IReadOnlyList<StatementSyntax>
+    Roslynator.CSharp.Syntax.StringConcatenationExpressionInfo : IEquatable<StringConcatenationExpressionInfo>
+    Roslynator.CSharp.Syntax.StringLiteralExpressionInfo : IEquatable<StringLiteralExpressionInfo>
+    Roslynator.CSharp.Syntax.UsingDirectiveListInfo : IEquatable<UsingDirectiveListInfo>, IReadOnlyList<UsingDirectiveSyntax>
+    Roslynator.CSharp.Syntax.XmlElementInfo : IEquatable<XmlElementInfo>
+    Roslynator.Text.TextLineCollectionSelection.Enumerator
+  System.Collections.Generic.EqualityComparer<T> : IEqualityComparer, IEqualityComparer<T>
+    Roslynator.MetadataNameEqualityComparer<TSymbol>
+  Microsoft.CodeAnalysis.AdditionalText
+  Microsoft.CodeAnalysis.AssemblyIdentity : IEquatable<AssemblyIdentity>
+  Microsoft.CodeAnalysis.AssemblyIdentityComparer
+    Microsoft.CodeAnalysis.DesktopAssemblyIdentityComparer
+  Microsoft.CodeAnalysis.AttributeData
+  Microsoft.CodeAnalysis.CommandLineArguments
+    Microsoft.CodeAnalysis.CSharp.CSharpCommandLineArguments
+  Microsoft.CodeAnalysis.CommandLineParser
+    Microsoft.CodeAnalysis.CSharp.CSharpCommandLineParser
+  Microsoft.CodeAnalysis.Compilation
+    Microsoft.CodeAnalysis.CSharp.CSharpCompilation
+  Microsoft.CodeAnalysis.CompilationOptions
+    Microsoft.CodeAnalysis.CSharp.CSharpCompilationOptions : IEquatable<CSharpCompilationOptions>
+  Microsoft.CodeAnalysis.ControlFlowAnalysis
+  Microsoft.CodeAnalysis.CustomModifier : ICustomModifier
+  Microsoft.CodeAnalysis.DataFlowAnalysis
+  Microsoft.CodeAnalysis.Diagnostic : IEquatable<Diagnostic>, IFormattable
+  Microsoft.CodeAnalysis.DiagnosticDescriptor : IEquatable<DiagnosticDescriptor>
+  Microsoft.CodeAnalysis.DiagnosticFormatter
+    Microsoft.CodeAnalysis.CSharp.CSharpDiagnosticFormatter
+  Microsoft.CodeAnalysis.DllImportData : IPlatformInvokeInformation
+  Microsoft.CodeAnalysis.DocumentId : IEquatable<DocumentId>, IObjectWritable
+  Microsoft.CodeAnalysis.DocumentInfo
+  Microsoft.CodeAnalysis.DocumentationProvider
+    Microsoft.CodeAnalysis.XmlDocumentationProvider
+  Microsoft.CodeAnalysis.EmbeddedText
+  Microsoft.CodeAnalysis.LocalizableString : IEquatable<LocalizableString>, IFormattable
+    Microsoft.CodeAnalysis.LocalizableResourceString : IObjectWritable
+  Microsoft.CodeAnalysis.Location
+  Microsoft.CodeAnalysis.Metadata : IDisposable
+    Microsoft.CodeAnalysis.AssemblyMetadata
+    Microsoft.CodeAnalysis.ModuleMetadata
+  Microsoft.CodeAnalysis.MetadataId
+  Microsoft.CodeAnalysis.MetadataReference
+    Microsoft.CodeAnalysis.CompilationReference : IEquatable<CompilationReference>
+    Microsoft.CodeAnalysis.PortableExecutableReference
+    Microsoft.CodeAnalysis.UnresolvedMetadataReference
+  Microsoft.CodeAnalysis.MetadataReferenceResolver
+  Microsoft.CodeAnalysis.ParseOptions
+    Microsoft.CodeAnalysis.CSharp.CSharpParseOptions : IEquatable<CSharpParseOptions>
+  Microsoft.CodeAnalysis.Project
+  Microsoft.CodeAnalysis.ProjectDependencyGraph
+  Microsoft.CodeAnalysis.ProjectId : IEquatable<ProjectId>, IObjectWritable
+  Microsoft.CodeAnalysis.ProjectInfo
+  Microsoft.CodeAnalysis.ProjectReference : IEquatable<ProjectReference>
+  Microsoft.CodeAnalysis.ResourceDescription : IFileReference
+  Microsoft.CodeAnalysis.RuleSet
+  Microsoft.CodeAnalysis.RuleSetInclude
+  Microsoft.CodeAnalysis.ScriptCompilationInfo
+    Microsoft.CodeAnalysis.CSharp.CSharpScriptCompilationInfo
+  Microsoft.CodeAnalysis.SemanticModel
+  Microsoft.CodeAnalysis.Solution
+  Microsoft.CodeAnalysis.SolutionId : IEquatable<SolutionId>, IObjectWritable
+  Microsoft.CodeAnalysis.SolutionInfo
+  Microsoft.CodeAnalysis.SourceReferenceResolver
+    Microsoft.CodeAnalysis.SourceFileResolver : IEquatable<SourceFileResolver>
+  Microsoft.CodeAnalysis.StrongNameProvider
+    Microsoft.CodeAnalysis.DesktopStrongNameProvider
+  Microsoft.CodeAnalysis.SymbolDisplayFormat
+  Microsoft.CodeAnalysis.SymbolVisitor
+  Microsoft.CodeAnalysis.SymbolVisitor<TResult>
+  Microsoft.CodeAnalysis.SyntaxAnnotation : IEquatable<SyntaxAnnotation>, IObjectWritable
+  Microsoft.CodeAnalysis.SyntaxNode
+    Microsoft.CodeAnalysis.CSharp.CSharpSyntaxNode : IMessageSerializable
+      Microsoft.CodeAnalysis.CSharp.Syntax.AccessorDeclarationSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.AccessorListSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.AnonymousObjectMemberDeclaratorSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.ArgumentSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.ArrayRankSpecifierSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.ArrowExpressionClauseSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.AttributeArgumentListSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.AttributeArgumentSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.AttributeListSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.AttributeSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.AttributeTargetSpecifierSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.BaseArgumentListSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ArgumentListSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.BracketedArgumentListSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.BaseCrefParameterListSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.CrefBracketedParameterListSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.CrefParameterListSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.BaseListSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.BaseParameterListSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.BracketedParameterListSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ParameterListSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.BaseTypeSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.SimpleBaseTypeSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.CatchClauseSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.CatchDeclarationSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.CatchFilterClauseSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.CompilationUnitSyntax : ICompilationUnitSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.ConstructorInitializerSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.CrefParameterSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.CrefSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.MemberCrefSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.ConversionOperatorMemberCrefSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.IndexerMemberCrefSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.NameMemberCrefSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.OperatorMemberCrefSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.QualifiedCrefSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.TypeCrefSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.ElseClauseSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.EqualsValueClauseSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.ExplicitInterfaceSpecifierSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.AnonymousFunctionExpressionSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.AnonymousMethodExpressionSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.LambdaExpressionSyntax
+            Microsoft.CodeAnalysis.CSharp.Syntax.ParenthesizedLambdaExpressionSyntax
+            Microsoft.CodeAnalysis.CSharp.Syntax.SimpleLambdaExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.AnonymousObjectCreationExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ArrayCreationExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.AssignmentExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.AwaitExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.BinaryExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.CastExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.CheckedExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ConditionalAccessExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ConditionalExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.DeclarationExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.DefaultExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ElementAccessExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ElementBindingExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ImplicitArrayCreationExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ImplicitElementAccessSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.InitializerExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.InstanceExpressionSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.BaseExpressionSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.ThisExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.InterpolatedStringExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.InvocationExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.IsPatternExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.LiteralExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.MakeRefExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.MemberAccessExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.MemberBindingExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ObjectCreationExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.OmittedArraySizeExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ParenthesizedExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.PostfixUnaryExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.PrefixUnaryExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.QueryExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.RefExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.RefTypeExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.RefValueExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.SizeOfExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.StackAllocArrayCreationExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ThrowExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.TupleExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.TypeOfExpressionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.TypeSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.ArrayTypeSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.NameSyntax
+            Microsoft.CodeAnalysis.CSharp.Syntax.AliasQualifiedNameSyntax
+            Microsoft.CodeAnalysis.CSharp.Syntax.QualifiedNameSyntax
+            Microsoft.CodeAnalysis.CSharp.Syntax.SimpleNameSyntax
+              Microsoft.CodeAnalysis.CSharp.Syntax.GenericNameSyntax
+              Microsoft.CodeAnalysis.CSharp.Syntax.IdentifierNameSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.NullableTypeSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.OmittedTypeArgumentSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.PointerTypeSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.PredefinedTypeSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.RefTypeSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.TupleTypeSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.ExternAliasDirectiveSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.FinallyClauseSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.InterpolatedStringContentSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.InterpolatedStringTextSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.InterpolationSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.InterpolationAlignmentClauseSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.InterpolationFormatClauseSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.JoinIntoClauseSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.MemberDeclarationSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.BaseFieldDeclarationSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.EventFieldDeclarationSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.FieldDeclarationSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.BaseMethodDeclarationSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.ConstructorDeclarationSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.ConversionOperatorDeclarationSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.DestructorDeclarationSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.MethodDeclarationSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.OperatorDeclarationSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.BasePropertyDeclarationSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.EventDeclarationSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.IndexerDeclarationSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.PropertyDeclarationSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.BaseTypeDeclarationSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.EnumDeclarationSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.TypeDeclarationSyntax
+            Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax
+            Microsoft.CodeAnalysis.CSharp.Syntax.InterfaceDeclarationSyntax
+            Microsoft.CodeAnalysis.CSharp.Syntax.StructDeclarationSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.DelegateDeclarationSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.EnumMemberDeclarationSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.GlobalStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.IncompleteMemberSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.NamespaceDeclarationSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.NameColonSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.NameEqualsSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.OrderingSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.ParameterSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.PatternSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ConstantPatternSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.DeclarationPatternSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.QueryBodySyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.QueryClauseSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.FromClauseSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.JoinClauseSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.LetClauseSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.OrderByClauseSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.WhereClauseSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.QueryContinuationSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.SelectOrGroupClauseSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.GroupClauseSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.SelectClauseSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.StatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.BlockSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.BreakStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.CheckedStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.CommonForEachStatementSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.ForEachStatementSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.ForEachVariableStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ContinueStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.DoStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.EmptyStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ExpressionStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.FixedStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ForStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.GotoStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.IfStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.LabeledStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.LocalDeclarationStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.LocalFunctionStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.LockStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ReturnStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.SwitchStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ThrowStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.TryStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.UnsafeStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.UsingStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.WhileStatementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.YieldStatementSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.StructuredTriviaSyntax : IStructuredTriviaSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.DirectiveTriviaSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.BadDirectiveTriviaSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.BranchingDirectiveTriviaSyntax
+            Microsoft.CodeAnalysis.CSharp.Syntax.ConditionalDirectiveTriviaSyntax
+              Microsoft.CodeAnalysis.CSharp.Syntax.ElifDirectiveTriviaSyntax
+              Microsoft.CodeAnalysis.CSharp.Syntax.IfDirectiveTriviaSyntax
+            Microsoft.CodeAnalysis.CSharp.Syntax.ElseDirectiveTriviaSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.DefineDirectiveTriviaSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.EndIfDirectiveTriviaSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.EndRegionDirectiveTriviaSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.ErrorDirectiveTriviaSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.LineDirectiveTriviaSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.LoadDirectiveTriviaSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.PragmaChecksumDirectiveTriviaSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.PragmaWarningDirectiveTriviaSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.ReferenceDirectiveTriviaSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.RegionDirectiveTriviaSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.ShebangDirectiveTriviaSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.UndefDirectiveTriviaSyntax
+          Microsoft.CodeAnalysis.CSharp.Syntax.WarningDirectiveTriviaSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.DocumentationCommentTriviaSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.SkippedTokensTriviaSyntax : ISkippedTokensTriviaSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.SwitchLabelSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.CasePatternSwitchLabelSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.CaseSwitchLabelSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.DefaultSwitchLabelSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.SwitchSectionSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.TupleElementSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.TypeArgumentListSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterConstraintClauseSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterConstraintSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ClassOrStructConstraintSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ConstructorConstraintSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.TypeConstraintSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterListSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.UsingDirectiveSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.VariableDeclarationSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.VariableDeclaratorSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.VariableDesignationSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.DiscardDesignationSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.ParenthesizedVariableDesignationSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.SingleVariableDesignationSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.WhenClauseSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.XmlAttributeSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.XmlCrefAttributeSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.XmlNameAttributeSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.XmlTextAttributeSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.XmlElementEndTagSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.XmlElementStartTagSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.XmlNameSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.XmlNodeSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.XmlCDataSectionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.XmlCommentSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.XmlElementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.XmlEmptyElementSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.XmlProcessingInstructionSyntax
+        Microsoft.CodeAnalysis.CSharp.Syntax.XmlTextSyntax
+      Microsoft.CodeAnalysis.CSharp.Syntax.XmlPrefixSyntax
+  Microsoft.CodeAnalysis.SyntaxReference
+  Microsoft.CodeAnalysis.SyntaxTree
+    Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree
+  Microsoft.CodeAnalysis.SyntaxWalker
+  Microsoft.CodeAnalysis.TextAndVersion
+  Microsoft.CodeAnalysis.TextDocument
+    Microsoft.CodeAnalysis.Document
+  Microsoft.CodeAnalysis.TextLoader
+  Microsoft.CodeAnalysis.Workspace : IDisposable
+    Microsoft.CodeAnalysis.AdhocWorkspace
+  Microsoft.CodeAnalysis.WorkspaceDiagnostic
+    Microsoft.CodeAnalysis.DocumentDiagnostic
+    Microsoft.CodeAnalysis.ProjectDiagnostic
+  Microsoft.CodeAnalysis.WorkspaceRegistration
+  Microsoft.CodeAnalysis.XmlReferenceResolver
+    Microsoft.CodeAnalysis.XmlFileResolver
+  Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor
+    Microsoft.CodeAnalysis.CSharp.CSharpSyntaxWalker
+  Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor<TResult>
+    Microsoft.CodeAnalysis.CSharp.CSharpSyntaxRewriter
+  Microsoft.CodeAnalysis.CodeActions.CodeAction
+    Microsoft.CodeAnalysis.CodeActions.CodeActionWithOptions
+  Microsoft.CodeAnalysis.CodeActions.CodeActionOperation
+    Microsoft.CodeAnalysis.CodeActions.ApplyChangesOperation
+    Microsoft.CodeAnalysis.CodeActions.OpenDocumentOperation
+    Microsoft.CodeAnalysis.CodeActions.PreviewOperation
+  Microsoft.CodeAnalysis.CodeFixes.CodeFixProvider
+  Microsoft.CodeAnalysis.CodeFixes.FixAllContext
+  Microsoft.CodeAnalysis.CodeFixes.FixAllContext.DiagnosticProvider
+  Microsoft.CodeAnalysis.CodeFixes.FixAllProvider
+  Microsoft.CodeAnalysis.CodeRefactorings.CodeRefactoringProvider
+  Microsoft.CodeAnalysis.CodeStyle.CodeStyleOption<T> : ICodeStyleOption, IEquatable<CodeStyleOption<T>>
+  Microsoft.CodeAnalysis.CodeStyle.CodeStyleOptions
+  Microsoft.CodeAnalysis.CodeStyle.NotificationOption
+  Microsoft.CodeAnalysis.Diagnostics.AnalysisContext
+  Microsoft.CodeAnalysis.Diagnostics.AnalysisResult
+  Microsoft.CodeAnalysis.Diagnostics.AnalyzerOptions
+  Microsoft.CodeAnalysis.Diagnostics.AnalyzerReference
+    Microsoft.CodeAnalysis.Diagnostics.AnalyzerFileReference : IEquatable<AnalyzerReference>
+    Microsoft.CodeAnalysis.Diagnostics.AnalyzerImageReference
+    Microsoft.CodeAnalysis.Diagnostics.UnresolvedAnalyzerReference
+  Microsoft.CodeAnalysis.Diagnostics.CodeBlockStartAnalysisContext<TLanguageKindEnum>
+  Microsoft.CodeAnalysis.Diagnostics.CompilationStartAnalysisContext
+  Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzers
+  Microsoft.CodeAnalysis.Diagnostics.CompilationWithAnalyzersOptions
+  Microsoft.CodeAnalysis.Diagnostics.DiagnosticAnalyzer
+  Microsoft.CodeAnalysis.Diagnostics.OperationBlockStartAnalysisContext
+  Microsoft.CodeAnalysis.Diagnostics.SourceTextValueProvider<TValue>
+  Microsoft.CodeAnalysis.Diagnostics.SuppressionInfo
+  Microsoft.CodeAnalysis.Diagnostics.SyntaxTreeValueProvider<TValue>
+  Microsoft.CodeAnalysis.Diagnostics.Telemetry.AnalyzerTelemetryInfo
+  Microsoft.CodeAnalysis.Differencing.EditScript<TNode>
+  Microsoft.CodeAnalysis.Differencing.Match<TNode>
+  Microsoft.CodeAnalysis.Differencing.TreeComparer<TNode>
+  Microsoft.CodeAnalysis.Editing.SolutionEditor
+  Microsoft.CodeAnalysis.Editing.SymbolEditor
+  Microsoft.CodeAnalysis.Editing.SyntaxEditor
+    Microsoft.CodeAnalysis.Editing.DocumentEditor
+  Microsoft.CodeAnalysis.Editing.SyntaxGenerator : ILanguageService
+  Microsoft.CodeAnalysis.Emit.EmitBaseline
+  Microsoft.CodeAnalysis.Emit.EmitOptions : IEquatable<EmitOptions>
+  Microsoft.CodeAnalysis.Emit.EmitResult
+    Microsoft.CodeAnalysis.Emit.EmitDifferenceResult
+  Microsoft.CodeAnalysis.FindSymbols.ReferencedSymbol
+  Microsoft.CodeAnalysis.Host.HostLanguageServices
+  Microsoft.CodeAnalysis.Host.HostServices
+    Microsoft.CodeAnalysis.Host.Mef.MefHostServices : IMefHostExportProvider
+  Microsoft.CodeAnalysis.Host.HostWorkspaceServices
+  Microsoft.CodeAnalysis.Options.Option<T> : IOption
+  Microsoft.CodeAnalysis.Options.OptionSet
+    Microsoft.CodeAnalysis.Options.DocumentOptionSet
+  Microsoft.CodeAnalysis.Options.OptionStorageLocation
+  Microsoft.CodeAnalysis.Options.PerLanguageOption<T> : IOption
+  Microsoft.CodeAnalysis.Semantics.OperationVisitor
+    Microsoft.CodeAnalysis.Semantics.OperationWalker
+  Microsoft.CodeAnalysis.Semantics.OperationVisitor<TArgument, TResult>
+  Microsoft.CodeAnalysis.Text.SourceText
+  Microsoft.CodeAnalysis.Text.SourceTextContainer
+  Microsoft.CodeAnalysis.Text.TextLineCollection : IEnumerable<TextLine>, IReadOnlyCollection<TextLine>, IReadOnlyList<TextLine>
+  Roslynator.NameGenerator
+  Roslynator.SeparatedSyntaxListSelection<TNode> : ISelection<TNode>
+  Roslynator.SyntaxListSelection<TNode> : ISelection<TNode>
+    Roslynator.CSharp.MemberDeclarationListSelection
+    Roslynator.CSharp.StatementListSelection
+  Roslynator.CSharp.ModifierList<TNode>
+  Roslynator.Text.TextLineCollectionSelection : ISelection<TextLine>

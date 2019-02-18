@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
@@ -49,7 +50,9 @@ namespace Roslynator.Documentation
             if (objectType == null)
                 throw new InvalidOperationException("Object type not found.");
 
-            var allTypes = new HashSet<INamedTypeSymbol>(types) { objectType };
+            Dictionary<INamedTypeSymbol, SymbolHierarchyItem> allItems = types.ToDictionary(f => f, f => new  SymbolHierarchyItem(f));
+
+            allItems[objectType] = new SymbolHierarchyItem(objectType, isExternal: true);
 
             foreach (INamedTypeSymbol type in types)
             {
@@ -57,30 +60,33 @@ namespace Roslynator.Documentation
 
                 while (t != null)
                 {
-                    allTypes.Add(t.OriginalDefinition);
+                    if (!allItems.ContainsKey(t.OriginalDefinition))
+                        allItems[t.OriginalDefinition] = new SymbolHierarchyItem(t.OriginalDefinition, isExternal: true);
+
                     t = t.BaseType;
                 }
             }
 
-            SymbolHierarchyItem root = CreateHierarchyItem(objectType, null);
+            SymbolHierarchyItem root = FillHierarchyItem(allItems[objectType], null);
 
             return new SymbolHierarchy(root);
 
-            SymbolHierarchyItem CreateHierarchyItem(INamedTypeSymbol baseType, SymbolHierarchyItem parent)
+            SymbolHierarchyItem FillHierarchyItem(SymbolHierarchyItem item, SymbolHierarchyItem parent)
             {
-                var item = new SymbolHierarchyItem(baseType, parent);
+                item.Parent = parent;
 
-                allTypes.Remove(baseType);
+                allItems.Remove(item.Symbol);
 
-                INamedTypeSymbol[] derivedTypes = allTypes
-                    .Where(f => f.BaseType?.OriginalDefinition == baseType.OriginalDefinition || f.Interfaces.Any(i => i.OriginalDefinition == baseType.OriginalDefinition))
+                SymbolHierarchyItem[] derivedTypes = allItems
+                    .Select(f => f.Value)
+                    .Where(f => f.Symbol.BaseType?.OriginalDefinition == item.Symbol.OriginalDefinition
+                        || f.Symbol.Interfaces.Any(i => i.OriginalDefinition == item.Symbol.OriginalDefinition))
+                    .OrderBy(f => f.Symbol, comparer)
                     .ToArray();
 
                 if (derivedTypes.Length > 0)
                 {
-                    Array.Sort(derivedTypes, comparer);
-
-                    SymbolHierarchyItem last = CreateHierarchyItem(derivedTypes[derivedTypes.Length - 1], item);
+                    SymbolHierarchyItem last = FillHierarchyItem(derivedTypes[derivedTypes.Length - 1], item);
 
                     SymbolHierarchyItem next = last;
 
@@ -88,7 +94,7 @@ namespace Roslynator.Documentation
 
                     for (int i = derivedTypes.Length - 2; i >= 0; i--)
                     {
-                        child = CreateHierarchyItem(derivedTypes[i], item);
+                        child = FillHierarchyItem(derivedTypes[i], item);
 
                         child.next = next;
 

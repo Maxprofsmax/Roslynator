@@ -71,7 +71,8 @@ namespace Roslynator
         public static SymbolDisplayFormat HierarchyType { get; } = FullDefinition_NameOnly.Update(
             typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
             genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
-            kindOptions: SymbolDisplayKindOptions.None);
+            kindOptions: SymbolDisplayKindOptions.None,
+            miscellaneousOptions: SymbolDisplayMiscellaneousOptions.None);
 
         internal const SymbolDisplayGlobalNamespaceStyle DefaultGlobalNamespaceStyle
             = SymbolDisplayGlobalNamespaceStyle.Omitted;

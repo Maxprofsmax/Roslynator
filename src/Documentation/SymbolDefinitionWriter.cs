@@ -67,7 +67,7 @@ namespace Roslynator.Documentation
 
         public abstract void WriteStartNamespace(INamespaceSymbol namespaceSymbol);
 
-        public abstract void WriteNamespace(INamespaceSymbol namespaceSymbol);
+        public abstract void WriteNamespace(INamespaceSymbol namespaceSymbol, SymbolDisplayFormat format = null);
 
         public abstract void WriteEndNamespace(INamespaceSymbol namespaceSymbol);
 
@@ -79,7 +79,7 @@ namespace Roslynator.Documentation
 
         public abstract void WriteStartType(INamedTypeSymbol typeSymbol);
 
-        public abstract void WriteType(INamedTypeSymbol typeSymbol);
+        public abstract void WriteType(INamedTypeSymbol typeSymbol, SymbolDisplayFormat format = null, SymbolDisplayTypeDeclarationOptions? typeDeclarationOptions = null);
 
         public abstract void WriteEndType(INamedTypeSymbol typeSymbol);
 
@@ -91,7 +91,7 @@ namespace Roslynator.Documentation
 
         public abstract void WriteStartMember(ISymbol symbol);
 
-        public abstract void WriteMember(ISymbol symbol);
+        public abstract void WriteMember(ISymbol symbol, SymbolDisplayFormat format = null);
 
         public abstract void WriteEndMember(ISymbol symbol);
 
@@ -103,7 +103,7 @@ namespace Roslynator.Documentation
 
         public abstract void WriteStartEnumMember(ISymbol symbol);
 
-        public abstract void WriteEnumMember(ISymbol symbol);
+        public abstract void WriteEnumMember(ISymbol symbol, SymbolDisplayFormat format = null);
 
         public abstract void WriteEndEnumMember(ISymbol symbol);
 
@@ -747,13 +747,13 @@ namespace Roslynator.Documentation
             }
         }
 
-        public virtual void Write(ISymbol symbol, SymbolDisplayFormat format)
+        public virtual void Write(ISymbol symbol, SymbolDisplayFormat format, SymbolDisplayTypeDeclarationOptions? typeDeclarationOptions = null, SymbolDisplayAdditionalOptions? additionalOptions = null)
         {
             ImmutableArray<SymbolDisplayPart> parts = SymbolDefinitionDisplay.GetDisplayParts(
                 symbol,
                 format,
-                typeDeclarationOptions: GetTypeDeclarationOptions(),
-                additionalOptions: GetAdditionalOptions(),
+                typeDeclarationOptions: typeDeclarationOptions ?? GetTypeDeclarationOptions(),
+                additionalOptions: additionalOptions ?? GetAdditionalOptions(),
                 shouldDisplayAttribute: Filter.IsVisibleAttribute);
 
             Write(parts);

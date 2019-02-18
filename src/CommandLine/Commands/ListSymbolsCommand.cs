@@ -44,6 +44,7 @@ namespace Roslynator.CommandLine
             var format = new DefinitionListFormat(
                 indentChars: Options.IndentChars,
                 nestNamespaces: Options.NestNamespaces,
+                hierarchy: Options.Hierarchy,
                 emptyLineBetweenMembers: Options.EmptyLineBetweenMembers,
                 omitContainingNamespace: Options.OmitContainingNamespace,
                 includeAttributes: true,

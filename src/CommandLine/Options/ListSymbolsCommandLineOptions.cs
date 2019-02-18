@@ -54,6 +54,14 @@ namespace Roslynator.CommandLine
             HelpText = "Indicates whether assembly attributes should be displayed.")]
         public bool IncludeAssemblyAttributes { get; set; }
 
+        [Option(longName: "include-attributes",
+            HelpText = "Indicates whether attributes should be displayed.")]
+        public bool IncludeAttributes { get; set; }
+
+        [Option(longName: "include-attribute-arguments",
+            HelpText = "Indicates whether attribute arguments should be included when displaying an attribute.")]
+        public bool IncludedAttributeArguments { get; set; }
+
         [Option(longName: "include-documentation",
             HelpText = "Indicates whether XML documentation should be included. This option is relevant only for XML output.")]
         public bool IncludeDocumentation { get; set; }
@@ -71,10 +79,6 @@ namespace Roslynator.CommandLine
         [Option(longName: "nest-namespaces",
             HelpText = "Indicates whether namespaces should be nested.")]
         public bool NestNamespaces { get; set; }
-
-        [Option(longName: "no-attribute-arguments",
-            HelpText = "Indicates whether attribute arguments should be omitted when displaying an attribute.")]
-        public bool NoAttributeArguments { get; set; }
 
         //[Option(longName: "no-precedence-for-system",
         //    HelpText = "Indicates whether symbols contained in 'System' namespace should be ordered as any other symbols and not before other symbols.")]

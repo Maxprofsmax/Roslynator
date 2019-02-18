@@ -38,7 +38,6 @@ namespace Roslynator.CommandLine
 #if DEBUG
                     AnalyzeAssemblyCommandLineOptions,
                     FindSymbolsCommandLineOptions,
-                    TypeHierarchyCommandLineOptions,
 #endif
                     ListSymbolsCommandLineOptions,
                     FormatCommandLineOptions,
@@ -86,7 +85,6 @@ namespace Roslynator.CommandLine
 #if DEBUG
                     (AnalyzeAssemblyCommandLineOptions options) => AnalyzeAssembly(options),
                     (FindSymbolsCommandLineOptions options) => FindSymbolsAsync(options).Result,
-                    (TypeHierarchyCommandLineOptions options) => TypeHierarchyAsync(options).Result,
 #endif
                     (ListSymbolsCommandLineOptions options) => ListSymbolsAsync(options).Result,
                     (FormatCommandLineOptions options) => FormatAsync(options).Result,
@@ -192,36 +190,6 @@ namespace Roslynator.CommandLine
                 visibilityFilter: visibilityFilter,
                 symbolGroupFilter: symbolGroupFilter,
                 ignoredAttributes: ignoredAttributes,
-                projectFilter: projectFilter);
-
-            CommandResult result = await command.ExecuteAsync(options.Path, options.MSBuildPath, options.Properties);
-
-            return (result.Kind == CommandResultKind.Success) ? 0 : 1;
-        }
-
-        private static async Task<int> TypeHierarchyAsync(TypeHierarchyCommandLineOptions options)
-        {
-            if (!options.TryGetProjectFilter(out ProjectFilter projectFilter))
-                return 1;
-
-            if (!TryParseOptionValueAsEnumFlags(options.Visibility, ParameterNames.Visibility, out VisibilityFilter visibilityFilter, SymbolFilterOptions.Default.VisibilityFilter))
-                return 1;
-
-            if (!TryParseMetadataNames(options.IgnoredNames, out ImmutableArray<MetadataName> ignoredNames))
-                return 1;
-
-            if (!TryParseMetadataNames(options.IgnoredAttributeNames, out ImmutableArray<MetadataName> ignoredAttributeNames))
-                return 1;
-
-            var symbolFilterOptions = new SymbolFilterOptions(
-                visibilityFilter: visibilityFilter,
-                ignoredNames: ignoredNames,
-                ignoredAttributeNames: ignoredAttributeNames);
-
-            var command = new TypeHierarchyCommand(
-                options: options,
-                symbolFilterOptions: symbolFilterOptions,
-                rootDirectoryUrl: options.RootDirectoryUrl,
                 projectFilter: projectFilter);
 
             CommandResult result = await command.ExecuteAsync(options.Path, options.MSBuildPath, options.Properties);

@@ -125,26 +125,7 @@ namespace Roslynator.Documentation.Xml
 
         public override void WriteStartType(INamedTypeSymbol typeSymbol)
         {
-            WriteStartElement(GetTypeName());
-
-            string GetTypeName()
-            {
-                switch (typeSymbol.TypeKind)
-                {
-                    case TypeKind.Class:
-                        return "class";
-                    case TypeKind.Delegate:
-                        return "delegate";
-                    case TypeKind.Enum:
-                        return "enum";
-                    case TypeKind.Interface:
-                        return "interface";
-                    case TypeKind.Struct:
-                        return "struct";
-                    default:
-                        throw new ArgumentException("", nameof(typeSymbol));
-                }
-            }
+            WriteStartElement("type");
         }
 
         public override void WriteType(INamedTypeSymbol typeSymbol, SymbolDisplayFormat format = null, SymbolDisplayTypeDeclarationOptions? typeDeclarationOptions = null)
@@ -179,36 +160,7 @@ namespace Roslynator.Documentation.Xml
 
         public override void WriteStartMember(ISymbol symbol)
         {
-            WriteStartElement(GetMemberName());
-
-            string GetMemberName()
-            {
-                switch (symbol.GetMemberDeclarationKind())
-                {
-                    case MemberDeclarationKind.Const:
-                        return "const";
-                    case MemberDeclarationKind.Field:
-                        return "field";
-                    case MemberDeclarationKind.StaticConstructor:
-                    case MemberDeclarationKind.Constructor:
-                        return "constructor";
-                    case MemberDeclarationKind.Destructor:
-                        return "destructor";
-                    case MemberDeclarationKind.Event:
-                        return "event";
-                    case MemberDeclarationKind.Property:
-                        return "property";
-                    case MemberDeclarationKind.Indexer:
-                        return "indexer";
-                    case MemberDeclarationKind.OrdinaryMethod:
-                        return "method";
-                    case MemberDeclarationKind.ConversionOperator:
-                    case MemberDeclarationKind.Operator:
-                        return "operator";
-                    default:
-                        throw new ArgumentException("", nameof(symbol));
-                }
-            }
+            WriteStartElement("member");
         }
 
         public override void WriteMember(ISymbol symbol, SymbolDisplayFormat format = null)
@@ -243,7 +195,7 @@ namespace Roslynator.Documentation.Xml
 
         public override void WriteStartEnumMember(ISymbol symbol)
         {
-            WriteStartElement("field");
+            WriteStartElement("member");
         }
 
         public override void WriteEnumMember(ISymbol symbol, SymbolDisplayFormat format = null)

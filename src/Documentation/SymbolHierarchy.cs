@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
@@ -10,29 +9,27 @@ namespace Roslynator.Documentation
 {
     internal sealed class SymbolHierarchy
     {
-        private SymbolHierarchy(SymbolHierarchyItem root)
+        private SymbolHierarchy(SymbolHierarchyItem root, SymbolHierarchyItem staticRoot)
         {
             Root = root;
+            StaticRoot = staticRoot;
         }
 
         public SymbolHierarchyItem Root { get; }
+
+        public SymbolHierarchyItem StaticRoot { get; }
 
         public static SymbolHierarchy Create(
             IEnumerable<IAssemblySymbol> assemblies,
             SymbolFilterOptions filter = null,
             IComparer<INamedTypeSymbol> comparer = null)
         {
-            Func<INamedTypeSymbol, bool> predicate;
+            Func<INamedTypeSymbol, bool> predicate = null;
 
             if (filter != null)
             {
-                predicate = t => !t.IsStatic
-                    && filter.IsVisibleType(t)
+                predicate = t => filter.IsVisibleType(t)
                     && filter.IsVisibleNamespace(t.ContainingNamespace);
-            }
-            else
-            {
-                predicate = t => !t.IsStatic;
             }
 
             IEnumerable<INamedTypeSymbol> types = assemblies.SelectMany(a => a.GetTypes(predicate));
@@ -50,11 +47,13 @@ namespace Roslynator.Documentation
             if (objectType == null)
                 throw new InvalidOperationException("Object type not found.");
 
-            Dictionary<INamedTypeSymbol, SymbolHierarchyItem> allItems = types.ToDictionary(f => f, f => new  SymbolHierarchyItem(f));
+            Dictionary<INamedTypeSymbol, SymbolHierarchyItem> allItems = types
+                .Where(f => !f.IsStatic)
+                .ToDictionary(f => f, f => new  SymbolHierarchyItem(f));
 
             allItems[objectType] = new SymbolHierarchyItem(objectType, isExternal: true);
 
-            foreach (INamedTypeSymbol type in types)
+            foreach (INamedTypeSymbol type in types.Where(f => !f.IsStatic))
             {
                 INamedTypeSymbol t = type.BaseType;
 
@@ -69,7 +68,9 @@ namespace Roslynator.Documentation
 
             SymbolHierarchyItem root = FillHierarchyItem(allItems[objectType], null);
 
-            return new SymbolHierarchy(root);
+            SymbolHierarchyItem staticRoot = GetStaticRoot();
+
+            return new SymbolHierarchy(root, staticRoot);
 
             SymbolHierarchyItem FillHierarchyItem(SymbolHierarchyItem item, SymbolHierarchyItem parent)
             {
@@ -104,6 +105,39 @@ namespace Roslynator.Documentation
                     last.next = child ?? last;
 
                     item.lastChild = last;
+                }
+
+                return item;
+            }
+
+            SymbolHierarchyItem GetStaticRoot()
+            {
+                var item = new SymbolHierarchyItem(null);
+
+                using (IEnumerator<INamedTypeSymbol> en = types
+                    .Where(f => f.IsStatic)
+                    .OrderByDescending(f => f, comparer)
+                    .GetEnumerator())
+                {
+                    if (en.MoveNext())
+                    {
+                        var last = new SymbolHierarchyItem(en.Current) { Parent = item };
+
+                        SymbolHierarchyItem next = last;
+
+                        SymbolHierarchyItem child = null;
+
+                        while (en.MoveNext())
+                        {
+                            child = new SymbolHierarchyItem(en.Current) { Parent = item, next = next };
+
+                            next = child;
+                        }
+
+                        last.next = child ?? last;
+
+                        item.lastChild = last;
+                    }
                 }
 
                 return item;

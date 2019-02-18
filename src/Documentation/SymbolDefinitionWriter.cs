@@ -28,7 +28,7 @@ namespace Roslynator.Documentation
 
         public IComparer<ISymbol> Comparer { get; }
 
-        public virtual bool SupportsMultilineDefinitions => true;
+        public virtual bool SupportsMultilineDefinitions => !Format.Hierarchy;
 
         protected int Depth { get; private set; }
 
@@ -187,7 +187,7 @@ namespace Roslynator.Documentation
         {
             WriteStartDocument();
             WriteAssemblies(assemblies);
-            WriteNamespaces(assemblies);
+            WriteTypes(assemblies);
             WriteEndDocument();
         }
 
@@ -229,26 +229,66 @@ namespace Roslynator.Documentation
             WriteEndAssemblies();
         }
 
-        public void WriteNamespaces(IEnumerable<IAssemblySymbol> assemblies)
+        public void WriteTypes(IEnumerable<IAssemblySymbol> assemblies)
         {
-            IEnumerable<IGrouping<INamespaceSymbol, INamedTypeSymbol>> typesByNamespace = assemblies
-                .SelectMany(a => a.GetTypes(t => t.ContainingType == null && Filter.IsVisibleType(t)))
-                .GroupBy(t => t.ContainingNamespace, MetadataNameEqualityComparer<INamespaceSymbol>.Instance)
-                .Where(g => Filter.IsVisibleNamespace(g.Key))
-                .OrderBy(g => g.Key, Comparer);
-
-            WriteStartNamespaces();
-
-            if (Format.NestNamespaces)
+            if (Format.Hierarchy)
             {
-                WriteNamespacesWithHierarchy(typesByNamespace.ToDictionary(f => f.Key, f => f.AsEnumerable()));
+                WriteHierarchy(assemblies);
             }
             else
             {
-                WriteNamespaces(typesByNamespace);
-            }
+                IEnumerable<IGrouping<INamespaceSymbol, INamedTypeSymbol>> typesByNamespace = assemblies
+                    .SelectMany(a => a.GetTypes(t => t.ContainingType == null && Filter.IsVisibleType(t)))
+                    .GroupBy(t => t.ContainingNamespace, MetadataNameEqualityComparer<INamespaceSymbol>.Instance)
+                    .Where(g => Filter.IsVisibleNamespace(g.Key))
+                    .OrderBy(g => g.Key, Comparer);
 
-            WriteEndNamespaces();
+                WriteStartNamespaces();
+
+                if (Format.NestNamespaces)
+                {
+                    WriteNamespacesWithHierarchy(typesByNamespace.ToDictionary(f => f.Key, f => f.AsEnumerable()));
+                }
+                else
+                {
+                    WriteNamespaces(typesByNamespace);
+                }
+
+                WriteEndNamespaces();
+            }
+        }
+
+        private void WriteHierarchy(IEnumerable<IAssemblySymbol> assemblies)
+        {
+            SymbolHierarchy hierarchy = SymbolHierarchy.Create(assemblies, Filter, Comparer);
+
+            WriteStartTypes();
+            WriteTypeHierarchy(hierarchy.Root);
+            WriteEndTypes();
+
+            WriteStartTypes();
+
+            foreach (SymbolHierarchyItem item in hierarchy.StaticRoot.Children())
+                WriteTypeHierarchy(item);
+
+            WriteEndTypes();
+
+            void WriteTypeHierarchy(SymbolHierarchyItem item)
+            {
+                WriteStartType(item.Symbol);
+
+                WriteType(
+                    item.Symbol,
+                    format: SymbolDefinitionDisplayFormats.HierarchyType);
+
+                if (!item.IsExternal)
+                    WriteMembers(item.Symbol);
+
+                foreach (SymbolHierarchyItem derivedItem in item.Children())
+                    WriteTypeHierarchy(derivedItem);
+
+                WriteEndType(item.Symbol);
+            }
         }
 
         private void WriteNamespaces(IEnumerable<IGrouping<INamespaceSymbol, INamedTypeSymbol>> typesByNamespace)
@@ -392,26 +432,7 @@ namespace Roslynator.Documentation
                         WriteStartType(type);
                         WriteType(type);
 
-                        switch (type.TypeKind)
-                        {
-                            case TypeKind.Class:
-                            case TypeKind.Interface:
-                            case TypeKind.Struct:
-                                {
-                                    WriteMembers(type);
-                                    break;
-                                }
-                            case TypeKind.Enum:
-                                {
-                                    WriteEnumMembers(type);
-                                    break;
-                                }
-                            default:
-                                {
-                                    Debug.Assert(type.TypeKind == TypeKind.Delegate, type.TypeKind.ToString());
-                                    break;
-                                }
-                        }
+                        WriteMembers(type);
 
                         WriteEndType(type);
 
@@ -432,7 +453,38 @@ namespace Roslynator.Documentation
 
         private void WriteMembers(INamedTypeSymbol type)
         {
-            if ((Filter.SymbolGroupFilter & SymbolGroupFilter.Member) != 0)
+            switch (type.TypeKind)
+            {
+                case TypeKind.Class:
+                case TypeKind.Interface:
+                case TypeKind.Struct:
+                    {
+                        if ((Filter.SymbolGroupFilter & SymbolGroupFilter.Member) != 0)
+                            WriteMembers();
+
+                        if (!Format.Hierarchy
+                            && (Filter.SymbolGroupFilter & SymbolGroupFilter.Type) != 0)
+                        {
+                            WriteTypes(type.GetTypeMembers().Where(f => Filter.IsVisibleType(f)));
+                        }
+
+                        break;
+                    }
+                case TypeKind.Enum:
+                    {
+                        if ((Filter.SymbolGroupFilter & SymbolGroupFilter.Member) != 0)
+                            WriteEnumMembers();
+
+                        break;
+                    }
+                default:
+                    {
+                        Debug.Assert(type.TypeKind == TypeKind.Delegate, type.TypeKind.ToString());
+                        break;
+                    }
+            }
+
+            void WriteMembers()
             {
                 using (IEnumerator<ISymbol> en = type
                     .GetMembers()
@@ -475,42 +527,36 @@ namespace Roslynator.Documentation
                 }
             }
 
-            if ((Filter.SymbolGroupFilter & SymbolGroupFilter.Type) != 0)
-                WriteTypes(type.GetTypeMembers().Where(f => Filter.IsVisibleType(f)));
-        }
-
-        private void WriteEnumMembers(INamedTypeSymbol enumType)
-        {
-            if ((Filter.SymbolGroupFilter & SymbolGroupFilter.Member) == 0)
-                return;
-
-            using (IEnumerator<ISymbol> en = enumType
-                .GetMembers()
-                .Where(m => m.Kind == SymbolKind.Field
-                    && m.DeclaredAccessibility == Accessibility.Public)
-                .GetEnumerator())
+            void WriteEnumMembers()
             {
-                if (en.MoveNext())
+                using (IEnumerator<ISymbol> en = type
+                    .GetMembers()
+                    .Where(m => m.Kind == SymbolKind.Field
+                        && m.DeclaredAccessibility == Accessibility.Public)
+                    .GetEnumerator())
                 {
-                    WriteStartEnumMembers();
-
-                    while (true)
+                    if (en.MoveNext())
                     {
-                        WriteStartEnumMember(en.Current);
-                        WriteEnumMember(en.Current);
-                        WriteEndEnumMember(en.Current);
+                        WriteStartEnumMembers();
 
-                        if (en.MoveNext())
+                        while (true)
                         {
-                            WriteEnumMemberSeparator();
+                            WriteStartEnumMember(en.Current);
+                            WriteEnumMember(en.Current);
+                            WriteEndEnumMember(en.Current);
+
+                            if (en.MoveNext())
+                            {
+                                WriteEnumMemberSeparator();
+                            }
+                            else
+                            {
+                                break;
+                            }
                         }
-                        else
-                        {
-                            break;
-                        }
+
+                        WriteEndEnumMembers();
                     }
-
-                    WriteEndEnumMembers();
                 }
             }
         }

@@ -2,7 +2,6 @@
 
 namespace Roslynator.Documentation
 {
-    //TODO: order by: namespace, accessibility, typekind, memberkind, name. group by: assembly, namespace, hierarchy
     internal class DefinitionListFormat
     {
         public DefinitionListFormat(

@@ -440,7 +440,7 @@ namespace Roslynator.Documentation
                 headingLevelBase: headingLevelBase);
         }
 
-        //TODO: WriteDeclaration > WriteDefinition
+        //XTODO: WriteDeclaration > WriteDefinition
         public virtual void WriteDeclaration(ISymbol symbol)
         {
             SymbolDisplayAdditionalOptions additionalOptions = SymbolDisplayAdditionalOptions.IncludeAttributes
